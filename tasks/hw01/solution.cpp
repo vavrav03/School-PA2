@@ -13,6 +13,174 @@
 using namespace std;
 #endif /* __PROGTEST__ */
 
+#define WRONG_INPUT (-2)
+#define END_OF_INPUT (-1)
+#define FIBONACCI_NUMBERS_COUNT 30
+
+class UTF8Stream {
+public:
+  explicit UTF8Stream(fstream &stream) : stream(stream) {};
+  int readOneCodepoint();
+private:
+  fstream &stream;
+  static int getNextBytesCount(char byte);
+  static bool isSuccessorByte(char byte);
+  static void writeOneCodepoint(int codepoint);
+  static int getCodePointBinaryLength(int codepoint);
+};
+
+int UTF8Stream::getNextBytesCount(char byte) {
+  if ((byte & 0b10000000) == 0) {
+    return 0;
+  }
+  if ((byte & 0b11100000) == 0b11000000) {
+    return 1;
+  }
+  if ((byte & 0b11110000) == 0b11100000) {
+    return 2;
+  }
+  if ((byte & 0b11111000) == 0b11110000) {
+    return 3;
+  }
+  return -1;
+}
+bool UTF8Stream::isSuccessorByte(char byte) {
+  return (byte & 0b11000000) == 0b10000000;
+}
+int UTF8Stream::readOneCodepoint() {
+  char byte;
+  stream.read(&byte, 1);
+  if (stream.eof()) {
+    return END_OF_INPUT;
+  } else if (!stream.good()) {
+    return WRONG_INPUT;
+  }
+  int nextBytesCount = getNextBytesCount(byte);
+  if (nextBytesCount == -1) {
+    return WRONG_INPUT;
+  }
+  if (nextBytesCount == 0) {
+    return byte & 0b01111111;
+  }
+  int result = byte & (0b01111111 >> (nextBytesCount + 1));
+  for (int i = 0; i < nextBytesCount; i++) {
+    stream.read(&byte, 1);
+    if (!stream.good()) { // more bytes were expected, but the stream ended
+      return WRONG_INPUT;
+    }
+    if (!isSuccessorByte(byte)) {
+      return WRONG_INPUT;
+    }
+    result = (result << 6) | (byte & 0b00111111); // most left bytes are the highest order bits (from leader byte)
+  }
+  if (result > 0x10FFFF) { // 0-0x10FFFF is the valid range for this task
+    return WRONG_INPUT;
+  }
+  return result;
+}
+int UTF8Stream::getCodePointBinaryLength(int codepoint) {
+  for(int i = 0; i <= 100; i++) {
+    if ((codepoint >> i) == 0) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+class FibonacciSequence {
+public:
+  int sequence[FIBONACCI_NUMBERS_COUNT]{};
+  FibonacciSequence() {
+    sequence[0] = 1;
+    sequence[1] = 2;
+    for (int i = 2; i < FIBONACCI_NUMBERS_COUNT; i++) {
+      sequence[i] = sequence[i - 1] + sequence[i - 2];
+    }
+  }
+  int biggestLowerIndex(int number) {
+    for (int i = FIBONACCI_NUMBERS_COUNT - 1; i >= 0; i--) {
+      if (sequence[i] <= number) {
+        return i;
+      }
+    }
+    return -1;
+  }
+};
+
+class FibonacciStream {
+public:
+  explicit FibonacciStream(fstream &stream) : stream(stream), fSeq(), bufferByte(0), bufferedCount(0) {}
+  void writeOneCodepoint(int codepoint);
+  void endOutput();
+private:
+  fstream &stream;
+  FibonacciSequence fSeq;
+  char bufferByte;
+  int bufferedCount;
+  void addToBuffer(int bit);
+};
+
+void FibonacciStream::addToBuffer(int bit) {
+  bufferByte |= (bit << bufferedCount);
+  bufferedCount++;
+  if (bufferedCount == 8) {
+    stream.write(&bufferByte, 1);
+    stream.flush();
+    bufferedCount = 0;
+    bufferByte = 0;
+  }
+}
+
+void FibonacciStream::writeOneCodepoint(int codepoint) {
+  codepoint++; // 0 is now 1
+  int result = 0;
+  int index = fSeq.biggestLowerIndex(codepoint); // should never be -1 here
+  int biggestLowerIndex = index;
+  while (index != -1) {
+    result |= (1 << index);
+    codepoint -= fSeq.sequence[index];
+    index = fSeq.biggestLowerIndex(codepoint);
+  }
+  for (int i = 0; i <= biggestLowerIndex; i++) { // sending this to output from right to left (LSB is right)
+    addToBuffer((result >> i) & 1);
+  }
+  addToBuffer(1);
+}
+
+bool utf8ToFibonacci(const char *inFile, const char *outFile) {
+  fstream in(inFile, ios::in | ios::binary);
+  fstream out(outFile, ios::out | ios::binary);
+  if (in.fail() || out.fail()) {
+    return false;
+  }
+  UTF8Stream utf8Stream(in);
+  FibonacciStream fibonacciStream(out);
+  int codepoint;
+  while ((codepoint = utf8Stream.readOneCodepoint()) >= 0) {
+    if (codepoint == -1) {
+      return false;
+    }
+    fibonacciStream.writeOneCodepoint(codepoint);
+  }
+  if (codepoint == END_OF_INPUT) {
+    fibonacciStream.endOutput();
+    return true;
+  }
+  return false;
+}
+
+void FibonacciStream::endOutput() {
+  if (bufferedCount > 0) {
+    stream.write(&bufferByte, 1);
+    bufferedCount = 0;
+    bufferByte = 0;
+  }
+}
+
+bool fibonacciToUtf8(const char *inFile, const char *outFile) {
+  return false;
+}
+
 #ifndef __PROGTEST__
 const int BUFFER_SIZE = 4096;
 
