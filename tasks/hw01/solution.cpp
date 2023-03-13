@@ -110,7 +110,6 @@ void UTF8Stream::writeOneCodepoint(int codepoint) {
     bytes[3] = 0b10000000 | (codepoint & 0b00111111);
     stream.write(bytes, 4);
   }
-  stream.flush();
 }
 
 class FibonacciSequence {
@@ -221,26 +220,6 @@ int FibonacciStream::readOneCodepoint() {
   return result - 1;
 }
 
-bool utf8ToFibonacci(const char *inFile, const char *outFile) {
-  fstream in(inFile, ios::in | ios::binary);
-  fstream out(outFile, ios::out | ios::binary);
-  if (in.fail() || out.fail()) {
-    return false;
-  }
-  UTF8Stream utf8Stream(in);
-  FibonacciStream fibonacciStream(out);
-  int codepoint;
-  while ((codepoint = utf8Stream.readOneCodepoint()) >= 0) {
-    fibonacciStream.writeOneCodepoint(codepoint);
-  }
-  if()
-  if (codepoint == END_OF_INPUT) {
-    fibonacciStream.endOutput();
-    return true;
-  }
-  return false;
-}
-
 void FibonacciStream::endOutput() {
   if (bufferedCount > 0) {
     stream.write(&bufferByte, 1);
@@ -249,10 +228,32 @@ void FibonacciStream::endOutput() {
   }
 }
 
+bool utf8ToFibonacci(const char *inFile, const char *outFile) {
+  fstream in(inFile, ios::in | ios::binary);
+  fstream out(outFile, ios::out | ios::binary);
+  if (!in.good() || !out.good()) {
+    return false;
+  }
+  UTF8Stream utf8Stream(in);
+  FibonacciStream fibonacciStream(out);
+  int codepoint;
+  while ((codepoint = utf8Stream.readOneCodepoint()) >= 0) {
+    fibonacciStream.writeOneCodepoint(codepoint);
+  }
+  if(out.bad()){
+    return false;
+  }
+  if (codepoint == END_OF_INPUT) {
+    fibonacciStream.endOutput();
+    return true;
+  }
+  return false;
+}
+
 bool fibonacciToUtf8(const char *inFile, const char *outFile) {
   fstream in(inFile, ios::in | ios::binary);
   fstream out(outFile, ios::out | ios::binary);
-  if (in.fail() || out.fail()) {
+  if (!in.good() || !out.good()) {
     return false;
   }
   FibonacciStream fibonacciStream(in);
@@ -260,6 +261,9 @@ bool fibonacciToUtf8(const char *inFile, const char *outFile) {
   int codepoint;
   while ((codepoint = fibonacciStream.readOneCodepoint()) >= 0) {
     utf8Stream.writeOneCodepoint(codepoint);
+  }
+  if(out.bad()){
+    return false;
   }
   if (codepoint == END_OF_INPUT) {
     return true;
@@ -310,7 +314,7 @@ int main(int argc, char *argv[]) {
   assert(fibonacciToUtf8("example/src_10.fib", "output.utf8") &&
           identicalFiles("output.utf8", "example/dst_10.utf8"));
   assert(!fibonacciToUtf8("example/src_11.fib", "output.utf8"));
-
+  fibonacciToUtf8("example/in_5025646.bin", "output.utf8");
   return EXIT_SUCCESS;
 }
 
