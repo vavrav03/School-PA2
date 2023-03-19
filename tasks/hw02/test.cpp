@@ -25,18 +25,18 @@ class HashMap {
 public:
   HashMap(int(*hash)(const T &), bool(*keyCompare)(const T &, const T &)) : currentSize(0), maxCapacity(BASE_SIZE),
                                                                             hash(hash), keyCompare(keyCompare) {
-    keys = new vector<list<pair<T, K *> > >();
+    keys = new vector<list<pair<T, K> > >();
     keys->resize(BASE_SIZE);
   }
   ~HashMap() {
     delete keys;
   }
-  bool add(const T &key, K *value) {
+  bool add(const T &key, K value) {
     int index = hash(key) % BASE_SIZE;
     if (getOnIndex(index, key) != nullptr) {
       return false;
     }
-    (*keys)[index].push_back(pair<T, K *>(key, value));
+    (*keys)[index].push_back(pair<T, K>(key, value));
     currentSize++;
     if (shouldResize()) {
       increaseCapacity();
@@ -58,17 +58,17 @@ public:
     const int index = hash(key) % BASE_SIZE;
     return getOnIndex(index, key) != nullptr;
   }
-  K *get(const T &key) const {
+  K get(const T &key) const {
     int index = hash(key) % BASE_SIZE;
     return getOnIndex(index, key);
   }
 private:
-  vector<list<pair<T, K *> > > *keys;
+  vector<list<pair<T, K> > > *keys;
   int currentSize;
   int maxCapacity;
   int (*hash)(const T &);
   bool (*keyCompare)(const T &, const T &);
-  K *getOnIndex(int index, const T &key) const {
+  K getOnIndex(int index, const T &key) const {
     for (auto it = (*keys)[index].begin(); it != (*keys)[index].end(); it++) {
       if (keyCompare(it->first, key)) {
         return it->second;
@@ -82,14 +82,14 @@ private:
   }
   void increaseCapacity() {
     int newCapacity = maxCapacity * 2;
-    auto *newKeys = new vector<list<pair<T, K *> > >();
+    auto *newKeys = new vector<list<pair<T, K> > >();
     for (int i = 0; i < newCapacity; i++) {
-      (*newKeys)[i] = list<pair<T, K *> >();
+      (*newKeys)[i] = list<pair<T, K> >();
     }
     for (int i = 0; i < maxCapacity; i++) {
       for (auto it = (*keys)[i].begin(); it != (*keys)[i].end(); it++) {
         int newIndex = hash(it->first) % newCapacity;
-        (*newKeys)[newIndex].push_back(pair<T, K *>(it->first, it->second));
+        (*newKeys)[newIndex].push_back(pair<T, K>(it->first, it->second));
       }
     }
     delete keys;
@@ -152,7 +152,7 @@ public:
 
 class CPersonalAgenda {
 public:
-  CPersonalAgenda() : peopleByEmail(hashString, compareStrings), salaryCount(hashSalary, compareSalary) {}
+  CPersonalAgenda() : peopleByEmail(hashString, compareStrings) {}
   ~CPersonalAgenda() {};
   bool add(const string &name,
           const string &surname,
@@ -318,8 +318,7 @@ public:
   }
 private:
   vector<Person *> peopleByName;
-  HashMap<string, Person> peopleByEmail;
-  HashMap<unsigned int, SalaryCount> salaryCount;
+  HashMap<string, Person*> peopleByEmail;
   int indexOf(const string &name, const string &surname) const {
     Person target = Person::createDummy(name, surname);
     auto foundItemPointer = lower_bound(this->peopleByName.begin(), this->peopleByName.end(), &target,
