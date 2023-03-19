@@ -32,7 +32,7 @@ public:
     delete keys;
   }
   bool add(const T &key, K value) {
-    int index = hash(key) % BASE_SIZE;
+    int index = getHashIndex(key);
     if (getOnIndex(index, key) != nullptr) {
       return false;
     }
@@ -44,7 +44,7 @@ public:
     return true;
   }
   bool remove(const T &key) {
-    int index = hash(key) % BASE_SIZE;
+    int index = getHashIndex(key);
     for (auto it = (*keys)[index].begin(); it != (*keys)[index].end(); it++) {
       if (keyCompare(it->first, key)) {
         (*keys)[index].erase(it);
@@ -55,12 +55,15 @@ public:
     return false;
   }
   bool contains(const T &key) const {
-    const int index = hash(key) % BASE_SIZE;
+    const int index = getHashIndex(key);
     return getOnIndex(index, key) != nullptr;
   }
-  K get(const T &key) const {
-    int index = hash(key) % BASE_SIZE;
+  K *get(const T &key) const {
+    int index = getHashIndex(key);
     return getOnIndex(index, key);
+  }
+  int size() const {
+    return currentSize;
   }
 private:
   vector<list<pair<T, K> > > *keys;
@@ -68,10 +71,13 @@ private:
   int maxCapacity;
   int (*hash)(const T &);
   bool (*keyCompare)(const T &, const T &);
-  K getOnIndex(int index, const T &key) const {
+  int getHashIndex(const T &key) const {
+    return abs(hash(key) % maxCapacity);
+  }
+  K *getOnIndex(int index, const T &key) const {
     for (auto it = (*keys)[index].begin(); it != (*keys)[index].end(); it++) {
       if (keyCompare(it->first, key)) {
-        return it->second;
+        return &(it->second);
       }
     }
     return nullptr;
@@ -186,39 +192,39 @@ public:
   }
 
   bool del(const string &email) {
-    Person *person = peopleByEmail.get(email);
+    Person **person = peopleByEmail.get(email);
     if (person == nullptr) {
       return false;
     }
-    int index = indexOf(person->name, person->surname);
+    int index = indexOf((*person)->name, (*person)->surname);
     peopleByEmail.remove(email);
     peopleByName.erase(peopleByName.begin() + index);
-    delete person;
     return true;
   }
 
   bool changeName(const string &email,
           const string &newName,
           const string &newSurname) {
-    Person *ref = peopleByEmail.get(email);
+    Person **ref = peopleByEmail.get(email);
     if (ref == nullptr) {
       return false;
     }
-    int index = indexOf(ref->name, ref->surname);
+    int index = indexOf((*ref)->name, (*ref)->surname);
     if (index == -1) {
       return false;
     }
-    Person target(newName, newSurname, email, ref->salary);
+    Person target(newName, newSurname, email, (*ref)->salary);
     auto foundItemPointer = lower_bound(this->peopleByName.begin(), this->peopleByName.end(), &target,
             Person::isLowerByName);
-    if (foundItemPointer != this->peopleByName.end() && Person::isSameByName(*foundItemPointer, &target) == 0) {
+    if (foundItemPointer != this->peopleByName.end() && Person::isSameByName(*foundItemPointer, &target)) {
       // new already exists
       return false;
     }
+    int salary = (*ref)->salary;
     peopleByEmail.remove(email);
     peopleByName.erase(peopleByName.begin() + index);
-    this->add(newName, newSurname, email, ref->salary);
-    delete ref;
+    // maybe delete ref?
+    this->add(newName, newSurname, email, salary);
     return true;
   }
 
@@ -233,8 +239,8 @@ public:
     if (existsNewEmail) {
       return false;
     }
-    peopleByName[index]->email = newEmail;
     peopleByEmail.remove(peopleByName[index]->email);
+    peopleByName[index]->email = newEmail;
     peopleByEmail.add(newEmail, peopleByName[index]);
     return true;
   }
@@ -247,18 +253,16 @@ public:
       return false;
     }
     peopleByName[index]->salary = salary;
-    // TODO alteration
-    return false;
+    return true;
   }
 
   bool setSalary(const string &email,
           unsigned int salary) {
-    Person *ref = peopleByEmail.get(email);
+    Person **ref = peopleByEmail.get(email);
     if (ref == nullptr) {
       return false;
     }
-    ref->salary = salary;
-    // TODO alteration
+    (*ref)->salary = salary;
     return true;
   }
 
@@ -272,26 +276,43 @@ public:
   }
 
   unsigned int getSalary(const string &email) const {
-    Person *ref = peopleByEmail.get(email);
+    Person **ref = peopleByEmail.get(email);
     if (ref == nullptr) {
       return 0;
     }
-    return ref->salary;
+    return (*ref)->salary;
   }
 
   bool getRank(const string &name,
           const string &surname,
           int &rankMin,
           int &rankMax) const {
-    // TODO
-    return false;
+    int strictlyLowerCount = 0;
+    int equalCount = 0;
+    int salary = getSalary(name, surname);
+    if(salary == 0) {
+      return false;
+    }
+    for(int i = 0; i < peopleByName.size(); i++) {
+      if(peopleByName[i]->salary < salary) {
+        strictlyLowerCount++;
+      } else if(peopleByName[i]->salary == salary) {
+        equalCount++;
+      }
+    }
+    rankMin = strictlyLowerCount;
+    rankMax = strictlyLowerCount + equalCount - 1;
+    return true;
   }
 
   bool getRank(const string &email,
           int &rankMin,
           int &rankMax) const {
-    // TODO
-    return false;
+    Person **ref = peopleByEmail.get(email);
+    if (ref == nullptr) {
+      return false;
+    }
+    return getRank((*ref)->name, (*ref)->surname, rankMin, rankMax);
   }
 
   bool getFirst(string &outName,
@@ -318,12 +339,12 @@ public:
   }
 private:
   vector<Person *> peopleByName;
-  HashMap<string, Person*> peopleByEmail;
+  HashMap<string, Person *> peopleByEmail;
   int indexOf(const string &name, const string &surname) const {
     Person target = Person::createDummy(name, surname);
     auto foundItemPointer = lower_bound(this->peopleByName.begin(), this->peopleByName.end(), &target,
             Person::isLowerByName);
-    if (foundItemPointer == peopleByName.end()) {
+    if (foundItemPointer == peopleByName.end() || !Person::isSameByName(*foundItemPointer, &target)) {
       return -1;
     }
     return foundItemPointer - peopleByName.begin();
