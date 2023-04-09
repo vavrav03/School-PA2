@@ -113,9 +113,7 @@ public:
   }
 
   bool operator==(const CInvoice &x) const {
-    bool dateEqual = (this->m_Date.year() == x.m_Date.year()) && (this->m_Date.month() == x.m_Date.month()) &&
-            (this->m_Date.day() == x.m_Date.day());
-    return dateEqual && (this->m_Buyer == x.m_Buyer) && (this->m_Seller == x.m_Seller) &&
+    return this->date().compare(x.date()) == 0 && (this->m_Buyer == x.m_Buyer) && (this->m_Seller == x.m_Seller) &&
             (this->m_Amount == x.m_Amount) && (this->m_Vat == x.m_Vat);
   }
 
@@ -147,10 +145,43 @@ public:
   static const int BY_VAT = 4;
   CSortOpt(void) {}
   CSortOpt &addKey(int key, bool ascending = true) {
+    keys.push_back(make_pair(key, ascending));
     return *this;
   }
+  bool operator()(const CInvoice &x, const CInvoice &y) const {
+    for (auto key: keys) {
+      switch (key.first) {
+        case BY_DATE:
+          if (x.date().compare(y.date()) != 0) {
+            return key.second ? x.date().compare(y.date()) < 0 : x.date().compare(y.date()) > 0;
+          }
+          break;
+        case BY_BUYER:
+          if (x.buyer() != y.buyer()) {
+            return key.second ? x.buyer() < y.buyer() : x.buyer() > y.buyer();
+          }
+          break;
+        case BY_SELLER:
+          if (x.seller() != y.seller()) {
+            return key.second ? x.seller() < y.seller() : x.seller() > y.seller();
+          }
+          break;
+        case BY_AMOUNT:
+          if (x.amount() != y.amount()) {
+            return key.second ? x.amount() < y.amount() : x.amount() > y.amount();
+          }
+          break;
+        case BY_VAT:
+          if (x.vat() != y.vat()) {
+            return key.second ? x.vat() < y.vat() : x.vat() > y.vat();
+          }
+          break;
+      }
+    }
+    return false;
+  }
 private:
-  // todo
+  list<pair<int, bool>> keys;
 };
 
 class CVATRegister {
@@ -160,24 +191,21 @@ public:
     return companies.insert(Company(name)).second;
   }
   bool addIssued(const CInvoice &x) {
-    if (companies.find(x.sellerCompany()) == companies.end() ||
-            existsSameInvoiceForCompany(x, issuedInvoices[x.sellerCompany()]) || x.hasSameSellerAndBuyer()) {
+    if (!existCompaniesFromInvoice(x) || isInvoiceIssued(x) || x.hasSameSellerAndBuyer()) {
       return false;
     }
     issuedInvoices[x.sellerCompany()].insert(x);
     return true;
   }
   bool addAccepted(const CInvoice &x) {
-    if (companies.find(x.buyerCompany()) == companies.end() ||
-            existsSameInvoiceForCompany(x, acceptedInvoices[x.buyerCompany()]) || x.hasSameSellerAndBuyer()) {
+    if (!existCompaniesFromInvoice(x) || isInvoiceAccepted(x)|| x.hasSameSellerAndBuyer()) {
       return false;
     }
-    acceptedInvoices[x.buyerCompany()].insert(x);
+    acceptedInvoices[x.sellerCompany()].insert(x);
     return true;
   }
   bool delIssued(const CInvoice &x) {
-    if (companies.find(x.sellerCompany()) == companies.end() ||
-            !existsSameInvoiceForCompany(x, issuedInvoices[x.sellerCompany()])) {
+    if (!existCompaniesFromInvoice(x) || !isInvoiceIssued(x)) {
       return false;
     }
     issuedInvoices[x.sellerCompany()].erase(x);
@@ -185,22 +213,40 @@ public:
   }
   bool delAccepted(const CInvoice &x) {
     // company does not have to be present in acceptedInvoices. Only after we check that company is present, can we check whether same invoice exists
-    if (companies.find(x.buyerCompany()) == companies.end() ||
-            !existsSameInvoiceForCompany(x, acceptedInvoices[x.buyerCompany()])) {
+    if (!existCompaniesFromInvoice(x) || !isInvoiceAccepted(x)) {
       return false;
     }
-    acceptedInvoices[x.buyerCompany()].erase(x);
+    acceptedInvoices[x.sellerCompany()].erase(x);
     return true;
   }
-  list<CInvoice> unmatched(const string &company, const CSortOpt &sortBy) const {
-    return list<CInvoice>();
+  list<CInvoice> unmatched(const string &companyName, const CSortOpt &sortBy) const {
+    Company company(companyName);
+    list<CInvoice> result;
+    return result;
   }
 private:
   unordered_set<Company, Company::Hash> companies;
   unordered_map<Company, unordered_set<CInvoice, CInvoice::Hash>, Company::Hash> issuedInvoices;
   unordered_map<Company, unordered_set<CInvoice, CInvoice::Hash>, Company::Hash> acceptedInvoices;
-  bool existsSameInvoiceForCompany(const CInvoice &x, const unordered_set<CInvoice, CInvoice::Hash> &invoices) const {
-    return invoices.find(x) != invoices.end();
+  bool isInvoiceIssued(const CInvoice &invoice) const {
+    return existsInvoiceRecord(invoice, issuedInvoices);
+  }
+  bool isInvoiceAccepted(const CInvoice &invoice) const {
+    return existsInvoiceRecord(invoice, acceptedInvoices);
+  }
+  bool existsCompany(const Company &company) const {
+    return companies.find(company) != companies.end();
+  }
+  bool existCompaniesFromInvoice(const CInvoice &invoice) const {
+    return existsCompany(invoice.buyerCompany()) && existsCompany(invoice.sellerCompany());
+  }
+  bool existsInvoiceRecord(const CInvoice &invoice,
+          const unordered_map<Company, unordered_set<CInvoice, CInvoice::Hash>, Company::Hash> &invoices) const {
+    auto invoicesForSeller = invoices.find(invoice.sellerCompany());
+    if(invoicesForSeller == invoices.end()){
+      return false;
+    }
+    return invoicesForSeller->second.find(invoice) != invoicesForSeller->second.end();
   }
 };
 
