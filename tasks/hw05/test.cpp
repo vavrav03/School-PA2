@@ -75,17 +75,29 @@ void removeTrailingSpaces(string &str) {
   str.erase(find_if(str.rbegin(), str.rend(), [](char ch) { return !isspace(ch); }).base(), str.end());
 }
 
+int compareCaseInsensitive(const string &x, const string &y) {
+  string xLower = x;
+  string yLower = y;
+  toLowerCase(xLower);
+  toLowerCase(yLower);
+  return xLower.compare(yLower);
+}
+
 class CInvoice {
 public:
   CInvoice(const CDate &date, const string &seller, const string &buyer, unsigned int amount, double vat)
-          : m_Date(date), m_Buyer(buyer), m_Seller(seller), m_Amount(amount), m_Vat(vat) {}
+          : m_Date(date), m_Seller(seller), m_Buyer(buyer), m_Amount(amount), m_Vat(vat) {}
   CDate date(void) const { return m_Date; }
   string buyer(void) const { return m_Buyer; }
   string seller(void) const { return m_Seller; }
   unsigned int amount(void) const { return m_Amount; }
   double vat(void) const { return m_Vat; }
+  size_t getNo() const { return m_No; }
   bool hasSameSellerAndBuyer(void) const {
     return m_Buyer == m_Seller;
+  }
+  void setNo(size_t no) {
+    m_No = no;
   }
 
   bool operator==(const CInvoice &x) const {
@@ -106,10 +118,11 @@ public:
 
 private:
   CDate m_Date;
-  string m_Buyer;
   string m_Seller;
+  string m_Buyer;
   unsigned int m_Amount;
   double m_Vat;
+  size_t m_No;
 };
 
 class CSortOpt {
@@ -125,21 +138,25 @@ public:
     return *this;
   }
   bool operator()(const CInvoice &x, const CInvoice &y) const {
+    int result = 0;
     for (auto key: keys) {
       switch (key.first) {
         case BY_DATE:
-          if (x.date().compare(y.date()) != 0) {
-            return key.second ? x.date().compare(y.date()) < 0 : x.date().compare(y.date()) > 0;
+          result = x.date().compare(y.date());
+          if (result != 0) {
+            return key.second ? result < 0 : result > 0;
           }
           break;
         case BY_BUYER:
-          if (x.buyer() != y.buyer()) {
-            return key.second ? x.buyer() < y.buyer() : x.buyer() > y.buyer();
+          result = compareCaseInsensitive(x.buyer(), y.buyer());
+          if (result != 0) {
+            return key.second ? result < 0 : result > 0;
           }
           break;
         case BY_SELLER:
-          if (x.seller() != y.seller()) {
-            return key.second ? x.seller() < y.seller() : x.seller() > y.seller();
+          result = compareCaseInsensitive(x.seller(), y.seller());
+          if (result != 0) {
+            return key.second ? result < 0 : result > 0;
           }
           break;
         case BY_AMOUNT:
@@ -154,19 +171,11 @@ public:
           break;
       }
     }
-    return false;
+    return x.getNo() < y.getNo();;
   }
 private:
   list<pair<int, bool>> keys;
 };
-
-int compareCaseInsensitive(const string &a, const string &b) {
-  string aCopy = a;
-  string bCopy = b;
-  toLowerCase(aCopy);
-  toLowerCase(bCopy);
-  return aCopy.compare(bCopy);
-}
 
 class CompanyDatabase {
 public:
@@ -181,7 +190,7 @@ public:
   bool existCompanies(const CInvoice &invoice) const {
     return existsCompany(invoice.buyer()) && existsCompany(invoice.seller());
   }
-  static CInvoice createtInvoice(const CInvoice &invoice) {
+  static CInvoice createTransformedInvoice(const CInvoice &invoice) {
     string transformedBuyer = createTransformedName(invoice.buyer());
     string transformedSeller = createTransformedName(invoice.seller());
     return CInvoice(invoice.date(), transformedSeller, transformedBuyer, invoice.amount(), invoice.vat());
@@ -191,10 +200,13 @@ public:
    * @param invoice Invoice with transformed names of companies.
    * @return Invoice with original names of companies.
    */
-  CInvoice createInvoiceWithOriginalNames(const CInvoice &invoice) {
+  CInvoice createInvoiceWithOriginalNames(const CInvoice &invoice) const {
     string originalBuyer = getOriginalName(invoice.buyer());
     string originalSeller = getOriginalName(invoice.seller());
-    return CInvoice(invoice.date(), originalSeller, originalBuyer, invoice.amount(), invoice.vat());
+    CInvoice transformedInvoice = CInvoice(invoice.date(), originalSeller, originalBuyer, invoice.amount(),
+            invoice.vat());
+    transformedInvoice.setNo(invoice.getNo());
+    return transformedInvoice;
   }
   static string createTransformedName(const string &name) {
     string transformedName = name;
@@ -219,25 +231,27 @@ public:
     return companies.registerCompany(name);
   }
   bool addIssued(const CInvoice &x) {
-    CInvoice tInvoice = CompanyDatabase::createtInvoice(x);
+    CInvoice tInvoice = CompanyDatabase::createTransformedInvoice(x);
     if (!companies.existCompanies(tInvoice) || isInvoiceIssued(tInvoice) ||
             tInvoice.hasSameSellerAndBuyer()) {
       return false;
     }
+    setInvoiceNo(tInvoice);
     issuedInvoices[tInvoice.seller()].insert(tInvoice);
     return true;
   }
   bool addAccepted(const CInvoice &x) {
-    CInvoice tInvoice = CompanyDatabase::createtInvoice(x);
+    CInvoice tInvoice = CompanyDatabase::createTransformedInvoice(x);
     if (!companies.existCompanies(tInvoice) || isInvoiceAccepted(tInvoice) ||
             tInvoice.hasSameSellerAndBuyer()) {
       return false;
     }
+    setInvoiceNo(tInvoice);
     acceptedInvoices[tInvoice.seller()].insert(tInvoice);
     return true;
   }
   bool delIssued(const CInvoice &x) {
-    CInvoice tInvoice = CompanyDatabase::createtInvoice(tInvoice);
+    CInvoice tInvoice = CompanyDatabase::createTransformedInvoice(x);
     if (!companies.existCompanies(tInvoice) || !isInvoiceIssued(tInvoice)) {
       return false;
     }
@@ -245,7 +259,7 @@ public:
     return true;
   }
   bool delAccepted(const CInvoice &x) {
-    CInvoice tInvoice = CompanyDatabase::createtInvoice(x);
+    CInvoice tInvoice = CompanyDatabase::createTransformedInvoice(x);
     if (!companies.existCompanies(tInvoice) || !isInvoiceAccepted(tInvoice)) {
       return false;
     }
@@ -253,14 +267,24 @@ public:
     return true;
   }
   list<CInvoice> unmatched(const string &companyName, const CSortOpt &sortBy) const {
-    string company(companyName);
-    list<CInvoice> result;
+    const string transformedCompanyName = CompanyDatabase::createTransformedName(companyName);
+    list<CInvoice> result = getUnmatchedInvoicesFromOneMap(transformedCompanyName, issuedInvoices, acceptedInvoices);
+    result.splice(result.end(),
+            getUnmatchedInvoicesFromOneMap(transformedCompanyName, acceptedInvoices, issuedInvoices));
+    for (auto &invoice: result) {
+      invoice = companies.createInvoiceWithOriginalNames(invoice);
+    }
+    result.sort(sortBy);
     return result;
   }
 private:
   CompanyDatabase companies;
   unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> issuedInvoices;
   unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> acceptedInvoices;
+  size_t noCounter = 1;
+  void setInvoiceNo(CInvoice &invoice) {
+    invoice.setNo(noCounter++);
+  }
   bool isInvoiceIssued(const CInvoice &invoice) const {
     return existsInvoiceRecord(invoice, issuedInvoices);
   }
@@ -275,12 +299,34 @@ private:
     }
     return invoicesForSeller->second.find(invoice) != invoicesForSeller->second.end();
   }
+
+  list<CInvoice> getUnmatchedInvoicesFromOneMap(const string &company,
+          const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &invoicesForCompany,
+          const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &otherInvoicesForCompany) const {
+    list<CInvoice> result;
+    for (const auto &invoicesOfSeller: invoicesForCompany) {
+      if (invoicesOfSeller.first == company) {
+        for (const auto &invoice: invoicesOfSeller.second) {
+          if (!existsInvoiceRecord(invoice, otherInvoicesForCompany)) {
+            result.push_back(invoice);
+          }
+        }
+      } else {
+        // seller is not company that interests us. However, it can be present as a buyer in other invoices
+        for (const auto &invoice: invoicesOfSeller.second) {
+          if (invoice.buyer() == company && !existsInvoiceRecord(invoice, otherInvoicesForCompany)) {
+            result.push_back(invoice);
+          }
+        }
+      }
+    }
+    return result;
+  }
 };
 
 #ifndef __PROGTEST__
 bool equalLists(const list<CInvoice> &a, const list<CInvoice> &b) {
-  // todo
-  return false;
+  return std::equal(std::begin(a), std::end(a), std::begin(b), std::end(b));
 }
 
 int main(void) {
