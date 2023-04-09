@@ -55,9 +55,35 @@ private:
 
 #endif /* __PROGTEST__ */
 
+void toLowerCase(string &str) {
+  transform(str.begin(), str.end(), str.begin(), ::tolower);
+}
+
+void squeezeCharacters(string &str, char c) {
+  str.erase(unique(str.begin(), str.end(), [](char a, char b) { return a == ' ' && b == ' '; }), str.end());
+}
+
+void squeezeSpaces(string &str) {
+  squeezeCharacters(str, ' ');
+}
+
+void removeLeadingSpaces(string &str) {
+  str.erase(str.begin(), find_if(str.begin(), str.end(), [](char ch) { return !isspace(ch); }));
+}
+
+void removeTrailingSpaces(string &str) {
+  str.erase(find_if(str.rbegin(), str.rend(), [](char ch) { return !isspace(ch); }).base(), str.end());
+}
+
 class Company {
 public:
-  explicit Company(const string &name) : name(name), transformedName(Company::createTransformedString(name)) {}
+  explicit Company(const string &name) : name(name)  {
+    transformedName = name;
+    squeezeSpaces(transformedName);
+    removeLeadingSpaces(transformedName);
+    removeTrailingSpaces(transformedName);
+    toLowerCase(transformedName);
+  }
 
   string getName() const { return name; }
 
@@ -70,19 +96,6 @@ public:
       return hash<string>()(x.transformedName);
     }
   };
-
-  static string createTransformedString(const string &name) {
-    string result = name;
-    // squeeze spaces (last result.end() is pertinent to erase method, not unique)
-    result.erase(unique(result.begin(), result.end(), [](char a, char b) { return a == ' ' && b == ' '; }),
-            result.end());
-    // remove leading and trailing spaces
-    result.erase(result.begin(), find_if(result.begin(), result.end(), [](char ch) { return !isspace(ch); }));
-    result.erase(find_if(result.rbegin(), result.rend(), [](char ch) { return !isspace(ch); }).base(), result.end());
-
-    transform(result.begin(), result.end(), result.begin(), ::tolower);
-    return result;
-  }
 
 private:
   string name;
