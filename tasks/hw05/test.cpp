@@ -75,50 +75,13 @@ void removeTrailingSpaces(string &str) {
   str.erase(find_if(str.rbegin(), str.rend(), [](char ch) { return !isspace(ch); }).base(), str.end());
 }
 
-class Company {
-public:
-  explicit Company(const string &name) : name(name)  {
-    transformedName = name;
-    squeezeSpaces(transformedName);
-    removeLeadingSpaces(transformedName);
-    removeTrailingSpaces(transformedName);
-    toLowerCase(transformedName);
-  }
-
-  string getName() const { return name; }
-
-  bool operator==(const Company &x) const {
-    return (this->transformedName) == x.transformedName;
-  }
-
-  struct Hash {
-    size_t operator()(const Company &x) const {
-      return hash<string>()(x.transformedName);
-    }
-  };
-
-private:
-  string name;
-  string transformedName;
-};
-
 class CInvoice {
 public:
-  CInvoice(const CDate &date, const string &seller, const string &buyer, unsigned int amount, double vat) : m_Date(
-          date),
-                                                                                                            m_Buyer(Company(
-                                                                                                                    buyer)),
-                                                                                                            m_Seller(
-                                                                                                                    Company(
-                                                                                                                            seller)),
-                                                                                                            m_Amount(
-                                                                                                                    amount),
-                                                                                                            m_Vat(vat) {}
+  CInvoice(const CDate &date, const string &seller, const string &buyer, unsigned int amount, double vat)
+          : m_Date(date), m_Buyer(buyer), m_Seller(seller), m_Amount(amount), m_Vat(vat) {}
   CDate date(void) const { return m_Date; }
-  string buyer(void) const { return m_Buyer.getName(); }
-  string seller(void) const { return m_Seller.getName(); }
-  Company buyerCompany(void) const { return m_Buyer; }
-  Company sellerCompany(void) const { return m_Seller; }
+  string buyer(void) const { return m_Buyer; }
+  string seller(void) const { return m_Seller; }
   unsigned int amount(void) const { return m_Amount; }
   double vat(void) const { return m_Vat; }
   bool hasSameSellerAndBuyer(void) const {
@@ -133,8 +96,8 @@ public:
   struct Hash {
     size_t operator()(const CInvoice &x) const {
       size_t dateHash = hash<int>()(x.m_Date.year()) ^ hash<int>()(x.m_Date.month()) ^ hash<int>()(x.m_Date.day());
-      size_t buyerHash = Company::Hash()(x.m_Buyer);
-      size_t sellerHash = Company::Hash()(x.m_Seller);
+      size_t buyerHash = hash<string>()(x.m_Buyer);
+      size_t sellerHash = hash<string>()(x.m_Seller);
       size_t amountHash = hash<unsigned int>()(x.m_Amount);
       size_t vatHash = hash<double>()(x.m_Vat);
       return dateHash ^ buyerHash ^ sellerHash ^ amountHash ^ vatHash;
@@ -143,8 +106,8 @@ public:
 
 private:
   CDate m_Date;
-  Company m_Buyer;
-  Company m_Seller;
+  string m_Buyer;
+  string m_Seller;
   unsigned int m_Amount;
   double m_Vat;
 };
@@ -197,66 +160,117 @@ private:
   list<pair<int, bool>> keys;
 };
 
+int compareCaseInsensitive(const string &a, const string &b) {
+  string aCopy = a;
+  string bCopy = b;
+  toLowerCase(aCopy);
+  toLowerCase(bCopy);
+  return aCopy.compare(bCopy);
+}
+
+class CompanyDatabase {
+public:
+  CompanyDatabase(void) : translatedCompaniesToOriginal() {}
+  bool registerCompany(const string &name) {
+    string transformedName = createTransformedName(name);
+    return translatedCompaniesToOriginal.insert(make_pair(transformedName, name)).second;
+  }
+  bool existsCompany(const string &name) const {
+    return translatedCompaniesToOriginal.find(name) != translatedCompaniesToOriginal.end();
+  }
+  bool existCompanies(const CInvoice &invoice) const {
+    return existsCompany(invoice.buyer()) && existsCompany(invoice.seller());
+  }
+  static CInvoice createtInvoice(const CInvoice &invoice) {
+    string transformedBuyer = createTransformedName(invoice.buyer());
+    string transformedSeller = createTransformedName(invoice.seller());
+    return CInvoice(invoice.date(), transformedSeller, transformedBuyer, invoice.amount(), invoice.vat());
+  }
+  /**
+   * @brief This function presumes that there are original names of companies in the database.
+   * @param invoice Invoice with transformed names of companies.
+   * @return Invoice with original names of companies.
+   */
+  CInvoice createInvoiceWithOriginalNames(const CInvoice &invoice) {
+    string originalBuyer = getOriginalName(invoice.buyer());
+    string originalSeller = getOriginalName(invoice.seller());
+    return CInvoice(invoice.date(), originalSeller, originalBuyer, invoice.amount(), invoice.vat());
+  }
+  static string createTransformedName(const string &name) {
+    string transformedName = name;
+    squeezeSpaces(transformedName);
+    removeLeadingSpaces(transformedName);
+    removeTrailingSpaces(transformedName);
+    toLowerCase(transformedName);
+    return transformedName;
+  }
+private:
+  unordered_map<string, string> translatedCompaniesToOriginal;
+
+  string getOriginalName(const string &name) const {
+    return translatedCompaniesToOriginal.find(name)->second;
+  }
+};
+
 class CVATRegister {
 public:
   CVATRegister(void) {}
   bool registerCompany(const string &name) {
-    return companies.insert(Company(name)).second;
+    return companies.registerCompany(name);
   }
   bool addIssued(const CInvoice &x) {
-    if (!existCompaniesFromInvoice(x) || isInvoiceIssued(x) || x.hasSameSellerAndBuyer()) {
+    CInvoice tInvoice = CompanyDatabase::createtInvoice(x);
+    if (!companies.existCompanies(tInvoice) || isInvoiceIssued(tInvoice) ||
+            tInvoice.hasSameSellerAndBuyer()) {
       return false;
     }
-    issuedInvoices[x.sellerCompany()].insert(x);
+    issuedInvoices[tInvoice.seller()].insert(tInvoice);
     return true;
   }
   bool addAccepted(const CInvoice &x) {
-    if (!existCompaniesFromInvoice(x) || isInvoiceAccepted(x)|| x.hasSameSellerAndBuyer()) {
+    CInvoice tInvoice = CompanyDatabase::createtInvoice(x);
+    if (!companies.existCompanies(tInvoice) || isInvoiceAccepted(tInvoice) ||
+            tInvoice.hasSameSellerAndBuyer()) {
       return false;
     }
-    acceptedInvoices[x.sellerCompany()].insert(x);
+    acceptedInvoices[tInvoice.seller()].insert(tInvoice);
     return true;
   }
   bool delIssued(const CInvoice &x) {
-    if (!existCompaniesFromInvoice(x) || !isInvoiceIssued(x)) {
+    CInvoice tInvoice = CompanyDatabase::createtInvoice(tInvoice);
+    if (!companies.existCompanies(tInvoice) || !isInvoiceIssued(tInvoice)) {
       return false;
     }
-    issuedInvoices[x.sellerCompany()].erase(x);
+    issuedInvoices[tInvoice.seller()].erase(tInvoice);
     return true;
   }
   bool delAccepted(const CInvoice &x) {
-    // company does not have to be present in acceptedInvoices. Only after we check that company is present, can we check whether same invoice exists
-    if (!existCompaniesFromInvoice(x) || !isInvoiceAccepted(x)) {
+    CInvoice tInvoice = CompanyDatabase::createtInvoice(x);
+    if (!companies.existCompanies(tInvoice) || !isInvoiceAccepted(tInvoice)) {
       return false;
     }
-    acceptedInvoices[x.sellerCompany()].erase(x);
+    acceptedInvoices[tInvoice.seller()].erase(tInvoice);
     return true;
   }
   list<CInvoice> unmatched(const string &companyName, const CSortOpt &sortBy) const {
-    Company company(companyName);
+    string company(companyName);
     list<CInvoice> result;
     return result;
   }
 private:
-  unordered_set<Company, Company::Hash> companies;
-  unordered_map<Company, unordered_set<CInvoice, CInvoice::Hash>, Company::Hash> issuedInvoices;
-  unordered_map<Company, unordered_set<CInvoice, CInvoice::Hash>, Company::Hash> acceptedInvoices;
+  CompanyDatabase companies;
+  unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> issuedInvoices;
+  unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> acceptedInvoices;
   bool isInvoiceIssued(const CInvoice &invoice) const {
     return existsInvoiceRecord(invoice, issuedInvoices);
   }
   bool isInvoiceAccepted(const CInvoice &invoice) const {
     return existsInvoiceRecord(invoice, acceptedInvoices);
   }
-  bool existsCompany(const Company &company) const {
-    return companies.find(company) != companies.end();
-  }
-  bool existCompaniesFromInvoice(const CInvoice &invoice) const {
-    return existsCompany(invoice.buyerCompany()) && existsCompany(invoice.sellerCompany());
-  }
   bool existsInvoiceRecord(const CInvoice &invoice,
-          const unordered_map<Company, unordered_set<CInvoice, CInvoice::Hash>, Company::Hash> &invoices) const {
-    auto invoicesForSeller = invoices.find(invoice.sellerCompany());
-    if(invoicesForSeller == invoices.end()){
+          const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &invoices) const {
+    auto invoicesForSeller = invoices.find(invoice.seller());
+    if (invoicesForSeller == invoices.end()) {
       return false;
     }
     return invoicesForSeller->second.find(invoice) != invoicesForSeller->second.end();
