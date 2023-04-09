@@ -82,19 +82,56 @@ private:
   // todo
 };
 
+class Company {
+public:
+  explicit Company(const string &name) : name(name), transformedName(Company::createTransformedString(name)) {}
+
+  string getName() const { return name; }
+
+  bool operator==(const Company &x) const {
+    return (this->transformedName) == x.transformedName;
+  }
+
+  struct Hash {
+    size_t operator()(const Company &x) const {
+      return hash<string>()(x.transformedName);
+    }
+  };
+
+  static string createTransformedString(const string &name) {
+    string result = name;
+    // squeeze spaces (last result.end() is pertinent to erase method, not unique)
+    result.erase(unique(result.begin(), result.end(), [](char a, char b) { return a == ' ' && b == ' '; }),
+            result.end());
+    // remove leading and trailing spaces
+    result.erase(result.begin(), find_if(result.begin(), result.end(), [](char ch) { return !isspace(ch); }));
+    result.erase(find_if(result.rbegin(), result.rend(), [](char ch) { return !isspace(ch); }).base(), result.end());
+    // transform to lower case
+    transform(result.begin(), result.end(), result.begin(), ::tolower);
+    cout << result << endl;
+    return result;
+  }
+
+private:
+  string name;
+  string transformedName;
+};
+
 class CVATRegister {
 public:
-  CVATRegister(void){}
-  bool registerCompany(const string &name){ return false;}
-  bool addIssued(const CInvoice &x){ return false;}
-  bool addAccepted(const CInvoice &x){ return false;}
-  bool delIssued(const CInvoice &x){ return false;}
-  bool delAccepted(const CInvoice &x){ return false;}
+  CVATRegister(void) {}
+  bool registerCompany(const string &name) {
+    return companies.insert(Company(name)).second;
+  }
+  bool addIssued(const CInvoice &x) { return false; }
+  bool addAccepted(const CInvoice &x) { return false; }
+  bool delIssued(const CInvoice &x) { return false; }
+  bool delAccepted(const CInvoice &x) { return false; }
   list<CInvoice> unmatched(const string &company, const CSortOpt &sortBy) const {
     return list<CInvoice>();
   }
 private:
-  // todo
+  unordered_set<Company, Company::Hash> companies;
 };
 
 #ifndef __PROGTEST__
