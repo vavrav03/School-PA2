@@ -46,6 +46,7 @@ public:
     return os << setfill('0') << setw(4) << x.m_Year << "-" << setw(2) << static_cast<int> ( x.m_Month ) << "-"
             << setw(2) << static_cast<int> ( x.m_Day ) << setfill(oldFill);
   }
+
 private:
   int16_t m_Year;
   int8_t m_Month;
@@ -53,34 +54,6 @@ private:
 };
 
 #endif /* __PROGTEST__ */
-
-class CInvoice {
-public:
-  CInvoice(const CDate &date, const string &seller, const string &buyer, unsigned int amount, double vat) {}
-  CDate date(void) const { return CDate(0, 0, 0); }
-  string buyer(void) const { return ""; }
-  string seller(void) const { return ""; }
-  unsigned int amount(void) const { return 0; }
-  double vat(void) const { return 0; }
-private:
-  // todo
-
-};
-
-class CSortOpt {
-public:
-  static const int BY_DATE = 0;
-  static const int BY_BUYER = 1;
-  static const int BY_SELLER = 2;
-  static const int BY_AMOUNT = 3;
-  static const int BY_VAT = 4;
-  CSortOpt(void) {}
-  CSortOpt &addKey(int key, bool ascending = true) {
-    return *this;
-  }
-private:
-  // todo
-};
 
 class Company {
 public:
@@ -106,9 +79,8 @@ public:
     // remove leading and trailing spaces
     result.erase(result.begin(), find_if(result.begin(), result.end(), [](char ch) { return !isspace(ch); }));
     result.erase(find_if(result.rbegin(), result.rend(), [](char ch) { return !isspace(ch); }).base(), result.end());
-    // transform to lower case
+
     transform(result.begin(), result.end(), result.begin(), ::tolower);
-    cout << result << endl;
     return result;
   }
 
@@ -117,21 +89,119 @@ private:
   string transformedName;
 };
 
+class CInvoice {
+public:
+  CInvoice(const CDate &date, const string &seller, const string &buyer, unsigned int amount, double vat) : m_Date(
+          date),
+                                                                                                            m_Buyer(Company(
+                                                                                                                    buyer)),
+                                                                                                            m_Seller(
+                                                                                                                    Company(
+                                                                                                                            seller)),
+                                                                                                            m_Amount(
+                                                                                                                    amount),
+                                                                                                            m_Vat(vat) {}
+  CDate date(void) const { return m_Date; }
+  string buyer(void) const { return m_Buyer.getName(); }
+  string seller(void) const { return m_Seller.getName(); }
+  Company buyerCompany(void) const { return m_Buyer; }
+  Company sellerCompany(void) const { return m_Seller; }
+  unsigned int amount(void) const { return m_Amount; }
+  double vat(void) const { return m_Vat; }
+  bool hasSameSellerAndBuyer(void) const {
+    return m_Buyer == m_Seller;
+  }
+
+  bool operator==(const CInvoice &x) const {
+    bool dateEqual = (this->m_Date.year() == x.m_Date.year()) && (this->m_Date.month() == x.m_Date.month()) &&
+            (this->m_Date.day() == x.m_Date.day());
+    return dateEqual && (this->m_Buyer == x.m_Buyer) && (this->m_Seller == x.m_Seller) &&
+            (this->m_Amount == x.m_Amount) && (this->m_Vat == x.m_Vat);
+  }
+
+  struct Hash {
+    size_t operator()(const CInvoice &x) const {
+      size_t dateHash = hash<int>()(x.m_Date.year()) ^ hash<int>()(x.m_Date.month()) ^ hash<int>()(x.m_Date.day());
+      size_t buyerHash = Company::Hash()(x.m_Buyer);
+      size_t sellerHash = Company::Hash()(x.m_Seller);
+      size_t amountHash = hash<unsigned int>()(x.m_Amount);
+      size_t vatHash = hash<double>()(x.m_Vat);
+      return dateHash ^ buyerHash ^ sellerHash ^ amountHash ^ vatHash;
+    }
+  };
+
+private:
+  CDate m_Date;
+  Company m_Buyer;
+  Company m_Seller;
+  unsigned int m_Amount;
+  double m_Vat;
+};
+
+class CSortOpt {
+public:
+  static const int BY_DATE = 0;
+  static const int BY_BUYER = 1;
+  static const int BY_SELLER = 2;
+  static const int BY_AMOUNT = 3;
+  static const int BY_VAT = 4;
+  CSortOpt(void) {}
+  CSortOpt &addKey(int key, bool ascending = true) {
+    return *this;
+  }
+private:
+  // todo
+};
+
 class CVATRegister {
 public:
   CVATRegister(void) {}
   bool registerCompany(const string &name) {
     return companies.insert(Company(name)).second;
   }
-  bool addIssued(const CInvoice &x) { return false; }
-  bool addAccepted(const CInvoice &x) { return false; }
-  bool delIssued(const CInvoice &x) { return false; }
-  bool delAccepted(const CInvoice &x) { return false; }
+  bool addIssued(const CInvoice &x) {
+    if (companies.find(x.sellerCompany()) == companies.end() ||
+            existsSameInvoiceForCompany(x, issuedInvoices[x.sellerCompany()]) || x.hasSameSellerAndBuyer()) {
+      return false;
+    }
+    issuedInvoices[x.sellerCompany()].insert(x);
+    return true;
+  }
+  bool addAccepted(const CInvoice &x) {
+    if (companies.find(x.buyerCompany()) == companies.end() ||
+            existsSameInvoiceForCompany(x, acceptedInvoices[x.buyerCompany()]) || x.hasSameSellerAndBuyer()) {
+      return false;
+    }
+    acceptedInvoices[x.buyerCompany()].insert(x);
+    return true;
+  }
+  bool delIssued(const CInvoice &x) {
+    if (companies.find(x.sellerCompany()) == companies.end() ||
+            !existsSameInvoiceForCompany(x, issuedInvoices[x.sellerCompany()])) {
+      return false;
+    }
+    issuedInvoices[x.sellerCompany()].erase(x);
+    return true;
+  }
+  bool delAccepted(const CInvoice &x) {
+    // company does not have to be present in acceptedInvoices. Only after we check that company is present, can we check whether same invoice exists
+    if (companies.find(x.buyerCompany()) == companies.end() ||
+            !existsSameInvoiceForCompany(x, acceptedInvoices[x.buyerCompany()])) {
+      return false;
+    }
+    acceptedInvoices[x.buyerCompany()].erase(x);
+    return true;
+  }
   list<CInvoice> unmatched(const string &company, const CSortOpt &sortBy) const {
     return list<CInvoice>();
   }
 private:
   unordered_set<Company, Company::Hash> companies;
+  unordered_map<Company, unordered_set<CInvoice, CInvoice::Hash>, Company::Hash> issuedInvoices;
+  unordered_map<Company, unordered_set<CInvoice, CInvoice::Hash>, Company::Hash> acceptedInvoices;
+  bool existsSameInvoiceForCompany(const CInvoice &x, const unordered_set<CInvoice, CInvoice::Hash> &invoices) const {
+    return invoices.find(x) != invoices.end();
+  }
 };
 
 #ifndef __PROGTEST__
