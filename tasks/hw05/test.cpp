@@ -304,7 +304,13 @@ private:
     return invoicesForSeller->second.find(invoice) != invoicesForSeller->second.end();
   }
 
-
+  /**
+   * @brief Checks if a company has in invoicesForCompany unmatched invoices in otherInvoicesForCompany. If so, it is added to result list.
+   * @param company
+   * @param invoicesForCompany
+   * @param otherInvoicesForCompany
+   * @param result
+   */
   void addUnmatchedInvoicesFromMap(const string &company,
           const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &invoicesForCompany,
           const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &otherInvoicesForCompany,
