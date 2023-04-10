@@ -238,6 +238,7 @@ public:
     }
     setInvoiceNo(tInvoice);
     issuedInvoices[tInvoice.seller()].insert(tInvoice);
+    issuedInvoices[tInvoice.buyer()].insert(tInvoice);
     return true;
   }
   bool addAccepted(const CInvoice &x) {
@@ -248,6 +249,7 @@ public:
     }
     setInvoiceNo(tInvoice);
     acceptedInvoices[tInvoice.seller()].insert(tInvoice);
+    acceptedInvoices[tInvoice.buyer()].insert(tInvoice);
     return true;
   }
   bool delIssued(const CInvoice &x) {
@@ -256,6 +258,7 @@ public:
       return false;
     }
     issuedInvoices[tInvoice.seller()].erase(tInvoice);
+    issuedInvoices[tInvoice.buyer()].erase(tInvoice);
     return true;
   }
   bool delAccepted(const CInvoice &x) {
@@ -264,13 +267,14 @@ public:
       return false;
     }
     acceptedInvoices[tInvoice.seller()].erase(tInvoice);
+    acceptedInvoices[tInvoice.buyer()].erase(tInvoice);
     return true;
   }
   list<CInvoice> unmatched(const string &companyName, const CSortOpt &sortBy) const {
     const string transformedCompanyName = CompanyDatabase::createTransformedName(companyName);
-    list<CInvoice> result = getUnmatchedInvoicesFromOneMap(transformedCompanyName, issuedInvoices, acceptedInvoices);
-    result.splice(result.end(),
-            getUnmatchedInvoicesFromOneMap(transformedCompanyName, acceptedInvoices, issuedInvoices));
+    list<CInvoice> result;
+    addUnmatchedInvoicesFromMap(transformedCompanyName, issuedInvoices, acceptedInvoices, result);
+    addUnmatchedInvoicesFromMap(transformedCompanyName, acceptedInvoices, issuedInvoices, result);
     for (auto &invoice: result) {
       invoice = companies.createInvoiceWithOriginalNames(invoice);
     }
@@ -291,8 +295,8 @@ private:
   bool isInvoiceAccepted(const CInvoice &invoice) const {
     return existsInvoiceRecord(invoice, acceptedInvoices);
   }
-  bool existsInvoiceRecord(const CInvoice &invoice,
-          const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &invoices) const {
+  static bool existsInvoiceRecord(const CInvoice &invoice,
+          const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &invoices) {
     auto invoicesForSeller = invoices.find(invoice.seller());
     if (invoicesForSeller == invoices.end()) {
       return false;
@@ -300,27 +304,20 @@ private:
     return invoicesForSeller->second.find(invoice) != invoicesForSeller->second.end();
   }
 
-  list<CInvoice> getUnmatchedInvoicesFromOneMap(const string &company,
+
+  void addUnmatchedInvoicesFromMap(const string &company,
           const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &invoicesForCompany,
-          const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &otherInvoicesForCompany) const {
-    list<CInvoice> result;
-    for (const auto &invoicesOfSeller: invoicesForCompany) {
-      if (invoicesOfSeller.first == company) {
-        for (const auto &invoice: invoicesOfSeller.second) {
-          if (!existsInvoiceRecord(invoice, otherInvoicesForCompany)) {
-            result.push_back(invoice);
-          }
-        }
-      } else {
-        // seller is not company that interests us. However, it can be present as a buyer in other invoices
-        for (const auto &invoice: invoicesOfSeller.second) {
-          if (invoice.buyer() == company && !existsInvoiceRecord(invoice, otherInvoicesForCompany)) {
-            result.push_back(invoice);
-          }
-        }
+          const unordered_map<string, unordered_set<CInvoice, CInvoice::Hash>, hash<string>> &otherInvoicesForCompany,
+          list<CInvoice> &result) const {
+    const auto &invoices = invoicesForCompany.find(company);
+    if(invoices == invoicesForCompany.end()) {
+      return;
+    }
+    for (const auto &invoice: invoices->second) {
+      if (!existsInvoiceRecord(invoice, otherInvoicesForCompany)) {
+        result.push_back(invoice);
       }
     }
-    return result;
   }
 };
 
