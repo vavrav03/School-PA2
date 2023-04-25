@@ -47,10 +47,10 @@ public:
           : m_Id(id), m_Name(name), m_RelPos(relPos), m_AbsPos(-1, -1, -1, -1) {}
 
   void calculateAbsPos(const CRect &windowPos) {
-    m_AbsPos = CRect(floor(windowPos.m_X + m_RelPos.m_X * windowPos.m_W),
-            floor(windowPos.m_Y + m_RelPos.m_Y * windowPos.m_H),
-            floor(m_RelPos.m_W * windowPos.m_W),
-            floor(m_RelPos.m_H * windowPos.m_H));
+    m_AbsPos = CRect((windowPos.m_X + m_RelPos.m_X * windowPos.m_W),
+            (windowPos.m_Y + m_RelPos.m_Y * windowPos.m_H),
+            (m_RelPos.m_W * windowPos.m_W),
+            (m_RelPos.m_H * windowPos.m_H));
   }
 
   int getID() const { return m_Id; }
@@ -250,7 +250,7 @@ public:
 
 private:
   vector<string> m_Items;
-  int m_SelectedIndex;
+  size_t m_SelectedIndex;
 };
 
 // output operators
