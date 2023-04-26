@@ -27,6 +27,46 @@
 using namespace std;
 #endif /* __PROGTEST__ */
 
+class ContestantsAdjacencyMap {
+public:
+
+  ContestantsAdjacencyMap() = default;
+
+  /**
+   * This method assumes that contestant1 and contestant2 are not the same string
+   * @param contestant1
+   * @param contestant2
+   * @throws logic_error if contestant1 and contestant2 have already draw record present
+   */
+  void addRecord(const string &contestant1, const string &contestant2) {
+    if (existsRecord(contestant1, contestant2)) {
+      throw logic_error("Record already exists");
+    }
+    addRecordToMap(contestant1, contestant2);
+    addRecordToMap(contestant2, contestant1);
+  }
+
+  bool existsRecord(const string &contestant1, const string &contestant2) {
+    if (keyDrawsValues.find(contestant1) == keyDrawsValues.end()) {
+      return false;
+    }
+    if (keyDrawsValues[contestant1].find(contestant2) == keyDrawsValues[contestant1].end()) {
+      return false;
+    }
+    return true;
+  }
+
+public:
+private:
+  void addRecordToMap(const string &contestant1, const string &contestant2) {
+    if (keyDrawsValues.find(contestant1) == keyDrawsValues.end()) {
+      keyDrawsValues[contestant1] = unordered_set<string>();
+    }
+    keyDrawsValues[contestant1].insert(contestant2);
+  }
+  unordered_map<string, unordered_set<string>, hash<string>> keyDrawsValues;
+};
+
 template<typename M_>
 class CContest {
 public:
@@ -34,6 +74,7 @@ public:
   CContest() = default;
 
   CContest &addMatch(const string &contestant1, const string &contestant2, const M_ &result) {
+
     return *this;
   }
 
@@ -46,7 +87,7 @@ public:
   }
 
 private:
-  // todo
+  ContestantsAdjacencyMap draws;
 };
 
 #ifndef __PROGTEST__
