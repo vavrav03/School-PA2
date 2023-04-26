@@ -30,11 +30,21 @@ using namespace std;
 template<typename M_>
 class CContest {
 public:
-  // default constructor
-  // destructor
-  // addMatch ( contestant1, contestant2, result )
-  // isOrdered ( comparator )
-  // results ( comparator )
+
+  CContest() = default;
+
+  CContest &addMatch(const string &contestant1, const string &contestant2, const M_ &result) {
+    return *this;
+  }
+
+  bool isOrdered(function<int(const M_ &)> compareFunc) {
+    return false;
+  }
+
+  list<string> results(function<int(const M_ &)> compareFunc) {
+    return list<string>();
+  }
+
 private:
   // todo
 };
