@@ -27,44 +27,64 @@
 using namespace std;
 #endif /* __PROGTEST__ */
 
-class ContestantsAdjacencyMap {
+/**
+ * Representation of an adjacency list from graph theory using unordered_maps.
+ * @tparam M_ generic class representing result type of a match between contestant1 and contestant2
+ */
+template<typename M_>
+class MatchResultsDatabase {
 public:
 
-  ContestantsAdjacencyMap() = default;
+  MatchResultsDatabase() = default;
 
   /**
-   * This method assumes that contestant1 and contestant2 are not the same string
+   * This method assumes that contestant1 and contestant2 are not the same string.
+   * Runs in O(1) time.
    * @param contestant1
    * @param contestant2
-   * @throws logic_error if contestant1 and contestant2 have already draw record present
+   * @param result
+   * @throws logic_error if contestant1 and contestant2 have already played against each other and the result is stored here
    */
-  void addRecord(const string &contestant1, const string &contestant2) {
+  void addRecord(const string &contestant1, const string &contestant2, const M_ &result) {
     if (existsRecord(contestant1, contestant2)) {
       throw logic_error("Record already exists");
     }
-    addRecordToMap(contestant1, contestant2);
-    addRecordToMap(contestant2, contestant1);
+    auto &againstValues = keyAgainstValues[contestant1];
+    againstValues.insert(make_pair(contestant2, result));
   }
 
+private:
+
+  /**
+   * Runs in O(1) time.
+   * @param contestant1
+   * @param contestant2
+   * @return true, if contestants have already played against each other and the result is stored here
+   */
   bool existsRecord(const string &contestant1, const string &contestant2) {
-    if (keyDrawsValues.find(contestant1) == keyDrawsValues.end()) {
+    return existsRecordInMap(contestant1, contestant2) || existsRecordInMap(contestant2, contestant1);
+  }
+
+  /**
+   * This method is dependent on the order of parameters
+   * @param contestant1
+   * @param contestant2
+   * @return true, if contestants have already played against each other and the result is stored here
+   */
+  bool existsRecordInMap(const string &contestant1, const string &contestant2) {
+    if (keyAgainstValues.find(contestant1) == keyAgainstValues.end()) {
       return false;
     }
-    if (keyDrawsValues[contestant1].find(contestant2) == keyDrawsValues[contestant1].end()) {
+    if (keyAgainstValues[contestant1].find(contestant2) == keyAgainstValues[contestant1].end()) {
       return false;
     }
     return true;
   }
 
-public:
-private:
-  void addRecordToMap(const string &contestant1, const string &contestant2) {
-    if (keyDrawsValues.find(contestant1) == keyDrawsValues.end()) {
-      keyDrawsValues[contestant1] = unordered_set<string>();
-    }
-    keyDrawsValues[contestant1].insert(contestant2);
-  }
-  unordered_map<string, unordered_set<string>, hash<string>> keyDrawsValues;
+  // key is first contestant from add method. There is no way knowing what does M_ actually mean
+  // and there is no way of knowing how to make and inverse record for second contestant,
+  // therefore same record is NOT present for the second contestant in this map!
+  unordered_map<string, unordered_map<string, M_, hash<string>>, hash<string>> keyAgainstValues;
 };
 
 template<typename M_>
@@ -74,7 +94,7 @@ public:
   CContest() = default;
 
   CContest &addMatch(const string &contestant1, const string &contestant2, const M_ &result) {
-
+    matchResults.addRecord(contestant1, contestant2, result);
     return *this;
   }
 
@@ -87,7 +107,7 @@ public:
   }
 
 private:
-  ContestantsAdjacencyMap draws;
+  MatchResultsDatabase<M_> matchResults;
 };
 
 #ifndef __PROGTEST__
@@ -127,6 +147,14 @@ int main(void) {
           .addMatch("Java", "PHP", CMatch(6, 2))
           .addMatch("Java", "Pascal", CMatch(7, 3))
           .addMatch("PHP", "Basic", CMatch(10, 0));
+
+  try {
+    x.addMatch("PHP", "Basic", CMatch(0, 10));
+    assert ("Exception missing!" == nullptr);
+  } catch (const logic_error &e) {
+  } catch (...) {
+    assert ("Invalid exception thrown!" == nullptr);
+  }
 
 
   assert (!x.isOrdered(HigherScore));
