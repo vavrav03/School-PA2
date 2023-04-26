@@ -28,6 +28,105 @@ using namespace std;
 #endif /* __PROGTEST__ */
 
 /**
+ * Representation of an adjacency list of key BEATS values graph theory using unordered_maps and unordered_sets.
+ * Graph represented by this class is a directed graph. Acyclism is not guaranteed.
+ */
+class WinsAdjacencyList {
+public:
+
+  WinsAdjacencyList() = default;
+
+  /**
+   * This function assumes that there will be no conflicts.
+   * @param contestant1
+   * @param contestant2
+   */
+  void addRecord(const string &contestant1, const string &contestant2) {
+    auto &againstValues = winnersAgainstLosers[contestant1];
+    againstValues.insert(contestant2);
+  }
+
+  /**
+   * An implementation of Kahn's algorithm for topological sorting.
+   * Source of concept: https://www.youtube.com/watch?v=cIBFEhD77b4&ab_channel=WilliamFiset
+   * Direct dependencies are represented as items of unordered_set for each key - all values that key BEATS.
+   * @throws logic_error if graph is not acyclic.
+   * @return topological ordering of the graph represented by this class.
+   */
+  list<string> createTopologicalOrdering() {
+    list<string> topologicalOrdering;
+    unordered_map<string, int> numberOfDependentsForKey;
+    queue<string> zeroDependentsQueue;
+    // calculate number of dependents for each key
+    for (const auto &winnerAgainstLosers: winnersAgainstLosers) {
+      const auto &winner = winnerAgainstLosers.first;
+      const auto &losers = winnerAgainstLosers.second;
+      if (numberOfDependentsForKey.find(winner) == numberOfDependentsForKey.end()) {
+        numberOfDependentsForKey[winner] = 0;
+      }
+      for (const auto &loser: losers) {
+        if (numberOfDependentsForKey.find(loser) == numberOfDependentsForKey.end()) {
+          numberOfDependentsForKey[loser] = 0;
+        }
+        numberOfDependentsForKey[loser]++;
+      }
+    }
+    // find keys with 0 dependents
+    for (const auto &dependent: numberOfDependentsForKey) {
+      if (dependent.second == 0) {
+        zeroDependentsQueue.push(dependent.first);
+      }
+    }
+    // algorithm itself
+    while (!zeroDependentsQueue.empty()) {
+      const auto &winner = zeroDependentsQueue.front();
+      topologicalOrdering.push_back(winner);
+      const auto &losers = winnersAgainstLosers[winner];
+      zeroDependentsQueue.pop();
+      for (const auto &loser: losers) {
+        numberOfDependentsForKey[loser]--;
+        if (numberOfDependentsForKey[loser] == 0) {
+          zeroDependentsQueue.push(loser);
+        }
+      }
+    }
+    // we have a cycle if there are still keys with dependents
+    if (topologicalOrdering.size() != numberOfDependentsForKey.size()) {
+      throw logic_error("Graph is not acyclic");
+    }
+    return topologicalOrdering;
+  }
+
+  /**
+   * Hamiltonian path in a graph is a path that visits each vertex exactly once.
+   * If topological ordering has a hamiltonean path, it is unique
+   * We can check this in O(n) time, where n is the number of vertices by traversing the list and checking that two consecutive vertices are connected by an edge.
+   * @param ordering
+   * @return
+   */
+  bool isHamiltonianPath(const list<string> & ordering ){
+    // iterate over ordering list and check if there is a path between each two consecutive nodes
+    for (auto it = ordering.begin(); it != ordering.end(); it++){
+      auto next = it;
+      next++;
+      if (next != ordering.end()){
+        if (!existsRecord(*it, *next)){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+private:
+  bool existsRecord(const string &winner, const string &loser) {
+    const auto &losers = winnersAgainstLosers[winner];
+    return losers.find(loser) != losers.end();
+  }
+  unordered_map<string, unordered_set<string>> winnersAgainstLosers;
+};
+
+/**
  * Representation of an adjacency list from graph theory using unordered_maps.
  * @tparam M_ generic class representing result type of a match between contestant1 and contestant2
  */
@@ -51,6 +150,33 @@ public:
     }
     auto &againstValues = keyAgainstValues[contestant1];
     againstValues.insert(make_pair(contestant2, result));
+  }
+
+  /**
+   * Runs in O(n) time, where n is the number of contestants.
+   * Acyclism is not guaranteed!
+   * @param compareFunc function that compares two results of type M_ and returns positive if first result is better, negative if second result is better and 0 if results are equal
+   * @return adjacency list of key BEATS values graph theory
+   */
+  WinsAdjacencyList generateWinsAdjacencyList(function<int(const M_ &)> compareFunc) const {
+    WinsAdjacencyList adjacencyList;
+    for (const auto &keyAgainstValue: keyAgainstValues) {
+      const auto &againstValues = keyAgainstValue.second;
+      for (const auto &againstValue: againstValues) {
+        const auto &contestant1 = keyAgainstValue.first;
+        const auto &contestant2 = againstValue.first;
+        const auto &result = againstValue.second;
+        int compareResult = compareFunc(result);
+        if (compareResult > 0) {
+          adjacencyList.addRecord(contestant1, contestant2);
+        } else if (compareResult < 0) {
+          // there is no inverse record for contestant2, contestant1 as stated numerous times in this class
+          adjacencyList.addRecord(contestant2, contestant1);
+        }
+        // draws are ignored. They are only used for detection of duplicate match entries
+      }
+    }
+    return adjacencyList;
   }
 
 private:
@@ -84,7 +210,7 @@ private:
   // key is first contestant from add method. There is no way knowing what does M_ actually mean
   // and there is no way of knowing how to make and inverse record for second contestant,
   // therefore same record is NOT present for the second contestant in this map!
-  unordered_map<string, unordered_map<string, M_, hash<string>>, hash<string>> keyAgainstValues;
+  unordered_map<const string, unordered_map<const string, const M_, hash<string>>, hash<string>> keyAgainstValues;
 };
 
 template<typename M_>
@@ -98,12 +224,22 @@ public:
     return *this;
   }
 
-  bool isOrdered(function<int(const M_ &)> compareFunc) {
-    return false;
+  bool isOrdered(function<int(const M_ &)> compareFunc) const {
+    try {
+      results(compareFunc);
+      return true;
+    } catch (logic_error &e) {
+      return false;
+    }
   }
 
-  list<string> results(function<int(const M_ &)> compareFunc) {
-    return list<string>();
+  list<string> results(function<int(const M_ &)> compareFunc) const {
+    auto adjacencyList = matchResults.generateWinsAdjacencyList(compareFunc);
+    const auto &topologicalOrdering = adjacencyList.createTopologicalOrdering();
+    if (!adjacencyList.isHamiltonianPath(topologicalOrdering)) {
+      throw logic_error("There is no valid ordering for the given data");
+    }
+    return topologicalOrdering;
   }
 
 private:
