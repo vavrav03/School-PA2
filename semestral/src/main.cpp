@@ -1,33 +1,23 @@
-#include <iostream>
+#ifndef __TESTING_MACRO_RELGEBRA__
 
-/**
- * @brief This is a dummy class
- */
-class AnotherClass {
-};
-
-/**
- * This class should appear in documentation
- */
-class DummyClassForDocTest : public AnotherClass {
-public:
-  /**
-   * @brief This is a dummy method
-   */
-  DummyClassForDocTest() = default;
-
-  void hello() {
-    std::cout << "Hello, World!" << std::endl;
-
-  }
-};
-
+#include "./module1/module1.cpp"
 
 /**
  * @brief This is an entry point to the program.
  * @return
  */
 int main() {
-  std::cout << "Hello, World!" << std::endl;
+    method1();
+    return 0;
+}
+
+#else // __TESTING_MACRO_RELGEBRA__
+
+#include "./module1/module1.test.cpp"
+
+int main() {
+  testMain();
   return 0;
 }
+
+#endif // __TESTING_MACRO_RELGEBRA__
