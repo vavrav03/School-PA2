@@ -1,4 +1,5 @@
 build
+doc
 obj
 bin
 cmake-build-debug
