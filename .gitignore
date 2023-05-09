@@ -2,4 +2,5 @@ build
 doc
 obj
 bin
+test_obj
 cmake-build-debug
