@@ -1,0 +1,32 @@
+Relational algebra interpreter
+==============================================================================================
+This project aims to create an interpreter for relation algebra expression. Main source of data are CSV files. Additionally, SQL conversion capabilities are implemented
+==============================================================================================
+Features of the project:
+- read CSV file and store it in memory as a variable
+- write a variable to a CSV file
+- evaluate relational algebra expressions on variables containing relational data
+- convert relational algebra expressions to SQL
+- Supported relational algebra operations:
+  - projection and renaming
+  - selection (N)
+  - natural and general join (N)
+  - set operations: union, intersection, difference, cartesian product (N)
+  - anti-join (N)
+  - division (N)
+- efficient memory representation of data - read files only when necessary and only the parts that are needed
+- nested expressions using () - Shunting-Yard algorithm
+==============================================================================================
+Example of usage:
+IMPORT ANIMALS "animals.csv"
+IMPORT NOURISHMENT "nourishment.csv"
+TMP = ("animals.csv" ∪ ANIMALS) × NOURISHMENT)
+CROSS = TMP["animals", "nourishment"]
+PRINT CROSS
+EXPORT CROSS "cross.csv"
+==============================================================================================
+How polymorphism is used:
+- representation of objects: table in CSV file, expression, ...
+- operations
+- import / export formats: CSV, JSON, XML, PostgreSQL, ...
+- user interface: console, GUI
