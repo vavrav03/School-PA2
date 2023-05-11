@@ -1,15 +1,15 @@
 #ifndef SEMESTRAL_STRINGTYPE_H
 #define SEMESTRAL_STRINGTYPE_H
 
-#include "../data-object.h"
+#include "../data-type.h"
 #include <string>
 
-class StringType : public DataObject {
+class StringType : public DataType {
 public:
   StringType(std::string value);
   std::string getValue() const;
-  bool equals(const DataObject &other) const override;
-  bool lessThan(const DataObject &other) const override;
+  bool equals(const DataType &other) const override;
+  bool lessThan(const DataType &other) const override;
 
 private:
   std::string value;

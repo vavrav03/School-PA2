@@ -1,16 +1,16 @@
 #ifndef SEMESTRAL_TIME_H
 #define SEMESTRAL_TIME_H
-#include "../data-object.h"
+#include "../data-type.h"
 
-class Time: public DataObject{
+class Time: public DataType{
 
 public:
   Time(int hour, int minute, int second);
   int getHour() const;
   int getMinute() const;
   int getSecond() const;
-  bool equals(const DataObject &other) const override;
-  bool lessThan(const DataObject &other) const override;
+  bool equals(const DataType &other) const override;
+  bool lessThan(const DataType &other) const override;
 private:
   int hour;
   int minute;

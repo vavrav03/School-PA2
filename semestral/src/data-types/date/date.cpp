@@ -1,11 +1,11 @@
 #include "date.h"
 
 Date::Date(int year, int month, int day)
-        : DataObject(), year(year), month(month), day(day) {
+        : DataType(), year(year), month(month), day(day) {
 }
 
-bool Date::equals(const DataObject &other) const {
-  if(!DataObject::equals(other)) {
+bool Date::equals(const DataType &other) const {
+  if(!DataType::equals(other)) {
     return false;
   }
   const Date &otherDate = static_cast<const Date &>(other);
@@ -14,7 +14,7 @@ bool Date::equals(const DataObject &other) const {
          day == otherDate.day;
 }
 
-bool Date::lessThan(const DataObject &other) const {
+bool Date::lessThan(const DataType &other) const {
   const Date &otherDate = static_cast<const Date &>(other);
   if (year < otherDate.year) {
     return true;

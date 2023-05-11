@@ -1,11 +1,11 @@
 #include "time.h"
 
 Time::Time(int hour, int minute, int second)
-        : DataObject(), hour(hour), minute(minute), second(second) {
+        : DataType(), hour(hour), minute(minute), second(second) {
 }
 
-bool Time::equals(const DataObject &other) const {
-  if(!DataObject::equals(other)) {
+bool Time::equals(const DataType &other) const {
+  if(!DataType::equals(other)) {
     return false;
   }
   const Time &otherTime = static_cast<const Time &>(other);
@@ -14,7 +14,7 @@ bool Time::equals(const DataObject &other) const {
          second == otherTime.second;
 }
 
-bool Time::lessThan(const DataObject &other) const {
+bool Time::lessThan(const DataType &other) const {
   const Time &otherTime = static_cast<const Time &>(other);
   if (hour < otherTime.hour) {
     return true;
