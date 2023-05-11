@@ -2,12 +2,10 @@
 
 StringType::StringType(std::string value) : value(value) {}
 
-std::string StringType::getValue() const {
-  return value;
-}
+std::string StringType::getValue() const { return value; }
 
 bool StringType::equals(const DataType &other) const {
-  if(!DataType::equals(other)) {
+  if (!DataType::equals(other)) {
     return false;
   }
   const StringType &otherString = static_cast<const StringType &>(other);
@@ -19,6 +17,4 @@ bool StringType::lessThan(const DataType &other) const {
   return value < otherString.value;
 }
 
-DataType *StringType::clone() const {
-  return new StringType(value);
-}
+DataType *StringType::clone() const { return new StringType(value); }

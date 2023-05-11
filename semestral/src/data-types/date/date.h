@@ -13,11 +13,11 @@ public:
   bool equals(const DataType &other) const override;
   bool lessThan(const DataType &other) const override;
   DataType *clone() const override;
+
 private:
   int year;
   int month;
   int day;
 };
 
-
-#endif //SEMESTRAL_DATE_H
+#endif // SEMESTRAL_DATE_H

@@ -2,12 +2,10 @@
 
 Number::Number(int value) : value(value) {}
 
-int Number::getValue() const {
-  return value;
-}
+int Number::getValue() const { return value; }
 
 bool Number::equals(const DataType &other) const {
-  if(!DataType::equals(other)) {
+  if (!DataType::equals(other)) {
     return false;
   }
   const Number &otherNumber = static_cast<const Number &>(other);
@@ -19,6 +17,4 @@ bool Number::lessThan(const DataType &other) const {
   return value < otherNumber.value;
 }
 
-DataType *Number::clone() const {
-  return new Number(*this);
-}
+DataType *Number::clone() const { return new Number(*this); }

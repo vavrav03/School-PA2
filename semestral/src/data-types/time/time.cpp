@@ -1,28 +1,20 @@
 #include "time.h"
 
 Time::Time(int hour, int minute, int second)
-        : DataType(), hour(hour), minute(minute), second(second) {
-}
+    : DataType(), hour(hour), minute(minute), second(second) {}
 
-int Time::getHour() const {
-  return hour;
-}
+int Time::getHour() const { return hour; }
 
-int Time::getMinute() const {
-  return minute;
-}
+int Time::getMinute() const { return minute; }
 
-int Time::getSecond() const {
-  return second;
-}
+int Time::getSecond() const { return second; }
 
 bool Time::equals(const DataType &other) const {
-  if(!DataType::equals(other)) {
+  if (!DataType::equals(other)) {
     return false;
   }
   const Time &otherTime = static_cast<const Time &>(other);
-  return hour == otherTime.hour &&
-         minute == otherTime.minute &&
+  return hour == otherTime.hour && minute == otherTime.minute &&
          second == otherTime.second;
 }
 
@@ -49,6 +41,4 @@ bool Time::lessThan(const DataType &other) const {
   return false;
 }
 
-DataType *Time::clone() const {
-  return new Time(*this);
-}
+DataType *Time::clone() const { return new Time(*this); }

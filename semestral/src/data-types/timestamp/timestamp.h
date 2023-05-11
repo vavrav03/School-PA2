@@ -5,7 +5,7 @@
 #include "../date/date.h"
 #include "../time/time.h"
 
-class Timestamp: public DataType {
+class Timestamp : public DataType {
 public:
   Timestamp(int year, int month, int day, int hour, int minute, int second);
   int getYear() const;
@@ -17,10 +17,10 @@ public:
   bool equals(const DataType &other) const override;
   bool lessThan(const DataType &other) const override;
   DataType *clone() const override;
+
 private:
   Date date;
   Time time;
 };
 
-
-#endif //SEMESTRAL_TIMESTAMP_H
+#endif // SEMESTRAL_TIMESTAMP_H

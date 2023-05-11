@@ -1,6 +1,6 @@
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -9,8 +9,7 @@
 
 using namespace std;
 
-void testCsvDataSource()
-{
+void testCsvDataSource() {
   // create CSV file with header: "name", "age", "height"
   std::ofstream csvFile;
   csvFile.open("test.csv");
@@ -31,8 +30,6 @@ void testCsvDataSource()
   assert(*(row[0]) == StringType("John"));
   assert(*(row[1]) == StringType("25"));
   assert(*(row[2]) == StringType("180"));
-
-  
 }
 
 int main() {

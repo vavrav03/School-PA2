@@ -1,12 +1,11 @@
 #ifndef SEMESTRAL_RESULTSTREAM_H
 #define SEMESTRAL_RESULTSTREAM_H
 
+#include "../../data-types/data-row/data-row.h"
 #include <string>
 #include <vector>
-#include "../../data-types/data-row/data-row.h"
 
-class AbstractDataSource
-{
+class AbstractDataSource {
 public:
   AbstractDataSource();
   const std::vector<std::string> &getHeader() const;

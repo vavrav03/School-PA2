@@ -4,8 +4,7 @@
 #include "../../data-types/data-type.h"
 #include <vector>
 
-class DataRow
-{
+class DataRow {
 public:
   DataRow();
 

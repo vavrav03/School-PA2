@@ -1,28 +1,20 @@
 #include "date.h"
 
 Date::Date(int year, int month, int day)
-        : DataType(), year(year), month(month), day(day) {
-}
+    : DataType(), year(year), month(month), day(day) {}
 
-int Date::getYear() const {
-  return year;
-}
+int Date::getYear() const { return year; }
 
-int Date::getMonth() const {
-  return month;
-}
+int Date::getMonth() const { return month; }
 
-int Date::getDay() const {
-  return day;
-}
+int Date::getDay() const { return day; }
 
 bool Date::equals(const DataType &other) const {
-  if(!DataType::equals(other)) {
+  if (!DataType::equals(other)) {
     return false;
   }
   const Date &otherDate = static_cast<const Date &>(other);
-  return year == otherDate.year &&
-         month == otherDate.month &&
+  return year == otherDate.year && month == otherDate.month &&
          day == otherDate.day;
 }
 
@@ -49,6 +41,4 @@ bool Date::lessThan(const DataType &other) const {
   return false;
 }
 
-DataType *Date::clone() const {
-  return new Date(*this);
-}
+DataType *Date::clone() const { return new Date(*this); }
