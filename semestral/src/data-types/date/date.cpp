@@ -4,6 +4,18 @@ Date::Date(int year, int month, int day)
         : DataType(), year(year), month(month), day(day) {
 }
 
+int Date::getYear() const {
+  return year;
+}
+
+int Date::getMonth() const {
+  return month;
+}
+
+int Date::getDay() const {
+  return day;
+}
+
 bool Date::equals(const DataType &other) const {
   if(!DataType::equals(other)) {
     return false;
@@ -35,4 +47,8 @@ bool Date::lessThan(const DataType &other) const {
     return false;
   }
   return false;
+}
+
+DataType *Date::clone() const {
+  return new Date(*this);
 }

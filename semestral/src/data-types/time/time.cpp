@@ -4,6 +4,18 @@ Time::Time(int hour, int minute, int second)
         : DataType(), hour(hour), minute(minute), second(second) {
 }
 
+int Time::getHour() const {
+  return hour;
+}
+
+int Time::getMinute() const {
+  return minute;
+}
+
+int Time::getSecond() const {
+  return second;
+}
+
 bool Time::equals(const DataType &other) const {
   if(!DataType::equals(other)) {
     return false;
@@ -35,4 +47,8 @@ bool Time::lessThan(const DataType &other) const {
     return false;
   }
   return false;
+}
+
+DataType *Time::clone() const {
+  return new Time(*this);
 }

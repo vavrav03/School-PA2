@@ -10,7 +10,7 @@ class Number: public DataType{
     int getValue() const;
     bool equals(const DataType &other) const override;
     bool lessThan(const DataType &other) const override;
-
+    DataType *clone() const override;
   private:
     int value;
 };

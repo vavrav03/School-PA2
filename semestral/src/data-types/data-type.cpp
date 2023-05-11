@@ -31,3 +31,10 @@ bool DataType::equals(const DataType &other) const {
   }
   return true;
 }
+
+bool DataType::lessThan(const DataType &other) const {
+  if (typeid(*this) != typeid(other)) {
+    return false;
+  }
+  return true;
+}

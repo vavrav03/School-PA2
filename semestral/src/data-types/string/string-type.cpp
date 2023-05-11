@@ -18,3 +18,7 @@ bool StringType::lessThan(const DataType &other) const {
   const StringType &otherString = static_cast<const StringType &>(other);
   return value < otherString.value;
 }
+
+DataType *StringType::clone() const {
+  return new StringType(value);
+}

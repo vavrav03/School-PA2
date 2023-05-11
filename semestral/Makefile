@@ -1,9 +1,9 @@
-LINKER := g++
-COMPILER := g++ -Wall -g -std=c++17 -Wall -pedantic
+LINKER := g++ -std=c++17 
+COMPILER := g++ -g -std=c++17 -Wall -pedantic
 
-SRC_FILES := $(wildcard src/*.cpp)
+SRC_FILES := $(shell find ./src -name '*.cpp')
 # pattern, replacement, text
-OBJ_FILES := $(patsubst src/%.cpp,obj/%.o,$(SRC_FILES))
+OBJ_FILES := $(patsubst ./src/%, ./obj/%, $(patsubst %.cpp, %.o, $(SRC_FILES)))
 
 .PHONY: compile run doc clean test
 
@@ -17,18 +17,21 @@ doc: $(SRC_FILES)
 	doxygen Doxyfile
 clean:
 	rm -rf obj bin doc
-bin/relgebra: src/main.cpp
-	mkdir -p bin
-	$(LINKER) $^ -o $@
-	chmod +x $@
-bin/relgebra_test: src/main.test.cpp
-	mkdir -p bin
-	$(LINKER) $^ -o $@
-	chmod +x $@
+bin/relgebra: $(filter-out obj/main.test.o,$(OBJ_FILES))
+	@mkdir -p bin
+	@$(LINKER) $^ -o $@
+	@chmod +x $@
+bin/relgebra_test: $(filter-out obj/main.o,$(OBJ_FILES))
+# print all dependencies
+	@mkdir -p bin
+	@$(LINKER) $^ -o $@
+	@chmod +x $@
 obj/%.o: src/%.cpp
+# create directory copying src structure in obj folder
+	mkdir -p $(patsubst src/%,obj/%,$(dir $<))
 	$(COMPILER) -c $< -o $@
 
 obj/Makefile.deps:
 	mkdir -p obj
-	$(COMPILER) -MM $(SRC_FILES) > obj/Makefile.deps
+	$($(COMPILER) -MM $(SRC_FILES)) > obj/Makefile.deps
 -include obj/Makefile.deps

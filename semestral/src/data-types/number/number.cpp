@@ -18,3 +18,7 @@ bool Number::lessThan(const DataType &other) const {
   const Number &otherNumber = static_cast<const Number &>(other);
   return value < otherNumber.value;
 }
+
+DataType *Number::clone() const {
+  return new Number(*this);
+}

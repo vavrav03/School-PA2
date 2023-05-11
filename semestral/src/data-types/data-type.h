@@ -24,6 +24,7 @@ public:
   bool operator>=(const DataType &other) const;
   virtual bool equals(const DataType &other) const;
   virtual bool lessThan(const DataType &other) const = 0;
+  virtual DataType *clone() const = 0;
 };
 
 #endif
