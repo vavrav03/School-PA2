@@ -30,6 +30,13 @@ void testCsvDataSource() {
   assert(*(row[0]) == StringType("John"));
   assert(*(row[1]) == StringType("25"));
   assert(*(row[2]) == StringType("180"));
+  assert(csvDataSource.hasNextRow() == false);
+  try {
+    csvDataSource.getNextRow();
+    assert(false);
+  } catch (const std::exception &e) {
+    assert(true);
+  }
 }
 
 int main() {

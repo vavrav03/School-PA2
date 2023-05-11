@@ -11,24 +11,32 @@ CSVDataSource::CSVDataSource(const string &path)
     throw runtime_error("Could not open file");
   }
   try {
-    this->header = readUnparsedRow();
+    readUnparsedRow();
+    this->header = this->nextRow;
+    readUnparsedRow();
   } catch (...) {
     throw runtime_error("Could not read header, CSV file is empty");
   }
 }
 
-bool CSVDataSource::hasNextRow() const { return !file.eof(); }
+bool CSVDataSource::hasNextRow() const { return nextRow.size() > 0; }
 
 const DataRow CSVDataSource::getNextRow() {
-  vector<string> unparsedRow = readUnparsedRow();
+  if(this->nextRow.size() == 0) {
+    throw runtime_error("Could not read row, CSV file is empty");
+  }
+  if(this->nextRow.size() != this->header.size()) {
+    throw runtime_error("Could not read row, CSV file has inconsistent number of columns");
+  }
   DataRow nextRow;
-  for (string &value : unparsedRow) {
+  for (string &value : this->nextRow) {
     nextRow.addField(new StringType(value));
   }
+  readUnparsedRow();
   return nextRow;
 }
 
-const vector<string> CSVDataSource::readUnparsedRow() {
+void CSVDataSource::readUnparsedRow() {
   string line;
   getline(file, line);
   stringstream ss(line);
@@ -37,7 +45,7 @@ const vector<string> CSVDataSource::readUnparsedRow() {
   while (getline(ss, token, ',')) {
     row.push_back(token);
   }
-  return row;
+  this->nextRow = row;
 }
 
 CSVDataSource::~CSVDataSource() { file.close(); }

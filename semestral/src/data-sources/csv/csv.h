@@ -14,7 +14,8 @@ public:
   ~CSVDataSource() override;
 
 private:
-  const std::vector<std::string> readUnparsedRow();
+  void readUnparsedRow();
+  std::vector<std::string> nextRow;
   std::ifstream file;
 };
 
