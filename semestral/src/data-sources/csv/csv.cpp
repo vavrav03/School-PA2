@@ -7,7 +7,7 @@ using namespace std;
 
 CSVDataSource::CSVDataSource(const string &path)
     : AbstractDataSource(), file(path) {
-  if (!file.is_open()) {
+  if(file.fail()) {
     throw runtime_error("Could not open file");
   }
   try {

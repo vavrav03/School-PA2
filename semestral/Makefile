@@ -17,7 +17,7 @@ doc: $(SRC_FILES)
 	doxygen Doxyfile
 clean:
 	rm -rf obj bin doc
-bin/relgebra: $(filter-out obj/main.test.o,$(OBJ_FILES))
+bin/relgebra: $(filter-out obj/test/main.test.o,$(OBJ_FILES))
 	@mkdir -p bin
 	@$(LINKER) $^ -o $@
 	@chmod +x $@

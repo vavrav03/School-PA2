@@ -4,20 +4,19 @@
 #include <string>
 #include <vector>
 
-#include "./data-sources/csv/csv.h"
-#include "./data-types/string/string-type.h"
+#include "../data-sources/csv/csv.h"
+#include "../data-types/string/string-type.h"
 
 using namespace std;
 
 void testCsvDataSource() {
-  // create CSV file with header: "name", "age", "height"
-  std::ofstream csvFile;
-  csvFile.open("test.csv");
-  csvFile << "name,age,height\n";
-  csvFile << "John,25,180\n";
-  csvFile.close();
-
-  CSVDataSource csvDataSource("test.csv");
+  try {
+    CSVDataSource csvDataSource("src/test/assets/non-existent.csv");
+    assert(false);
+  } catch (const std::exception &e) {
+    assert(true);
+  }
+  CSVDataSource csvDataSource("src/test/assets/test.csv");
   assert(csvDataSource.hasNextRow() == true);
   vector<string> header = csvDataSource.getHeader();
   assert(header.size() == 3);
