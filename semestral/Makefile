@@ -1,48 +1,34 @@
 LINKER := g++
 COMPILER := g++ -Wall -g -std=c++17 -Wall -pedantic
 
-SRC_DIR := src
-OBJ_DIR := obj
-TEST_OBJ_DIR := test_obj
-BIN_DIR := bin
-DOC_DIR := doc
-
-SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
+SRC_FILES := $(wildcard src/*.cpp)
 # pattern, replacement, text
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
-TEST_OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(TEST_OBJ_DIR)/%.o,$(SRC_FILES))
-BIN_FILE := $(BIN_DIR)/relgebra
-TEST_BIN_FILE := $(BIN_DIR)/relgebra_test
+OBJ_FILES := $(patsubst src/%.cpp,obj/%.o,$(SRC_FILES))
 
-.PHONY: all clean deps init run doc
+.PHONY: compile run doc clean test
 
-$(BIN_FILE): $(OBJ_FILES)
-	mkdir -p $(BIN_DIR)
-	$(LINKER) $^ -o $@
-	chmod +x $@
-$(TEST_BIN_FILE): $(TEST_OBJ_FILES)
-	mkdir -p $(BIN_DIR)
-	$(LINKER) $^ -o $@
-	chmod +x $@
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(COMPILER) -c $< -o $@
-$(TEST_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	mkdir -p $(TEST_OBJ_DIR)
-	$(COMPILER) -D__TESTING_MACRO_RELGEBRA__ -c $< -o $@
-
-$(OBJ_DIR)/Makefile.deps:
-	mkdir -p $(OBJ_DIR)
-	$(COMPILER) -MM $(SRC_FILES) > $(OBJ_DIR)/Makefile.deps
-
-all: $(BIN_FILE)
-run: $(BIN_FILE)
-	./$(BIN_FILE)
+compile: bin/relgebra
+run: bin/relgebra
+	./bin/relgebra
+test: bin/relgebra_test
+	./bin/relgebra_test
 doc: $(SRC_FILES)
-	mkdir -p $(DOC_DIR)
+	mkdir -p doc
 	doxygen Doxyfile
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR) $(DOC_DIR)
-test: $(TEST_BIN_FILE)
-	./$(TEST_BIN_FILE)
+	rm -rf obj bin doc
+bin/relgebra: src/main.cpp
+	mkdir -p bin
+	$(LINKER) $^ -o $@
+	chmod +x $@
+bin/relgebra_test: src/main.test.cpp
+	mkdir -p bin
+	$(LINKER) $^ -o $@
+	chmod +x $@
+obj/%.o: src/%.cpp
+	$(COMPILER) -c $< -o $@
 
--include $(OBJ_DIR)/Makefile.deps
+obj/Makefile.deps:
+	mkdir -p obj
+	$(COMPILER) -MM $(SRC_FILES) > obj/Makefile.deps
+-include obj/Makefile.deps
