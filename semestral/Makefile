@@ -17,12 +17,13 @@ doc: $(SRC_FILES)
 	doxygen Doxyfile
 clean:
 	rm -rf obj bin doc
-bin/relgebra: $(filter-out obj/test/main.test.o,$(OBJ_FILES))
+bin/relgebra: $(filter-out ./obj/test/main.test.o,$(OBJ_FILES))
 	@mkdir -p bin
 	@$(LINKER) $^ -o $@
 	@chmod +x $@
-bin/relgebra_test: $(filter-out obj/main.o,$(OBJ_FILES))
+bin/relgebra_test: $(filter-out ./obj/main.o,$(OBJ_FILES))
 # print all dependencies
+	echo $^
 	@mkdir -p bin
 	@$(LINKER) $^ -o $@
 	@chmod +x $@
