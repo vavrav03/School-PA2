@@ -1,16 +1,22 @@
 #include "./rename.h"
+
+#include <vector>
 #include <string>
 
 using namespace std;
 
-RenameExpression::RenameExpression(AbstractDataSource& dataSource, const std::unordered_map<const std::string, const std::string, std::hash<string>> &renameCriteria) : dataSource(dataSource)
+RenameExpression::RenameExpression(AbstractDataSource& dataSource, const HeaderValueContainer & translations) : dataSource(dataSource)
 {
-  const vector<string> & oldHeader = dataSource.getHeader();
-  for (const string & oldName : oldHeader) {
-    if (renameCriteria.find(oldName) != renameCriteria.end()) {
-      this->renamedHeader.push_back(renameCriteria.at(oldName));
-    } else {
-      this->renamedHeader.push_back(oldName);
+  vector<string> newHeader;
+  for (int i = 0; i < dataSource.getHeader().size(); i++)
+  {
+    if(translations.hasHeaderValue(dataSource.getHeader()[i]))
+    {
+      newHeader.push_back(translations[dataSource.getHeader()[i]]);
+    }
+    else
+    {
+      newHeader.push_back(dataSource.getHeader()[i]);
     }
   }
 }
@@ -19,7 +25,7 @@ RenameExpression::~RenameExpression()
 {
 }
 
-const vector<string> &RenameExpression::getHeader() const
+const DataRow &RenameExpression::getHeader() const
 {
   return this->renamedHeader;
 }

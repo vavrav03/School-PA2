@@ -1,24 +1,25 @@
 #ifndef SEMESTRAL_RENAME_EXPRESSION_H
 #define SEMESTRAL_RENAME_EXPRESSION_H
 
-#include "../../../data-row/data-row.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "../../abstract/data-row.h"
 #include "../../abstract/abstract.h"
+#include "../../abstract/header-value-container.h"
 
 class RenameExpression : public AbstractDataSource
 {
 public:
-  RenameExpression(AbstractDataSource& dataSource, const std::unordered_map<const std::string, const std::string, std::hash<std::string>> &renameCriteria);
+  RenameExpression(AbstractDataSource& dataSource, const HeaderValueContainer &renameCriteria);
   ~RenameExpression();
-  const std::vector<std::string> &getHeader() const;
+  const DataRow &getHeader() const;
   bool hasNextRow() const;
   const DataRow getNextRow();
 
 private:
   AbstractDataSource& dataSource;
-  std::vector<std::string> renamedHeader;
+  DataRow renamedHeader;
 };
 
 #endif // SEMESTRAL_RENAME_EXPRESSION_H

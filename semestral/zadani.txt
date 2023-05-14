@@ -12,7 +12,7 @@ Features of the project:
   - set-boolean operations: is_subset "⊆", equals "=", is_proper_subset "⊂"
   - general joins: join "[rel1.col1 < rel2.col3]", left_semi_join "<condition]", right_semi_join "[condition>", left_anti_join "!<condition]", right_anti_join "![condition>"
   - natural joins (same order as general joins): "", "<", ">", "!<", "!*>"
-  - boolean operations: and "∧", or "∨", not "¬"
+  - boolean operations: and "∧", or "∨", not "¬", xor "⊕", implies "→", equivalent "↔", nand "⊼", nor "⊽"
   - projection: project "relation[col1, col3]"
   - selection: select "(condition)"
   - rename: rename "relation[col1 -> new_col1, col3 -> new_col3]"

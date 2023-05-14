@@ -3,13 +3,13 @@
 
 #include <vector>
 #include <string>
-#include "../abstract/data-row.h"
+#include "../../data-sources/abstract/header-value-container.h"
 
 class BooleanExpression
 {
 public:
   BooleanExpression() = default;
-  virtual bool evaluate() const = 0;
+  virtual bool evaluate(HeaderValueContainer & headerValues) const = 0;
   virtual ~BooleanExpression() = default;
 };
 
