@@ -28,7 +28,16 @@ print temp
 export temp to "temp.csv"
 ==============================================================================================
 How polymorphism is used:
-- representation of data sources: table in CSV file, JSON data source, expressions - union, intersection, join, ...
-- boolean operations - and, or, not
-- import / export formats: CSV, JSON, XML, PostgreSQL, ...
+- representation of data sources: table in CSV file, JSON data source, expressions - union, intersection, joins
+  - all of them implement same interface and we can therefore read record by record from them
+  - this enables memory-efficient reppresentation of data sources - we read only the parts of data that are needed
+  - this also enables recursive evaluation of relational algebra expressions
+  - on top of that, we can easily convert nested expression to SQL using this pattern
+- boolean operations - and, or, not, primary boolean expressions
+  - all of them implement same interface - this allows to recursively evaluate boolean expressions
+- export formats: CSV, JSON, XML, PostgreSQL, ...
+  - user is going to choose the format through GUI. Then in a factory method, correct exporter is going to be created and .export method on a common interface is going to be called
+  - therefore, GUI does not have to worry about the format of the exported data
 - abstract user interface - unified starting method and configuration based on CLI arguments parsed in main method.
+  - this is going to be chosen on start of the app using CLI aguments
+  - .run method is going to be called on a common interface from main method. This will start the user interface that has been chosen by the user
