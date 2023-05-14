@@ -1,7 +1,7 @@
 #ifndef SEMESTRAL_RENAME_EXPRESSION_H
 #define SEMESTRAL_RENAME_EXPRESSION_H
 
-#include "../../../data-types/data-row/data-row.h"
+#include "../../../data-row/data-row.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
