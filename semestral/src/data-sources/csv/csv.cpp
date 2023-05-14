@@ -1,5 +1,5 @@
 #include "./csv.h"
-#include "../../data-row/data-row.h"
+#include "../abstract/data-row.h"
 #include <iostream>
 #include <sstream>
 
@@ -12,7 +12,7 @@ CSVDataSource::CSVDataSource(const string &path)
   }
   try {
     readUnparsedRow();
-    this->header = this->nextRow;
+    this->header = DataRow(this->nextRow);
     readUnparsedRow();
   } catch (...) {
     throw runtime_error("Could not read header, CSV file is empty");

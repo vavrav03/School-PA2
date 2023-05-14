@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../data-sources/abstract/data-row.h"
 #include "../data-sources/csv/csv.h"
 
 using namespace std;
@@ -17,7 +18,7 @@ void testCsvDataSource() {
   }
   CSVDataSource csvDataSource("src/test/assets/test.csv");
   assert(csvDataSource.hasNextRow() == true);
-  vector<string> header = csvDataSource.getHeader();
+  DataRow header = csvDataSource.getHeader();
   assert(header.size() == 3);
   assert(header[0] == "name");
   assert(header[1] == "age");

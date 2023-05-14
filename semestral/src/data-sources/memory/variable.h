@@ -1,7 +1,7 @@
 #ifndef SEMESTRAL_VARIABLE_DATA_SOURCE_H
 #define SEMESTRAL_VARIABLE_DATA_SOURCE_H
 
-#include "../../data-row/data-row.h"
+#include "../abstract/data-row.h"
 #include "../abstract/abstract.h"
 
 class VariableDataSource : public AbstractDataSource
