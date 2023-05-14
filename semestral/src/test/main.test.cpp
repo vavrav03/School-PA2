@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "../data-sources/csv/csv.h"
-#include "../data-types/string/string-type.h"
 
 using namespace std;
 
@@ -26,9 +25,9 @@ void testCsvDataSource() {
   assert(csvDataSource.getHeaderSize() == 3);
   assert(csvDataSource.hasNextRow() == true);
   DataRow row = csvDataSource.getNextRow();
-  assert(*(row[0]) == StringType("John"));
-  assert(*(row[1]) == StringType("25"));
-  assert(*(row[2]) == StringType("180"));
+  assert(row[0] == "John");
+  assert(row[1] == "25");
+  assert(row[2] == "180");
   assert(csvDataSource.hasNextRow() == false);
   try {
     csvDataSource.getNextRow();

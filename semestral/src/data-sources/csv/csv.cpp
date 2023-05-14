@@ -1,5 +1,5 @@
-#include "csv.h"
-#include "../../data-types/string/string-type.h"
+#include "./csv.h"
+#include "../../data-row/data-row.h"
 #include <iostream>
 #include <sstream>
 
@@ -30,7 +30,7 @@ const DataRow CSVDataSource::getNextRow() {
   }
   DataRow nextRow;
   for (string &value : this->nextRow) {
-    nextRow.addField(new StringType(value));
+    nextRow.addField(value);
   }
   readUnparsedRow();
   return nextRow;

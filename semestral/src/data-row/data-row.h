@@ -1,19 +1,19 @@
 #ifndef SEMESTRAL_DATA_ROW_H
 #define SEMESTRAL_DATA_ROW_H
 
-#include "../../data-types/data-type.h"
 #include <vector>
+#include <string>
 
 class DataRow {
 public:
   DataRow();
 
-  void addField(const DataType *field);
+  void addField(const std::string & field);
   ~DataRow();
-  DataType *operator[](int index) const;
+  const std::string &operator[](int index) const;
 
 private:
-  std::vector<DataType *> data;
+  std::vector<std::string> data;
 };
 
 #endif // SEMESTRAL_DATA_ROW_H

@@ -1,32 +1,34 @@
 Relational algebra interpreter
 ==============================================================================================
-This project aims to create an interpreter for relation algebra expression. Main source of data are CSV files. Additionally, SQL conversion capabilities are implemented
+This project aims to create an interpreter for relation algebra expression. Main source of data are CSV / JSON files. Additionally, SQL conversion capabilities are implemented
 ==============================================================================================
 Features of the project:
-- read CSV file and store it in memory as a variable
-- write a variable to a CSV file
+- read CSV / JSON file and store it in memory as a variable
+- write a variable to a CSV / JSON file
 - evaluate relational algebra expressions on variables containing relational data
 - convert relational algebra expressions to SQL
 - Supported relational algebra operations:
-  - projection and renaming
-  - selection (N)
-  - natural and general join (N)
-  - set operations: union, intersection, difference, cartesian product (N)
-  - anti-join (N)
-  - division (N)
+  - set-set operations: union "∪", intersect "∩", except "", cross "×", divide "÷"
+  - set-boolean operations: is_subset "⊆", equals "=", is_proper_subset "⊂"
+  - general joins: join "[rel1.col1 < rel2.col3]", left_semi_join "<condition]", right_semi_join "[condition>", left_anti_join "!<condition]", right_anti_join "![condition>"
+  - natural joins (same order as general joins): "", "<", ">", "!<", "!*>"
+  - boolean operations: and "∧", or "∨", not "¬"
+  - projection: project "relation[col1, col3]"
+  - selection: select "(condition)"
+  - rename: rename "relation[col1 -> new_col1, col3 -> new_col3]"
 - efficient memory representation of data - read files only when necessary and only the parts that are needed
+- one data type all data - string
 - nested expressions using () - Shunting-Yard algorithm
 ==============================================================================================
 Example of usage:
-IMPORT ANIMALS "animals.csv"
-IMPORT NOURISHMENT "nourishment.csv"
-TMP = ("animals.csv" ∪ ANIMALS) × NOURISHMENT)
-CROSS = TMP["animals", "nourishment"]
-PRINT CROSS
-EXPORT CROSS "cross.csv"
+animals = import "animals1.csv"
+nourishment = import "nourishment.csv"
+temp = ("animals2.csv" ∪ animals) × nourishment)
+print temp
+export temp to "temp.csv"
 ==============================================================================================
 How polymorphism is used:
-- representation of objects: table in CSV file, expression, ...
-- operations
+- representation of data sources: table in CSV file, JSON data source, expressions - union, intersection, join, ...
+- boolean operations - and, or, not
 - import / export formats: CSV, JSON, XML, PostgreSQL, ...
-- user interface: console, GUI
+- abstract user interface - unified starting method and configuration based on CLI arguments parsed in main method.

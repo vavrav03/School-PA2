@@ -1,7 +1,7 @@
 #ifndef SEMESTRAL_RESULTSTREAM_H
 #define SEMESTRAL_RESULTSTREAM_H
 
-#include "../../data-types/data-row/data-row.h"
+#include "../../data-row/data-row.h"
 #include <string>
 #include <vector>
 
