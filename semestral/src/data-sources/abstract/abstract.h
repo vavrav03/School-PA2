@@ -8,7 +8,7 @@
 class AbstractDataSource {
 public:
   AbstractDataSource();
-  const std::vector<std::string> &getHeader() const;
+  virtual const std::vector<std::string> &getHeader() const;
   const int getHeaderSize() const;
   virtual bool hasNextRow() const = 0;
   virtual const DataRow getNextRow() = 0;
