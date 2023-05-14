@@ -11,6 +11,7 @@ public:
   BooleanExpression() = default;
   virtual bool evaluate(HeaderValueContainer & headerValues) const = 0;
   virtual ~BooleanExpression() = default;
+  virtual std::string toSQL() const = 0;
 };
 
 #endif // SEMESTRAL_BOOLEAN_EXPRESSION_H
