@@ -7,6 +7,7 @@ OBJ_FILES := $(patsubst ./src/%, ./obj/%, $(patsubst %.cpp, %.o, $(SRC_FILES)))
 
 .PHONY: compile run doc clean test
 
+all: run
 compile: bin/relgebra
 run: bin/relgebra
 	./bin/relgebra
