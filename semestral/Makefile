@@ -1,35 +1,27 @@
-LINKER := g++ -std=c++17 
+LINKER := g++ -std=c++17
 COMPILER := g++ -g -std=c++17 -Wall -pedantic
 
-SRC_FILES := $(shell find ./src -name '*.cpp')
-# pattern, replacement, text
+SRC_FILES := $(wildcard ./src/*.cpp) $(wildcard ./src/*/*.cpp) $(wildcard ./src/*/*/*.cpp) $(wildcard ./src/*/*/*/*.cpp) $(wildcard ./src/*/*/*/*/*.cpp)
 OBJ_FILES := $(patsubst ./src/%, ./obj/%, $(patsubst %.cpp, %.o, $(SRC_FILES)))
 
-.PHONY: compile run doc clean test
+.PHONY: compile run doc clean
 
-all: run
-compile: bin/relgebra
-run: bin/relgebra
-	./bin/relgebra
-test: bin/relgebra_test
-	./bin/relgebra_test
+all: compile doc vavravl3_test
+compile: vavravl3
+run: vavravl3
+	./vavravl3
 doc: $(SRC_FILES)
 	mkdir -p doc
 	doxygen Doxyfile
 clean:
-	rm -rf obj bin doc
-bin/relgebra: $(filter-out ./obj/test/main.test.o,$(OBJ_FILES))
-	@mkdir -p bin
+	rm -rf obj vavravl3 vavravl3_test doc
+vavravl3: $(filter-out ./obj/test/main.test.o,$(OBJ_FILES))
+	$(LINKER) $^ -o $@
+test: vavravl3_test
+	./vavravl3_test
+vavravl3_test: $(filter-out ./obj/main.o,$(OBJ_FILES))
 	@$(LINKER) $^ -o $@
-	@chmod +x $@
-bin/relgebra_test: $(filter-out ./obj/main.o,$(OBJ_FILES))
-# print all dependencies
-	echo $^
-	@mkdir -p bin
-	@$(LINKER) $^ -o $@
-	@chmod +x $@
 obj/%.o: src/%.cpp
-# create directory copying src structure in obj folder
 	mkdir -p $(patsubst src/%,obj/%,$(dir $<))
 	$(COMPILER) -c $< -o $@
 
