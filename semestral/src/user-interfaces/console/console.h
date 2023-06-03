@@ -3,9 +3,9 @@
 
 #include "../abstract/variables-memory.h"
 
-#include "./token.h"
-#include "./console-command.h"
+#include "./commands/console-command.h"
 #include "../abstract/abstract.h"
+#include "./tokenizer/token.h"
 #include "./tokenizer/tokenizer.h"
 
 class ConsoleInterface : public AbstractInterface

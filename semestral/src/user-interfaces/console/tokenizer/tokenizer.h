@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "../token.h"
+#include "./token.h"
 
 class Tokenizer {
 

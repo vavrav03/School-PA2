@@ -3,9 +3,9 @@
 
 #include <string>
 #include <vector>
-#include "./token.h"
+#include "../tokenizer/token.h"
 #include <iostream>
-#include "../abstract/variables-memory.h"
+#include "../../abstract/variables-memory.h"
 
 class ConsoleCommand {
 
