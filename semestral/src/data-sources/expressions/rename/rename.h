@@ -5,20 +5,19 @@
 #include <unordered_map>
 #include <vector>
 #include "../abstract/unary-expression.h"
-#include "../../abstract/data-row.h"
 #include "../../abstract/header-value-container.h"
 
 class RenameExpression : public AbstractUnaryExpression
 {
 public:
   RenameExpression(AbstractDataSource* dataSource, const HeaderValueContainer &renameCriteria);
-  ~RenameExpression();
-  const DataRow &getHeader() const;
-  bool hasNextRow() const;
-  const DataRow getNextRow();
+  const std::vector<std::string> &getHeader() const override;
+  bool hasNextRow() const override;
+  const std::vector<std::string> getNextRow() override;
+  std::string toSQL() const override;
 
 private:
-  DataRow renamedHeader;
+  std::vector<std::string> renamedHeader;
 };
 
 #endif // SEMESTRAL_RENAME_EXPRESSION_H

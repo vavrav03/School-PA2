@@ -4,7 +4,7 @@ using namespace std;
 
 AbstractDataSource::AbstractDataSource() = default;
 
-const DataRow &AbstractDataSource::getHeader() const {
+const vector<string> &AbstractDataSource::getHeader() const {
   return this->header;
 }
 

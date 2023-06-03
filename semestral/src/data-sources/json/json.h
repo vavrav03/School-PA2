@@ -9,10 +9,10 @@ class JsonDataSource : public AbstractDataSource
 public:
   JsonDataSource(const std::string &path);
   bool hasNextRow() const override;
-  const DataRow getNextRow() override;
+  const vector<string> getNextRow() override;
 private:
   int currentRow;
-  std::vector<DataRow> rows;
+  std::vector<vector<string>> rows;
 };
 
 #endif // SEMESTRAL_JSON_DATA_SOURCE_H

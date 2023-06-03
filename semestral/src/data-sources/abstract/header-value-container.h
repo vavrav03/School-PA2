@@ -3,7 +3,6 @@
 
 #include <string>
 #include <unordered_map>
-#include "./data-row.h"
 
 /**
  * This class is used for cases when we need to quickly access a value in a row by its header name and we have to access it by header names in random order
@@ -12,8 +11,10 @@
 class HeaderValueContainer
 {
 public:
-  HeaderValueContainer(DataRow &header, DataRow & values);
-  const bool hasHeaderValue(const std::string &headerName) const;
+  HeaderValueContainer(const std::vector<std::string> &header, const std::vector<std::string> & values);
+  HeaderValueContainer();
+  bool hasHeaderValue(const std::string &headerName) const;
+  void addValue(const std::string &headerName, const std::string &value);
   const std::string &operator[](const std::string& headerName) const;
   virtual ~HeaderValueContainer() = default;
 

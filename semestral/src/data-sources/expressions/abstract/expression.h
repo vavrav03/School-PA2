@@ -8,7 +8,6 @@ class AbstractExpression : public AbstractDataSource
 {
 public:
   AbstractExpression() = default;
-  virtual ~AbstractExpression() = default;
   virtual std::string toSQL() const = 0;
 };
 

@@ -3,11 +3,14 @@
 
 #include "./expression.h"
 
-class AbstractUnaryExpression : public AbstractExpression
-{
+class AbstractUnaryExpression : public AbstractExpression {
 public:
   AbstractUnaryExpression(AbstractDataSource *_expression)
-      : expression(_expression) {}
+          : expression(_expression) {}
+
+  virtual ~AbstractUnaryExpression() {
+    delete expression;
+  }
 
 protected:
   AbstractDataSource *expression;

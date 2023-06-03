@@ -3,7 +3,7 @@
 
 using namespace std;
 
-HeaderValueContainer::HeaderValueContainer(DataRow &header, DataRow &values)
+HeaderValueContainer::HeaderValueContainer(const vector<string> &header, const vector<string> &values)
 {
   for (int i = 0; i < header.size(); i++)
   {
@@ -11,7 +11,7 @@ HeaderValueContainer::HeaderValueContainer(DataRow &header, DataRow &values)
   }
 }
 
-const bool HeaderValueContainer::hasHeaderValue(const string &headerName) const
+bool HeaderValueContainer::hasHeaderValue(const string &headerName) const
 {
   return this->headerValueMap.find(headerName) != this->headerValueMap.end();
 }

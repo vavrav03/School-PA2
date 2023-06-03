@@ -1,5 +1,4 @@
 #include "./csv.h"
-#include "../abstract/data-row.h"
 #include <iostream>
 #include <sstream>
 
@@ -12,7 +11,7 @@ CSVDataSource::CSVDataSource(const string &path)
   }
   try {
     readUnparsedRow();
-    this->header = DataRow(this->nextRow);
+    this->header = vector<string>(this->nextRow);
     readUnparsedRow();
   } catch (...) {
     throw runtime_error("Could not read header, CSV file is empty");
@@ -21,16 +20,16 @@ CSVDataSource::CSVDataSource(const string &path)
 
 bool CSVDataSource::hasNextRow() const { return nextRow.size() > 0; }
 
-const DataRow CSVDataSource::getNextRow() {
+const vector<string> CSVDataSource::getNextRow() {
   if(this->nextRow.size() == 0) {
     throw runtime_error("Could not read row, CSV file is empty");
   }
   if(this->nextRow.size() != this->header.size()) {
     throw runtime_error("Could not read row, CSV file has inconsistent number of columns");
   }
-  DataRow nextRow;
+  vector<string> nextRow;
   for (string &value : this->nextRow) {
-    nextRow.addField(value);
+    nextRow.push_back(value);
   }
   readUnparsedRow();
   return nextRow;
