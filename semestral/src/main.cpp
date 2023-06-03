@@ -1,7 +1,6 @@
 
 #include "./user-interfaces/abstract/abstract.h"
 #include <string>
-#include <exception>
 #include <iostream>
 
 using namespace std;

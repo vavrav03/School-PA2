@@ -7,3 +7,4 @@ AbstractInterface* AbstractInterface::createInstance(const std::string &interfac
   }
   throw std::runtime_error("Unknown interface: " + interfaceName);
 }
+

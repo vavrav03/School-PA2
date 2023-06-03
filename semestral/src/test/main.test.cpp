@@ -3,8 +3,13 @@
 #include <vector>
 
 #include "../data-sources/csv/csv.h"
+#include "../user-interfaces/console/console.h"
 
 using namespace std;
+
+void testTokenizeMethod() {
+  assert(ConsoleInterface::tokenize("     help     ")[0].value == "help");
+}
 
 void testCsvDataSource() {
   try {
