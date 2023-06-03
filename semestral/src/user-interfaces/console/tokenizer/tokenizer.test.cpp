@@ -27,4 +27,16 @@ void testTokenizeMethod() {
   assert(!tokens[1].quoted);
   assert(!tokens[2].quoted);
   assert(tokens[3].quoted);
+
+  tokens = tokenizer.tokenize("abc=import \"format.csv\"");
+  assert(tokens[0].value == "abc");
+  assert(tokens[1].value == "=");
+  assert(tokens[2].value == "import");
+  assert(tokens[3].value == "format.csv");
+
+  tokens = tokenizer.tokenize("abc= import\"format.csv\"");
+  assert(tokens[0].value == "abc");
+  assert(tokens[1].value == "=");
+  assert(tokens[2].value == "import");
+  assert(tokens[3].value == "format.csv");
 }
