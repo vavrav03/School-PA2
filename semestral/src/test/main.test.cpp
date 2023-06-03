@@ -4,5 +4,6 @@
 int main() {
   testCsvDataSource();
   testTokenizeMethod();
+  testConsoleCommands();
   return 0;
 }

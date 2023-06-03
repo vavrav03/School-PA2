@@ -3,16 +3,16 @@
 
 #include "../abstract/abstract.h"
 #include <string>
+#include <vector>
 
-class JsonDataSource : public AbstractDataSource
-{
+class JSONDataSource : public AbstractDataSource {
 public:
-  JsonDataSource(const std::string &path);
+  JSONDataSource(const std::string &path);
   bool hasNextRow() const override;
-  const vector<string> getNextRow() override;
+  const std::vector<std::string> getNextRow() override;
 private:
   int currentRow;
-  std::vector<vector<string>> rows;
+  std::vector<std::vector<std::string> > rows;
 };
 
 #endif // SEMESTRAL_JSON_DATA_SOURCE_H

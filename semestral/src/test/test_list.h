@@ -3,5 +3,6 @@
 
 void testCsvDataSource();
 void testTokenizeMethod();
+void testConsoleCommands();
 
 #endif //SEMESTRAL_TEST_LIST_H

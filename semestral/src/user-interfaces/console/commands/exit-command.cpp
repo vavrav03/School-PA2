@@ -2,7 +2,7 @@
 
 using namespace std;
 
-ExitCommand::ExitCommand(const VariablesMemory &memory) : VariablesDependentCommand(memory) {}
+ExitCommand::ExitCommand(VariablesMemory &memory) : VariablesDependentCommand(memory) {}
 
 void ExitCommand::run(std::vector<Token> command) {
   cout << "Exiting..." << endl;

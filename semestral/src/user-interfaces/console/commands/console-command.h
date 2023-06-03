@@ -18,15 +18,15 @@ public:
 
 class VariablesDependentCommand : public ConsoleCommand {
 public:
-  explicit VariablesDependentCommand(const VariablesMemory &memory) : ConsoleCommand(), memory(memory) {}
+  explicit VariablesDependentCommand(VariablesMemory &memory) : ConsoleCommand(), memory(memory) {}
 
 protected:
-  const VariablesMemory & memory;
+  VariablesMemory & memory;
 };
 
 class ExitCommand : public VariablesDependentCommand {
 public:
-  explicit ExitCommand(const VariablesMemory &memory);
+  explicit ExitCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
   bool shouldRun(std::vector<Token> command) override;
@@ -43,6 +43,14 @@ public:
 class UnknownCommand : public ConsoleCommand {
 public:
   UnknownCommand();
+
+  void run(std::vector<Token> command) override;
+  bool shouldRun(std::vector<Token> command) override;
+};
+
+class ImportCommand : public VariablesDependentCommand {
+public:
+  explicit ImportCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
   bool shouldRun(std::vector<Token> command) override;
