@@ -5,13 +5,37 @@
 #include <vector>
 #include <fstream>
 
+/**
+ * Everything that produces relational data should inherit from this class.
+ */
 class AbstractDataSource {
 public:
   AbstractDataSource();
 
+  /**
+   *
+   * @return vector of strings describing what each column means.
+   */
   virtual std::vector<std::string> getHeader() const;
+
+  /**
+   *
+   * @param name
+   * @return index of column with given name.
+   */
   int getHeaderIndex(const std::string &name) const;
+
+  /**
+   *
+   * @param index
+   * @return name of column with given index.
+   */
   const std::string& getHeaderName(int index) const;
+
+  /**
+   *
+   * @return number of columns in this relation
+   */
   int getHeaderSize() const;
 
   /**
@@ -39,6 +63,9 @@ protected:
   std::unordered_map<std::string, int> header;
 };
 
+/**
+ * Data source for reading from a file.
+ */
 class FileDataSource : public AbstractDataSource {
 public:
   FileDataSource(const std::string &path);

@@ -6,8 +6,9 @@
 #include <vector>
 
 /**
- * Custom JSON data source implementation. It requires file to be an array of same JSON objects - will not work otherwise
+ * Custom JSON data source implementation. It requires file to be an array of same JSON objects (it throws error if it is not)
  * nlohmann cannot be used because it does not support streaming of JSON arrays - it requires the whole file to be loaded into memory
+ * Representation is memory efficient - only one block is loaded into memory at a time
  */
 class JSONDataSource : public FileDataSource {
 public:

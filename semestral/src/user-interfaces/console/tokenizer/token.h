@@ -3,6 +3,9 @@
 
 #include <string>
 
+/**
+ * Lexical token used by tokenizer (@see Tokenizer)
+ */
 class Token {
 
 public:

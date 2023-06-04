@@ -7,6 +7,9 @@
 #include <iostream>
 #include "../../abstract/variables-memory.h"
 
+/**
+ * Abstract class for all commands used by console interface
+ */
 class ConsoleCommand {
 
 public:
@@ -16,6 +19,9 @@ public:
   virtual bool matchesSyntactically(std::vector<Token> command) = 0;
 };
 
+/**
+ * Abstract class for all commands that need access to variables memory
+ */
 class VariablesDependentCommand : public ConsoleCommand {
 public:
   explicit VariablesDependentCommand(VariablesMemory &memory) : ConsoleCommand(), memory(memory) {}
