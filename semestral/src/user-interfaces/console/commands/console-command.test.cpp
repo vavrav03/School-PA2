@@ -88,10 +88,16 @@ void testExportCommand(Tokenizer &tokenizer) {
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   string outputFile = string(TEST_ASSETS_DIR) + "test_output185212351.csv";
+  string testFileJSON = string(TEST_ASSETS_DIR) + "test.json";
+  string outputFileJSON = string(TEST_ASSETS_DIR) + "test_output185212352.json";
   ImportCommand importCommand(memory);
   importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
+  ImportCommand importCommandJSON(memory);
+  importCommandJSON.run(tokenizer.tokenize("abcjson = import \"" + testFileJSON + "\""));
   ExportCommand command(memory);
+  ExportCommand commandJSON(memory);
   const string correct1 = "export abc to \"" + outputFile + "\"";
+  const string correct1JSON = "export abcjson to \"" + outputFileJSON + "\"";
   const string incorrectNonExistingVariable = "export aaa to \"" + outputFile + "\"";
   const string incorrectWithoutExport = "abc to \"" + outputFile + "\"";
   const string incorrectMultipleVariables = "export abc ddd to \"" + outputFile + "\"";
@@ -111,6 +117,19 @@ void testExportCommand(Tokenizer &tokenizer) {
   assert(row[2] == "180");
   // remove file so that it does not interfere with other tests
   remove(outputFile.c_str());
+
+  assert(commandJSON.matchesSyntactically(tokenizer.tokenize(correct1JSON)));
+  commandJSON.run(tokenizer.tokenize(correct1JSON));
+  ImportCommand importCommandCheckJSON(memory);
+  importCommandCheckJSON.run(tokenizer.tokenize("dddjson = import \"" + outputFileJSON + "\""));
+  assert(memory.get("dddjson")->getHeaderName(0) == "a");
+  assert(memory.get("dddjson")->getHeaderName(1) == "b");
+  assert(memory.get("dddjson")->getHeaderName(2) == "c");
+  row = memory.get("dddjson")->getNextRow();
+  assert(row[0] == "1");
+  assert(row[1] == "2");
+  assert(row[2] == "3");
+  remove(outputFileJSON.c_str());
 
   assert(command.matchesSyntactically(tokenizer.tokenize(incorrectNonExistingVariable)));
   try {

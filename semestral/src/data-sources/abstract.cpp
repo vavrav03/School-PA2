@@ -37,6 +37,7 @@ FileDataSource::FileDataSource(const std::string &path) : file(path) {
 void FileDataSource::reset() {
   file.clear();
   file.seekg(0, ios::beg);
+
 }
 
 FileDataSource::~FileDataSource() {

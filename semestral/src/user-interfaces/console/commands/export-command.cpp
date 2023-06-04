@@ -21,7 +21,7 @@ void ExportCommand::run(std::vector<Token> command) {
   if (extension == "csv") {
     exporter = new CSVDataExporter(dataSource, fileName);
   } else if (extension == "json") {
-//    exporter = new JSONDataExporter(dataSource, fileName);
+    exporter = new JSONDataExporter(dataSource, fileName);
   } else {
     throw runtime_error("Unknown file extension " + extension + ".");
   }

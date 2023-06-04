@@ -28,14 +28,12 @@ public:
   CSVDataExporter(AbstractDataSource *dataSource, std::string dstPath);
 
   void exportData() override;
-  ~CSVDataExporter() override;
 };
 
-//class JSONDataExporter : public FileDataExporter {
-//public:
-//  JSONDataExporter(AbstractDataSource *dataSource, std::string dstPath);
-//
-//  void exportData() override;
-//  ~JSONDataExporter() override;
-//};
+class JSONDataExporter : public FileDataExporter {
+public:
+  JSONDataExporter(AbstractDataSource *dataSource, std::string dstPath);
+
+  void exportData() override;
+};
 #endif //SEMESTRAL_DATA_EXPORTERS_H

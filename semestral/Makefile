@@ -1,5 +1,5 @@
-LINKER := g++ -std=c++17
-COMPILER := g++ -g -std=c++17 -Wall -pedantic
+LINKER := g++ -fsanitize=address -std=c++17
+COMPILER := g++ -g -fsanitize=address -std=c++17 -Wall -pedantic
 
 SRC_FILES := $(wildcard ./src/*.cpp) $(wildcard ./src/*/*.cpp) $(wildcard ./src/*/*/*.cpp) $(wildcard ./src/*/*/*/*.cpp) $(wildcard ./src/*/*/*/*/*.cpp)
 OBJ_FILES := $(patsubst ./src/%, ./obj/%, $(patsubst %.cpp, %.o, $(SRC_FILES)))

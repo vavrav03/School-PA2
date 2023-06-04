@@ -29,7 +29,3 @@ void CSVDataExporter::exportData() {
   }
   file.close();
 }
-
-CSVDataExporter::~CSVDataExporter(){
-  
-}
