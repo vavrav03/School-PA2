@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 class AbstractDataSource {
 public:
@@ -34,6 +35,15 @@ protected:
    * Each data source must have a header describing what each column means. This header must be the same size as each row.
    */
   std::vector<std::string> header;
+};
+
+class FileDataSource : public AbstractDataSource {
+public:
+  FileDataSource(const std::string &path);
+  virtual ~FileDataSource();
+  void reset() override;
+protected:
+  std::ifstream file;
 };
 
 #endif // SEMESTRAL_RESULTSTREAM_H

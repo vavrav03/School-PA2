@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-class JSONDataSource : public AbstractDataSource {
+class JSONDataSource : public FileDataSource {
 public:
   JSONDataSource(const std::string &path);
   bool hasNextRow() const override;

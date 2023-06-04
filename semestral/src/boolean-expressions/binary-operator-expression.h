@@ -41,6 +41,4 @@ public:
   }
 };
 
-class
-
 #endif // SEMESTRAL_BINARY_OPERATOR_EXPRESSION_H

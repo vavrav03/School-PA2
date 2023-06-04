@@ -5,10 +5,7 @@
 using namespace std;
 
 CSVDataSource::CSVDataSource(const string &path)
-    : AbstractDataSource(), file(path) {
-  if(file.fail()) {
-    throw runtime_error("Could not open file");
-  }
+    : FileDataSource(path) {
   try {
     readUnparsedRow();
     this->header = vector<string>(this->nextRow);
@@ -47,11 +44,8 @@ void CSVDataSource::readUnparsedRow() {
   this->nextRow = row;
 }
 
-CSVDataSource::~CSVDataSource() { file.close(); }
-
 void CSVDataSource::reset() {
-  file.clear();
-  file.seekg(0, ios::beg);
+  FileDataSource::reset();
   readUnparsedRow();
   readUnparsedRow();
 }
