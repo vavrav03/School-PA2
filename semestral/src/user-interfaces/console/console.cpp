@@ -10,6 +10,7 @@ ConsoleInterface::ConsoleInterface() : AbstractInterface(), tokenizer(Tokenizer:
   commands.push_back(new ImportCommand(memory));
   commands.push_back(new PrintCommand(memory));
   commands.push_back(new PrintVariablesCommand(memory));
+  commands.push_back(new ExportCommand(memory));
   commands.push_back(new UnknownCommand());
 }
 

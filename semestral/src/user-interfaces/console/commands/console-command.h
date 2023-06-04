@@ -72,4 +72,12 @@ public:
   bool matchesSyntactically(std::vector<Token> command) override;
 };
 
+class ExportCommand: public VariablesDependentCommand {
+public:
+  explicit ExportCommand(VariablesMemory &memory);
+
+  void run(std::vector<Token> command) override;
+  bool matchesSyntactically(std::vector<Token> command) override;
+};
+
 #endif //SEMESTRAL_CONSOLE_COMMAND_H
