@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <unordered_map>
 
 /**
  * Everything that produces relational data should inherit from this class.

@@ -1,4 +1,4 @@
-LINKER := g++ -fsanitize=address -std=c++17
+LINKER := g++ -fsanitize=address -std=c++17 -pedantic
 COMPILER := g++ -g -fsanitize=address -std=c++17 -Wall -pedantic
 
 SRC_FILES := $(wildcard ./src/*.cpp) $(wildcard ./src/*/*.cpp) $(wildcard ./src/*/*/*.cpp) $(wildcard ./src/*/*/*/*.cpp) $(wildcard ./src/*/*/*/*/*.cpp)

@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+rm -R vavravl3
+rm vavravl3.zip
+mkdir -p vavravl3
+cp semestral/Makefile vavravl3
+cp semestral/Doxyfile vavravl3
+cp semestral/zadani.txt vavravl3
+cp semestral/prohlaseni.txt vavravl3
+cp semestral/README.md vavravl3
+cp -R semestral/examples vavravl3
+cp -R semestral/src vavravl3
+
+zip -r vavravl3.zip vavravl3
