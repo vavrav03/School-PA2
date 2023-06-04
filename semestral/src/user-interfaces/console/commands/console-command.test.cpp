@@ -16,7 +16,7 @@ void testImportCommand(Tokenizer &tokenizer) {
   const string incorrectWithoutImport = "abc = \"" + testFile + "\"";
   const string incorrectFollowedByCommand = "abc = import \"" + testFile + "\" select * from abc";
 
-  assert(command.shouldRun(tokenizer.tokenize(correct1)));
+  assert(command.matchesSyntactically(tokenizer.tokenize(correct1)));
   command.run(tokenizer.tokenize(correct1));
   assert(memory.get("abc")->getHeader()[0] == "name");
   assert(memory.get("abc")->getHeader()[1] == "age");
@@ -26,7 +26,7 @@ void testImportCommand(Tokenizer &tokenizer) {
   assert(row[1] == "25");
   assert(row[2] == "180");
 
-  assert(command.shouldRun(tokenizer.tokenize(correct2)));
+  assert(command.matchesSyntactically(tokenizer.tokenize(correct2)));
   command.run(tokenizer.tokenize(correct2));
   assert(memory.get("ddd")->getHeader()[0] == "name");
   assert(memory.get("ddd")->getHeader()[1] == "age");
@@ -36,7 +36,7 @@ void testImportCommand(Tokenizer &tokenizer) {
   assert(row[1] == "25");
   assert(row[2] == "180");
 
-  assert(!command.shouldRun(tokenizer.tokenize(incorrectUnquoted)));
+  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectUnquoted)));
   try {
     command.run(tokenizer.tokenize(incorrectAlreadyExistingVariable));
     assert(false);
@@ -44,11 +44,46 @@ void testImportCommand(Tokenizer &tokenizer) {
     assert(true);
   }
 
-  assert(!command.shouldRun(tokenizer.tokenize(incorrectWithoutImport)));
-  assert(!command.shouldRun(tokenizer.tokenize(incorrectFollowedByCommand)));
+  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectWithoutImport)));
+  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectFollowedByCommand)));
+}
+
+void testPrintCommand(Tokenizer &tokenizer) {
+  VariablesMemory memory;
+  string testFile = string(TEST_ASSETS_DIR) + "test.csv";
+  ImportCommand importCommand(memory);
+  importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
+  PrintCommand command(memory);
+  const string correct1 = "print abc";
+  const string correct2 = "print abc";
+  const string correct3 = "print \"abc\"";
+  const string incorrectNonExistingVariable = "print ddd";
+  const string incorrectWithoutPrint = "abc";
+  const string incorrectMultipleVariables = "print abc ddd";
+
+  assert(command.matchesSyntactically(tokenizer.tokenize(correct1)));
+  command.run(tokenizer.tokenize(correct1));
+
+  assert(command.matchesSyntactically(tokenizer.tokenize(correct2)));
+  command.run(tokenizer.tokenize(correct2));
+
+  assert(command.matchesSyntactically(tokenizer.tokenize(correct3)));
+
+  assert(command.matchesSyntactically(tokenizer.tokenize(incorrectNonExistingVariable)));
+  try {
+    command.run(tokenizer.tokenize(incorrectNonExistingVariable));
+    assert(false);
+  } catch (exception &e) {
+    assert(true);
+  }
+
+  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectWithoutPrint)));
+  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectMultipleVariables)));
+
 }
 
 void testConsoleCommands() {
   Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
   testImportCommand(tokenizer);
+  testPrintCommand(tokenizer);
 }

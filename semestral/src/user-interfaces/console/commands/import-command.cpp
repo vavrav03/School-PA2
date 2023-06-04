@@ -6,7 +6,7 @@ using namespace std;
 
 ImportCommand::ImportCommand(VariablesMemory &memory) : VariablesDependentCommand(memory) {}
 
-bool ImportCommand::shouldRun(std::vector<Token> command) {
+bool ImportCommand::matchesSyntactically(std::vector<Token> command) {
   return command.size() == 4 && command[1].value == "=" && command[2].value == "import" && command[3].quoted;
 }
 

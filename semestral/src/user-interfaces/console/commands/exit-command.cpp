@@ -10,6 +10,6 @@ void ExitCommand::run(std::vector<Token> command) {
   exit(0);
 }
 
-bool ExitCommand::shouldRun(std::vector<Token> command) {
+bool ExitCommand::matchesSyntactically(std::vector<Token> command) {
   return command.size() == 1 && command[0].value == "exit";
 }

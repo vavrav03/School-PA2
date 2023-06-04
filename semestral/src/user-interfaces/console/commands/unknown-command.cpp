@@ -12,6 +12,6 @@ void UnknownCommand::run(std::vector<Token> command) {
   cout << "Unknown command:\"" + commandString + "\". Type \"help\" to see available commands." << endl;
 }
 
-bool UnknownCommand::shouldRun(std::vector<Token> command) {
+bool UnknownCommand::matchesSyntactically(std::vector<Token> command) {
   return true;
 }

@@ -11,3 +11,11 @@ void VariablesMemory::add(const std::string &name, AbstractDataSource *item) {
 AbstractDataSource *VariablesMemory::get(const std::string &name) {
   return variables[name];
 }
+
+std::vector<std::string> VariablesMemory::getVariablesNames() {
+  std::vector<std::string> names;
+  for (auto &pair : variables) {
+    names.push_back(pair.first);
+  }
+  return names;
+}

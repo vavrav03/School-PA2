@@ -8,6 +8,8 @@ ConsoleInterface::ConsoleInterface() : AbstractInterface(), tokenizer(Tokenizer:
   commands.push_back(new ExitCommand(memory));
   commands.push_back(new HelpCommand());
   commands.push_back(new ImportCommand(memory));
+  commands.push_back(new PrintCommand(memory));
+  commands.push_back(new PrintVariablesCommand(memory));
   commands.push_back(new UnknownCommand());
 }
 
@@ -35,7 +37,7 @@ void ConsoleInterface::printPrompt() {
 
 void ConsoleInterface::processCommand(const vector<Token> &commandTokens) {
   for (auto &command: commands) {
-    if (command->shouldRun(commandTokens)) {
+    if (command->matchesSyntactically(commandTokens)) {
       command->run(commandTokens);
       return;
     }

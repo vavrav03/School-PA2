@@ -4,7 +4,7 @@ using namespace std;
 
 HelpCommand::HelpCommand() : ConsoleCommand() {}
 
-bool HelpCommand::shouldRun(std::vector<Token> command) {
+bool HelpCommand::matchesSyntactically(std::vector<Token> command) {
   return command.size() == 1 && !command[0].quoted && command[0].value == "help";
 }
 
@@ -20,6 +20,7 @@ void HelpCommand::run(std::vector<Token> command) {
   cout << "   - export ... to ...: Creates a file filled by a content of a variable" << endl;
   cout << "       - export <variable_name> to \"<file_name>.csv\" exports a content of a <variable_name> variable to a CSV file" << endl;
   cout << "       - export <variable_name> to \"<file_name>.json\" exports a content of a <variable_name> variable to a JSON file" << endl;
+  cout << "   - vars: Prints a list of all variables" << endl;
   cout << "   - print: Prints a content of a variable to console" << endl;
   cout << "other operations follow standard relational algebra syntax:" << endl;
   cout << "   - set-set operations: union \"∪\", intersect \"∩\", except \"\\\", cross \"×\", divide \"÷\"" << endl;
