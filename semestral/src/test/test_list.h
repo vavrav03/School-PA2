@@ -8,5 +8,6 @@ void testCsvDataSource();
 void testJSONDataSource();
 void testTokenizeMethod();
 void testConsoleCommands();
+void testExpression();
 
 #endif //SEMESTRAL_TEST_LIST_H

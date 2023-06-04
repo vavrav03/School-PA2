@@ -19,3 +19,22 @@ unordered_map<string, int> vectorToIndexMap(const vector<string> &vector){
   }
   return map;
 }
+
+string join(const vector<string> &vector, const string &delimiter) {
+  string result;
+  for (int i = 0; i < vector.size(); i++) {
+    result += vector[i];
+    if (i != vector.size() - 1) {
+      result += delimiter;
+    }
+  }
+  return result;
+}
+
+string toLowerCase(const string &stringToConvert) {
+  string result = stringToConvert;
+  for (char &c : result) {
+    c = tolower(c);
+  }
+  return result;
+}

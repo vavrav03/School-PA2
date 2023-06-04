@@ -24,6 +24,7 @@ public:
   /**
    *
    * @param name
+   * @throws std::runtime_error if there is no column with given name.
    * @return index of column with given name.
    */
   virtual int getHeaderIndex(const std::string &name) const = 0;

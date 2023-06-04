@@ -18,4 +18,8 @@ std::vector<std::string> indexMapToVector(const std::unordered_map<std::string, 
  */
 std::unordered_map<std::string, int> vectorToIndexMap(const std::vector<std::string> &vector);
 
+std::string join(const std::vector<std::string> &vector, const std::string &delimiter);
+
+std::string toLowerCase(const std::string &string);
+
 #endif //SEMESTRAL_UTILS_H

@@ -6,5 +6,6 @@ int main() {
   testJSONDataSource();
   testTokenizeMethod();
   testConsoleCommands();
+  testExpression();
   return 0;
 }
