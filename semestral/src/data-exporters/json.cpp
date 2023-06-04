@@ -7,7 +7,7 @@ JSONDataExporter::JSONDataExporter(AbstractDataSource *dataSource, std::string d
 void JSONDataExporter::exportData() {
   AbstractDataExporter::exportData();
   ofstream file(this->dstPath);
-  vector<string> header = this->dataSource->getHeader();
+  vector<string> header = this->dataSource->getHeaderVector();
   file << "[";
   while (this->dataSource->hasNextRow()) {
     vector<string> row = this->dataSource->getNextRow();

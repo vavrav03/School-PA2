@@ -7,7 +7,7 @@ CSVDataExporter::CSVDataExporter(AbstractDataSource *dataSource, string dstPath)
 void CSVDataExporter::exportData() {
   AbstractDataExporter::exportData();
   ofstream file(this->dstPath);
-  vector<string> header = this->dataSource->getHeader();
+  vector<string> header = this->dataSource->getHeaderVector();
   int headerSize = this->dataSource->getHeaderSize();
   for (int i = 0; i < headerSize; i++) {
     file << header[i];

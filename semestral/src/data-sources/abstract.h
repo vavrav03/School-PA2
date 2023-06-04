@@ -17,27 +17,29 @@ public:
    *
    * @return vector of strings describing what each column means.
    */
-  virtual std::vector<std::string> getHeader() const;
+  virtual std::vector<std::string> getHeaderVector() const = 0;
+
+  virtual std::unordered_map<std::string, int> getHeaderMap() const = 0;
 
   /**
    *
    * @param name
    * @return index of column with given name.
    */
-  int getHeaderIndex(const std::string &name) const;
+  virtual int getHeaderIndex(const std::string &name) const = 0;
 
   /**
    *
    * @param index
    * @return name of column with given index.
    */
-  const std::string& getHeaderName(int index) const;
+  virtual const std::string& getHeaderName(int index) const = 0;
 
   /**
    *
    * @return number of columns in this relation
    */
-  int getHeaderSize() const;
+  virtual int getHeaderSize() const = 0;
 
   /**
    *
@@ -58,10 +60,6 @@ public:
   virtual ~AbstractDataSource();
 
 protected:
-  /**
-   * Each data source must have a header describing what each column means. This header must be the same size as each row.
-   */
-  std::unordered_map<std::string, int> header;
 };
 
 /**
@@ -70,10 +68,19 @@ protected:
 class FileDataSource : public AbstractDataSource {
 public:
   FileDataSource(const std::string &path);
+  virtual std::vector<std::string> getHeaderVector() const override;
+  virtual std::unordered_map<std::string, int> getHeaderMap() const override;
+  virtual int getHeaderIndex(const std::string &name) const override;
+  virtual const std::string& getHeaderName(int index) const override;
+  virtual int getHeaderSize() const override;
   virtual ~FileDataSource();
   void reset() override;
 protected:
   std::ifstream file;
+  /**
+   * Each data source must have a header describing what each column means. This header must be the same size as each row.
+   */
+  std::unordered_map<std::string, int> header;
 };
 
 #endif // SEMESTRAL_RESULTSTREAM_H

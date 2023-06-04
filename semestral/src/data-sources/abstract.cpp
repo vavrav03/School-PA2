@@ -5,15 +5,27 @@ using namespace std;
 
 AbstractDataSource::AbstractDataSource() = default;
 
-vector<string> AbstractDataSource::getHeader() const {
+AbstractDataSource::~AbstractDataSource() = default;
+
+FileDataSource::FileDataSource(const std::string &path) : file(path) {
+  if (file.fail()) {
+    throw runtime_error("File not found");
+  }
+}
+
+vector<string> FileDataSource::getHeaderVector() const {
   return indexMapToVector(this->header);
 }
 
-int AbstractDataSource::getHeaderIndex(const string &name) const {
+unordered_map<string, int> FileDataSource::getHeaderMap() const {
+  return this->header;
+}
+
+int FileDataSource::getHeaderIndex(const string &name) const {
   return this->header.at(name);
 }
 
-const string & AbstractDataSource::getHeaderName(int index) const {
+const string & FileDataSource::getHeaderName(int index) const {
   for(auto &pair: this->header){
     if(pair.second == index){
       return pair.first;
@@ -22,16 +34,8 @@ const string & AbstractDataSource::getHeaderName(int index) const {
   throw runtime_error("Index not found");
 }
 
-int AbstractDataSource::getHeaderSize() const {
+int FileDataSource::getHeaderSize() const {
   return this->header.size();
-}
-
-AbstractDataSource::~AbstractDataSource() = default;
-
-FileDataSource::FileDataSource(const std::string &path) : file(path) {
-  if (file.fail()) {
-    throw runtime_error("File not found");
-  }
 }
 
 void FileDataSource::reset() {
@@ -43,3 +47,4 @@ void FileDataSource::reset() {
 FileDataSource::~FileDataSource() {
   file.close();
 }
+
