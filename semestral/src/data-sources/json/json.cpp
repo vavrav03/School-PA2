@@ -9,3 +9,5 @@ bool JSONDataSource::hasNextRow() const {
 const std::vector<std::string> JSONDataSource::getNextRow() {
   return std::vector<std::string>();
 }
+
+void JSONDataSource::reset() {}

@@ -10,6 +10,7 @@ public:
   JSONDataSource(const std::string &path);
   bool hasNextRow() const override;
   const std::vector<std::string> getNextRow() override;
+  void reset() override;
 private:
   int currentRow;
   std::vector<std::vector<std::string> > rows;

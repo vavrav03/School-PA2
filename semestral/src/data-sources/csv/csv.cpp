@@ -48,3 +48,10 @@ void CSVDataSource::readUnparsedRow() {
 }
 
 CSVDataSource::~CSVDataSource() { file.close(); }
+
+void CSVDataSource::reset() {
+  file.clear();
+  file.seekg(0, ios::beg);
+  readUnparsedRow();
+  readUnparsedRow();
+}

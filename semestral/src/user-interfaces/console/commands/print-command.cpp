@@ -14,6 +14,7 @@ void PrintCommand::run(std::vector<Token> command) {
     throw runtime_error("Variable " + variableName + " does not exist.");
   }
   AbstractDataSource *dataSource = memory.get(variableName);
+  dataSource->reset();
   cout << "| ";
   for(string columnName : dataSource->getHeader()) {
     cout << columnName << " | ";

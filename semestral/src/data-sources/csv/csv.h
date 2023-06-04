@@ -10,6 +10,7 @@ public:
   CSVDataSource(const std::string &path);
   bool hasNextRow() const override;
   const std::vector<std::string> getNextRow() override;
+  void reset() override;
   ~CSVDataSource() override;
 
 private:
