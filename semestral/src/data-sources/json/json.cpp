@@ -1,8 +1,37 @@
 #include "./json.h"
-
+#include <iostream>
 using namespace std;
 
 JSONDataSource::JSONDataSource(const std::string &path) : FileDataSource(path), reachedEndOfArray(false) {
+  readFirstBlockAndSetHeader();
+}
+
+bool JSONDataSource::hasNextRow() const {
+  return !reachedEndOfArray;
+}
+
+const std::vector<std::string> JSONDataSource::getNextRow() {
+  vector<string> result = nextRow;
+  auto block = readBlock();
+  if (block.first.empty()) {
+    reachedEndOfArray = true;
+  } else {
+    nextRow = block.second;
+  }
+  // TODO - check if header is the same
+  // TODO - for this check, implement possibility of having different order
+  return result;
+}
+
+void JSONDataSource::reset() {
+  FileDataSource::reset();
+  reachedEndOfArray = false;
+  header = vector<string>();
+  nextRow = vector<string>();
+  readFirstBlockAndSetHeader();
+}
+
+void JSONDataSource::readFirstBlockAndSetHeader() {
   // get first character
   char c = file.get();
   if (c != '[') {
@@ -16,26 +45,26 @@ JSONDataSource::JSONDataSource(const std::string &path) : FileDataSource(path), 
   nextRow = block.second;
 }
 
-bool JSONDataSource::hasNextRow() const {
-  // TODO
-  return reachedEndOfArray;
-}
-
-const std::vector<std::string> JSONDataSource::getNextRow() {
-  return std::vector<std::string>();
-}
-
-void JSONDataSource::reset() {
-  FileDataSource::reset();
-}
-
 std::pair<std::vector<std::string>, std::vector<std::string> > JSONDataSource::readBlock() {
   // find first {
   char c;
+  int commaCounter = 0;
   while ((c = file.get()) != '{') {
     if (c == EOF) {
       throw std::runtime_error("Unexpected end of file");
+    } else if (c == ']') {
+      return make_pair(vector<string>(), vector<string>());
+    } else if (c == ',') {
+      commaCounter++;
+    } else if (c != ' ' && c != '\n' && c != '\r' && c != '\t') {
+      throw std::runtime_error("Unexpected character " + string(1, c) + " found in JSON array file");
     }
+  }
+  cout << "OH" << endl;
+  cout << commaCounter << endl;
+  cout << header.size() << endl;
+  if (commaCounter != 1 && !header.empty()) {
+    throw std::runtime_error("JSON is in invalid format - there must be exactly one comma between objects");
   }
   // We know that objects are not nested, so just look for next }
   std::string unparsedJsonObject;

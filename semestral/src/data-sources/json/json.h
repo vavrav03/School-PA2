@@ -11,17 +11,18 @@
  */
 class JSONDataSource : public FileDataSource {
 public:
-  /**
-   * Read first block of JSON array file, set it to nextRow and set header
-   * @throws runtime_error if file does not start with [ or if no data is found in the array
-   * @return vector of header strings
-   */
   JSONDataSource(const std::string &path);
   bool hasNextRow() const override;
   const std::vector<std::string> getNextRow() override;
   void reset() override;
   static std::pair<std::vector<std::string>, std::vector<std::string> > parseBlockString(const std::string & unparsedJsonObject);
 private:
+  /**
+   * Read first block of JSON array file, set it to nextRow and set header
+   * @throws runtime_error if file does not start with [ or if no data is found in the array
+   * @return vector of header strings
+   */
+  void readFirstBlockAndSetHeader();
   /**
    * Get following block in JSON array file
    * @throws runtime_error if there is no block to read - no more data (no starting { or ending } found)
