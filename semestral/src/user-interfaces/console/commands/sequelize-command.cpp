@@ -13,7 +13,7 @@ void SequelizeCommand::run(std::vector<Token> command) {
     if(!memory.exists(command[1].value)){
       throw runtime_error("Variable " + command[1].value + " does not exist.");
     }
-    NamedDataSourceExpression *dataSource = memory.get(command[1].value);
+    DataSourceExpressionWrapper *dataSource = memory.get(command[1].value);
     cout << dataSource->toSQL() << endl;
   } else {
     // TODO: convert expression directly to SQL

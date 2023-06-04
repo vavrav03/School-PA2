@@ -5,11 +5,11 @@ bool VariablesMemory::exists(const std::string &name) {
 }
 
 void VariablesMemory::add(const std::string &name, AbstractDataSource *item) {
-  auto *expression = new NamedDataSourceExpression(item, name);
+  auto *expression = new DataSourceExpressionWrapper(item, name);
   variables[name] = expression;
 }
 
-NamedDataSourceExpression *VariablesMemory::get(const std::string &name) {
+DataSourceExpressionWrapper *VariablesMemory::get(const std::string &name) {
   return variables[name];
 }
 

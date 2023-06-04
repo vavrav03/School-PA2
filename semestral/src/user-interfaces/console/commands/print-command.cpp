@@ -13,7 +13,7 @@ void PrintCommand::run(std::vector<Token> command) {
   if (!memory.exists(variableName)) {
     throw runtime_error("Variable " + variableName + " does not exist.");
   }
-  NamedDataSourceExpression *dataSource = memory.get(variableName);
+  DataSourceExpressionWrapper *dataSource = memory.get(variableName);
   dataSource->reset();
   cout << "| ";
   for (string columnName: dataSource->getHeaderVector()) {
