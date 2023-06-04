@@ -3,6 +3,7 @@
 
 int main() {
   testCsvDataSource();
+  testJSONDataSource();
   testTokenizeMethod();
   testConsoleCommands();
   return 0;

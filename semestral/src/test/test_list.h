@@ -5,6 +5,7 @@
 #define TEST_ASSETS_DIR "./src/test/assets/"
 
 void testCsvDataSource();
+void testJSONDataSource();
 void testTokenizeMethod();
 void testConsoleCommands();
 

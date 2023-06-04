@@ -1,8 +1,10 @@
 #include "./tokenizer.h"
+#include <iostream>
 
 using namespace std;
 
 void testTokenizeMethod() {
+  cout << "- RUNNING: testTokenizeMethod" << endl;
   Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
   std::vector<Token> tokens = tokenizer.tokenize("     help     anotherH elp    ");
   assert(tokens[0].value == "help");

@@ -1,8 +1,10 @@
 #include "./csv.h"
+#include <iostream>
 
 using namespace std;
 
 void testCsvDataSource() {
+  cout << "- RUNNING: testCsvDataSource" << endl;
   try {
     CSVDataSource csvDataSource("src/test/assets/non-existent.csv");
     assert(false);

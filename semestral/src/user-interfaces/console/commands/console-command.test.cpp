@@ -6,6 +6,7 @@
 using namespace std;
 
 void testImportCommand(Tokenizer &tokenizer) {
+  cout << "- RUNNING: testImportCommand" << endl;
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand command(memory);
@@ -49,6 +50,7 @@ void testImportCommand(Tokenizer &tokenizer) {
 }
 
 void testPrintCommand(Tokenizer &tokenizer) {
+  cout << "- RUNNING: testPrintCommand" << endl;
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand importCommand(memory);
@@ -82,6 +84,7 @@ void testPrintCommand(Tokenizer &tokenizer) {
 }
 
 void testExportCommand(Tokenizer &tokenizer) {
+  cout << "- RUNNING: testExportCommand" << endl;
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   string outputFile = string(TEST_ASSETS_DIR) + "test_output185212351.csv";
