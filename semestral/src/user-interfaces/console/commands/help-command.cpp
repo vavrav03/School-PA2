@@ -16,6 +16,7 @@ void HelpCommand::run(std::vector<Token> command) {
   cout << "   - import: Imports a file to a new or existing variable" << endl;
   cout << "       - <variable_name> = import \"<file_name>.csv\" returns CSV datasource and sets it to a <variable_name> variable" << endl;
   cout << "       - <variable_name> = import \"<file_name>.json\" returns JSON datasource and sets it to a <variable_name> variable" << endl;
+  cout << "       - variable name must be a quoted path to a file relative to a current working directory" << endl;
   cout << "   - export ... to ...: Creates a file filled by a content of a variable" << endl;
   cout << "       - export <variable_name> to \"<file_name>.csv\" exports a content of a <variable_name> variable to a CSV file" << endl;
   cout << "       - export <variable_name> to \"<file_name>.json\" exports a content of a <variable_name> variable to a JSON file" << endl;

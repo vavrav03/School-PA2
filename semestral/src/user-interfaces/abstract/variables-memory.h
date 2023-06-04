@@ -7,8 +7,10 @@
 
 class VariablesMemory {
 public:
-  bool existsVariable(const std::string &name);
-  void addVariable(const std::string &name, AbstractDataSource *item);
+  bool exists(const std::string &name);
+  void add(const std::string &name, AbstractDataSource *item);
+  AbstractDataSource *get(const std::string &name);
+
 protected:
   std::unordered_map<std::string, AbstractDataSource *> variables;
 };

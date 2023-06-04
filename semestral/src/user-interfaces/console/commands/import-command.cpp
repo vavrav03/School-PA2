@@ -13,14 +13,14 @@ bool ImportCommand::shouldRun(std::vector<Token> command) {
 void ImportCommand::run(std::vector<Token> command) {
   string variableName = command[0].value;
   string fileName = command[3].value;
-  if (memory.existsVariable(variableName)) {
+  if (memory.exists(variableName)) {
     throw runtime_error("Variable " + variableName + " already exists.");
   }
   string extension = fileName.substr(fileName.find_last_of(".") + 1);
   if (extension == "csv") {
-    memory.addVariable(variableName, new CSVDataSource(fileName));
+    memory.add(variableName, new CSVDataSource(fileName));
   } else if (extension == "json") {
-    memory.addVariable(variableName, new JSONDataSource(fileName));
+    memory.add(variableName, new JSONDataSource(fileName));
   } else {
     throw runtime_error("Unknown file extension " + extension + ".");
   }
