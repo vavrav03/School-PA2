@@ -144,9 +144,36 @@ void testExportCommand(Tokenizer &tokenizer) {
   assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectMulitpleFiles)));
 }
 
+void testSequelizeCommand(Tokenizer & tokenizer){
+  cout << "- RUNNING: testSequelizeCommand" << endl;
+  VariablesMemory memory;
+  string testFile = string(TEST_ASSETS_DIR) + "test.csv";
+  ImportCommand importCommand(memory);
+  importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
+  SequelizeCommand command(memory);
+  const string correct1 = "sequelize abc";
+  const string incorrectNonExistingVariable = "sequelize ddd";
+  const string incorrectWithoutSequelize = "abc";
+
+  assert(command.matchesSyntactically(tokenizer.tokenize(correct1)));
+  // just test it does not throw
+  command.run(tokenizer.tokenize(correct1));
+
+  assert(command.matchesSyntactically(tokenizer.tokenize(incorrectNonExistingVariable)));
+  try {
+    command.run(tokenizer.tokenize(incorrectNonExistingVariable));
+    assert(false);
+  } catch (exception &e) {
+    assert(true);
+  }
+
+  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectWithoutSequelize)));
+}
+
 void testConsoleCommands() {
   Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
   testImportCommand(tokenizer);
   testPrintCommand(tokenizer);
   testExportCommand(tokenizer);
+  testSequelizeCommand(tokenizer);
 }
