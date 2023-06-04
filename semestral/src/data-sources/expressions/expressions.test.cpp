@@ -5,18 +5,18 @@
 
 using namespace std;
 
-void testProjection(){
+void testProjection() {
   string t = string(TEST_ASSETS_DIR) + "test.csv";
-  CSVDataSource dataSource(string(TEST_ASSETS_DIR) + "test.csv");
+  auto dataSource = make_shared<CSVDataSource>(string(TEST_ASSETS_DIR) + "test.csv");
   vector<string> headers(2);
   headers[0] = "height";
   headers[1] = "age";
-  DataSourceExpressionWrapper dataSourceExpressionWrapper(&dataSource, "a");
-  ProjectionExpression projection(&dataSourceExpressionWrapper, headers, "b");
+  auto wrapper = make_shared<DataSourceExpressionWrapper>(dataSource, "a");
+  ProjectionExpression projection(wrapper, headers, "b");
   cout << projection.toSQL() << endl;
   assert(toLowerCase(projection.toSQL()) == "select height,age from (select * from a) as b");
 }
 
-void testExpression(){
+void testExpression() {
   testProjection();
 }

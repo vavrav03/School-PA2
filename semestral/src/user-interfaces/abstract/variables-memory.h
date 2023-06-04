@@ -10,12 +10,12 @@
 class VariablesMemory {
 public:
   bool exists(const std::string &name);
-  void add(const std::string &name, AbstractDataSource *item);
-  DataSourceExpressionWrapper *get(const std::string &name);
+  void add(const std::string &name, std::shared_ptr<AbstractDataSource> item);
+  std::shared_ptr<DataSourceExpressionWrapper> get(const std::string &name);
   std::vector<std::string> getVariablesNames();
 
 protected:
-  std::unordered_map<std::string, DataSourceExpressionWrapper *> variables;
+  std::unordered_map<std::string, std::shared_ptr<DataSourceExpressionWrapper> > variables;
 };
 
 

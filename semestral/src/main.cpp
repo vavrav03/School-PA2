@@ -38,14 +38,14 @@ int main(int argc, char **argv)
   {
     interfaceName = getValue("--interface", argc, argv);
   }
-  catch (const std::runtime_error& e)
+  catch (runtime_error e)
   {
   }
   try
   {
     interface = AbstractInterface::createInstance(interfaceName);
   }
-  catch (const std::runtime_error& e)
+  catch (runtime_error e)
   {
     cout << e.what() << endl;
     return 1;

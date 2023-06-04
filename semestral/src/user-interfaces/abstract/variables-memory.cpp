@@ -1,20 +1,22 @@
 #include "variables-memory.h"
 
-bool VariablesMemory::exists(const std::string &name) {
+using namespace std;
+
+bool VariablesMemory::exists(const string &name) {
   return variables.find(name) != variables.end();
 }
 
-void VariablesMemory::add(const std::string &name, AbstractDataSource *item) {
-  auto *expression = new DataSourceExpressionWrapper(item, name);
+void VariablesMemory::add(const string &name, shared_ptr<AbstractDataSource>item) {
+  auto expression = make_shared<DataSourceExpressionWrapper>(item, name);
   variables[name] = expression;
 }
 
-DataSourceExpressionWrapper *VariablesMemory::get(const std::string &name) {
+shared_ptr<DataSourceExpressionWrapper> VariablesMemory::get(const string &name) {
   return variables[name];
 }
 
-std::vector<std::string> VariablesMemory::getVariablesNames() {
-  std::vector<std::string> names;
+vector<string> VariablesMemory::getVariablesNames() {
+  vector<string> names;
   for (auto &pair : variables) {
     names.push_back(pair.first);
   }

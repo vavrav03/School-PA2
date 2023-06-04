@@ -18,9 +18,9 @@ void ImportCommand::run(std::vector<Token> command) {
   }
   string extension = fileName.substr(fileName.find_last_of(".") + 1);
   if (extension == "csv") {
-    memory.add(variableName, new CSVDataSource(fileName));
+    memory.add(variableName, make_shared<CSVDataSource>(fileName));
   } else if (extension == "json") {
-    memory.add(variableName, new JSONDataSource(fileName));
+    memory.add(variableName, make_shared<JSONDataSource>(fileName));
   } else {
     throw runtime_error("Unknown file extension " + extension + ".");
   }

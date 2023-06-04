@@ -2,7 +2,7 @@
 
 using namespace std;
 
-JSONDataExporter::JSONDataExporter(AbstractDataSource *dataSource, std::string dstPath) : FileDataExporter(dataSource, dstPath) {}
+JSONDataExporter::JSONDataExporter(shared_ptr<AbstractDataSource>dataSource, std::string dstPath) : FileDataExporter(dataSource, dstPath) {}
 
 void JSONDataExporter::exportData() {
   AbstractDataExporter::exportData();

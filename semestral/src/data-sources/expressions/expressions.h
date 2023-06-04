@@ -16,22 +16,18 @@ protected:
 
 class AbstractBinaryExpression : public AbstractExpression {
 public:
-  AbstractBinaryExpression(AbstractExpression *_left, AbstractExpression *_right, const std::string &name)
+  AbstractBinaryExpression(std::shared_ptr<AbstractExpression>_left, std::shared_ptr<AbstractExpression>_right, const std::string &name)
           : AbstractExpression(name), left(_left), right(_right) {}
 
 protected:
-  AbstractExpression *left;
-  AbstractExpression *right;
+  std::shared_ptr<AbstractExpression>left;
+  std::shared_ptr<AbstractExpression>right;
 };
 
 class AbstractUnaryExpression : public AbstractExpression {
 public:
-  AbstractUnaryExpression(AbstractExpression *_expression, const std::string &name) : AbstractExpression(name),
-                                                                                      expression(_expression) {}
-
-  virtual ~AbstractUnaryExpression() {
-    delete expression;
-  }
+  AbstractUnaryExpression(std::shared_ptr<AbstractExpression>expression, const std::string &name) : AbstractExpression(name),
+                                                                                      expression(expression) {}
   void reset() override {
     expression->reset();
   }
@@ -58,7 +54,7 @@ public:
   }
 
 protected:
-  AbstractExpression *expression;
+  std::shared_ptr<AbstractExpression>expression;
 };
 
 /**
@@ -67,7 +63,7 @@ protected:
  */
 class DataSourceExpressionWrapper : public AbstractExpression {
 public:
-  DataSourceExpressionWrapper(AbstractDataSource *dataSource, const std::string &name);
+  DataSourceExpressionWrapper(std::shared_ptr<AbstractDataSource>dataSource, const std::string &name);
   std::string toSQL() const override;
   virtual std::vector<std::string> getHeaderVector() const override;
   virtual std::unordered_map<std::string, int> getHeaderMap() const override;
@@ -78,12 +74,12 @@ public:
   virtual bool hasNextRow() const override;
   virtual const std::vector<std::string> getNextRow() override;
 private:
-  AbstractDataSource *expression;
+  std::shared_ptr<AbstractDataSource>expression;
 };
 
 class ProjectionExpression : public AbstractUnaryExpression {
 public:
-  ProjectionExpression(AbstractExpression *expression, const std::vector<std::string> &columns,
+  ProjectionExpression(std::shared_ptr<AbstractExpression>expression, const std::vector<std::string> &columns,
                        const std::string &name);
 
   std::string toSQL() const override;
@@ -99,7 +95,7 @@ private:
 
 //class SelectionExpression : public AbstractUnaryExpression {
 //public:
-//  SelectionExpression(AbstractExpression *_expression, const std::string &_column, const std::string &_value,
+//  SelectionExpression(shared_ptr<AbstractExpression>_expression, const std::string &_column, const std::string &_value,
 //                      const std::string &name);
 //
 //  std::string toSQL() const override;

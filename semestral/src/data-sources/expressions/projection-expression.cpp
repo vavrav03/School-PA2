@@ -2,7 +2,7 @@
 
 using namespace std;
 
-ProjectionExpression::ProjectionExpression(AbstractExpression * expression, const std::vector<std::string> &columns,
+ProjectionExpression::ProjectionExpression(shared_ptr<AbstractExpression> expression, const std::vector<std::string> &columns,
                        const std::string &name) : AbstractUnaryExpression(expression, name) {
   vector<int> indexes(expression->getHeaderSize());
   for(const std::string &column : columns) {

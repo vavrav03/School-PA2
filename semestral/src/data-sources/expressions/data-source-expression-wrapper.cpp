@@ -1,6 +1,8 @@
 #include "expressions.h"
 
-DataSourceExpressionWrapper::DataSourceExpressionWrapper(AbstractDataSource *dataSource, const std::string &name)
+using namespace std;
+
+DataSourceExpressionWrapper::DataSourceExpressionWrapper(shared_ptr<AbstractDataSource>dataSource, const std::string &name)
         : AbstractExpression(name), expression(dataSource) {
 }
 
