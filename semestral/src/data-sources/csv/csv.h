@@ -1,7 +1,7 @@
 #ifndef SEMESTRAL_CSV_DATA_SOURCE_H
 #define SEMESTRAL_CSV_DATA_SOURCE_H
 
-#include "../abstract/abstract.h"
+#include "../abstract.h"
 #include <fstream>
 
 class CSVDataSource : public FileDataSource {

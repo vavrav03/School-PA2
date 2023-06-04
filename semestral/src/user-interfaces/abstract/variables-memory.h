@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_map>
-#include "../../data-sources/abstract/abstract.h"
+#include "../../data-sources/abstract.h"
 
 class VariablesMemory {
 public:

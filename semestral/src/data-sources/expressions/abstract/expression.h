@@ -2,7 +2,7 @@
 #ifndef SEMESTRAL_ABSTRACT_EXPRESSION_H
 #define SEMESTRAL_ABSTRACT_EXPRESSION_H
 
-#include "../../abstract/abstract.h"
+#include "../../abstract.h"
 
 class AbstractExpression : public AbstractDataSource
 {

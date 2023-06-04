@@ -1,7 +1,7 @@
 #ifndef SEMESTRAL_DATA_EXPORTERS_H
 #define SEMESTRAL_DATA_EXPORTERS_H
 
-#include "../data-sources/abstract/abstract.h"
+#include "../data-sources/abstract.h"
 #include <fstream>
 
 class AbstractDataExporter {

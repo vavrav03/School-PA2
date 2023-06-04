@@ -1,5 +1,6 @@
 #include "./json.h"
-#include <iostream>
+#include "../../utils/utils.h"
+
 using namespace std;
 
 JSONDataSource::JSONDataSource(const std::string &path) : FileDataSource(path), reachedEndOfArray(false) {
@@ -26,7 +27,7 @@ const std::vector<std::string> JSONDataSource::getNextRow() {
 void JSONDataSource::reset() {
   FileDataSource::reset();
   reachedEndOfArray = false;
-  header = vector<string>();
+  header = unordered_map<string, int>();
   nextRow = vector<string>();
   readFirstBlockAndSetHeader();
 }
@@ -41,7 +42,7 @@ void JSONDataSource::readFirstBlockAndSetHeader() {
   if (block.first.empty()) {
     throw std::runtime_error("JSON array file must contain at least one object");
   }
-  header = block.first;
+  header = vectorToIndexMap(block.first);
   nextRow = block.second;
 }
 
@@ -60,9 +61,6 @@ std::pair<std::vector<std::string>, std::vector<std::string> > JSONDataSource::r
       throw std::runtime_error("Unexpected character " + string(1, c) + " found in JSON array file");
     }
   }
-  cout << "OH" << endl;
-  cout << commaCounter << endl;
-  cout << header.size() << endl;
   if (commaCounter != 1 && !header.empty()) {
     throw std::runtime_error("JSON is in invalid format - there must be exactly one comma between objects");
   }

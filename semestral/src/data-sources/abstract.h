@@ -9,8 +9,10 @@ class AbstractDataSource {
 public:
   AbstractDataSource();
 
-  virtual const std::vector<std::string> &getHeader() const;
-  const int getHeaderSize() const;
+  virtual std::vector<std::string> getHeader() const;
+  int getHeaderIndex(const std::string &name) const;
+  const std::string& getHeaderName(int index) const;
+  int getHeaderSize() const;
 
   /**
    *
@@ -34,7 +36,7 @@ protected:
   /**
    * Each data source must have a header describing what each column means. This header must be the same size as each row.
    */
-  std::vector<std::string> header;
+  std::unordered_map<std::string, int> header;
 };
 
 class FileDataSource : public AbstractDataSource {

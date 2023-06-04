@@ -1,6 +1,7 @@
 #include "./csv.h"
 #include <iostream>
 #include <sstream>
+#include "../../utils/utils.h"
 
 using namespace std;
 
@@ -8,7 +9,7 @@ CSVDataSource::CSVDataSource(const string &path)
     : FileDataSource(path) {
   try {
     readUnparsedRow();
-    this->header = vector<string>(this->nextRow);
+    this->header = vectorToIndexMap(this->nextRow);
     readUnparsedRow();
   } catch (...) {
     throw runtime_error("Could not read header, CSV file is empty");

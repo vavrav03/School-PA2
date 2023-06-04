@@ -13,12 +13,10 @@ void testCsvDataSource() {
   }
   CSVDataSource csvDataSource("src/test/assets/test.csv");
   assert(csvDataSource.hasNextRow() == true);
-  vector<string> header = csvDataSource.getHeader();
-  assert(header.size() == 3);
-  assert(header[0] == "name");
-  assert(header[1] == "age");
-  assert(header[2] == "height");
   assert(csvDataSource.getHeaderSize() == 3);
+  assert(csvDataSource.getHeaderName(0) == "name");
+  assert(csvDataSource.getHeaderName(1) == "age");
+  assert(csvDataSource.getHeaderName(2) == "height");
   assert(csvDataSource.hasNextRow() == true);
   vector<string> row = csvDataSource.getNextRow();
   assert(row[0] == "John");

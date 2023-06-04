@@ -19,9 +19,9 @@ void testImportCommand(Tokenizer &tokenizer) {
 
   assert(command.matchesSyntactically(tokenizer.tokenize(correct1)));
   command.run(tokenizer.tokenize(correct1));
-  assert(memory.get("abc")->getHeader()[0] == "name");
-  assert(memory.get("abc")->getHeader()[1] == "age");
-  assert(memory.get("abc")->getHeader()[2] == "height");
+  assert(memory.get("abc")->getHeaderName(0) == "name");
+  assert(memory.get("abc")->getHeaderName(1) == "age");
+  assert(memory.get("abc")->getHeaderName(2) == "height");
   vector<string> row = memory.get("abc")->getNextRow();
   assert(row[0] == "John");
   assert(row[1] == "25");
@@ -29,9 +29,9 @@ void testImportCommand(Tokenizer &tokenizer) {
 
   assert(command.matchesSyntactically(tokenizer.tokenize(correct2)));
   command.run(tokenizer.tokenize(correct2));
-  assert(memory.get("ddd")->getHeader()[0] == "name");
-  assert(memory.get("ddd")->getHeader()[1] == "age");
-  assert(memory.get("ddd")->getHeader()[2] == "height");
+  assert(memory.get("ddd")->getHeaderName(0) == "name");
+  assert(memory.get("ddd")->getHeaderName(1) == "age");
+  assert(memory.get("ddd")->getHeaderName(2) == "height");
   row = memory.get("ddd")->getNextRow();
   assert(row[0] == "John");
   assert(row[1] == "25");
@@ -102,9 +102,9 @@ void testExportCommand(Tokenizer &tokenizer) {
   // test that file is filled correctly
   ImportCommand importCommandCheck(memory);
   importCommandCheck.run(tokenizer.tokenize("ddd = import \"" + outputFile + "\""));
-  assert(memory.get("ddd")->getHeader()[0] == "name");
-  assert(memory.get("ddd")->getHeader()[1] == "age");
-  assert(memory.get("ddd")->getHeader()[2] == "height");
+  assert(memory.get("ddd")->getHeaderName(0) == "name");
+  assert(memory.get("ddd")->getHeaderName(1) == "age");
+  assert(memory.get("ddd")->getHeaderName(2) == "height");
   vector<string> row = memory.get("ddd")->getNextRow();
   assert(row[0] == "John");
   assert(row[1] == "25");
