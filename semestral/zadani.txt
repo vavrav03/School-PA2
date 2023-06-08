@@ -8,7 +8,7 @@ Features of the project:
 - evaluate relational algebra expressions on variables containing relational data
 - convert relational algebra expressions to SQL
 - Supported relational algebra operations:
-  - set-set operations: union "∪", intersect "∩", except "", cross "×", divide "÷"
+  - set-set operations: union "∪", intersect "∩", except "\", cross "×", divide "÷"
   - set-boolean operations: is_subset "⊆", equals "=", is_proper_subset "⊂"
   - general joins: join "[rel1.col1 < rel2.col3]", left_semi_join "<condition]", right_semi_join "[condition>", left_anti_join "!<condition]", right_anti_join "![condition>"
   - natural joins (same order as general joins): "", "<", ">", "!<", "!*>"
@@ -21,10 +21,12 @@ Features of the project:
 - nested expressions using () - Shunting-Yard algorithm
 ==============================================================================================
 Example of usage:
-animals = import "animals1.csv"
+animals1 = import "animals1.csv"
+animals2 = import "animals2.csv"
 nourishment = import "nourishment.csv"
-temp = ("animals2.csv" ∪ animals) × nourishment)
+temp = {{animals1 ∪ animals2} × nourishment}
 print temp
+sequelize tmp
 export temp to "temp.csv"
 ==============================================================================================
 How polymorphism is used:
