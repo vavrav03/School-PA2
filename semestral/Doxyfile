@@ -114,7 +114,7 @@ INPUT_FILE_ENCODING    =
 FILE_PATTERNS          = *.c \
                          *.h \
                          *.cpp \
-                         *.md \
+                         *.md
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
