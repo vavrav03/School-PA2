@@ -2,23 +2,39 @@
 
 using namespace std;
 
-ProjectionExpression::ProjectionExpression(shared_ptr<AbstractExpression> expression, const std::vector<std::string> &columns,
-                       const std::string &name) : AbstractUnaryExpression(expression, name) {
+ProjectionExpression::ProjectionExpression(shared_ptr<AbstractExpression> expression,
+                                           const std::vector<std::string> &columns,
+                                           const unordered_map<string, string> &aliasToPreviousName,
+                                           const std::string &name) : AbstractUnaryExpression(expression, name) {
   vector<int> indexes(expression->getHeaderSize());
-  for(const std::string &column : columns) {
-    // it throws if column does not exist
-    indexes[expression->getHeaderIndex(column)]++;
+  this->aliasToPreviousName = aliasToPreviousName;
+  for (const std::string &column: columns) {
+    indexes[expression->getHeaderIndex(getWrappedColumnName(column))]++;
   }
-  for(int i = 0; i < indexes.size(); i++) {
-    if(indexes[i] > 1) {
+  for (int i = 0; i < indexes.size(); i++) {
+    if (indexes[i] > 1) {
       throw runtime_error("Column " + expression->getHeaderName(i) + " is duplicated");
     }
   }
   this->headerMap = vectorToIndexMap(columns);
+  // check that aliases
 }
 
 string ProjectionExpression::toSQL() const {
-  return "SELECT " + join(this->getHeaderVector(), ",") + " FROM (" + this->expression->toSQL() + ") AS " + this->name;
+  string sql = "SELECT ";
+  vector<string> header = this->getHeaderVector();
+  for (int i = 0; i < header.size(); i++) {
+    if (i > 0) {
+      sql += ", ";
+    }
+    if (aliasToPreviousName.count(header[i]) > 0) {
+      sql += aliasToPreviousName.at(header[i]) + " AS " + header[i];
+    } else {
+      sql += header[i];
+    }
+  }
+  sql += " FROM (" + this->expression->toSQL() + ") AS " + this->name;
+  return sql;
 }
 
 vector<string> ProjectionExpression::getHeaderVector() const {
@@ -33,9 +49,9 @@ int ProjectionExpression::getHeaderIndex(const string &name) const {
   return this->headerMap.at(name);
 }
 
-const string & ProjectionExpression::getHeaderName(int index) const {
-  for(auto &pair: this->headerMap) {
-    if(pair.second == index) {
+const string &ProjectionExpression::getHeaderName(int index) const {
+  for (auto &pair: this->headerMap) {
+    if (pair.second == index) {
       return pair.first;
     }
   }
@@ -45,14 +61,21 @@ const string & ProjectionExpression::getHeaderName(int index) const {
 int ProjectionExpression::getHeaderSize() const {
   return this->headerMap.size();
 }
-
+#include <iostream>
 const vector<string> ProjectionExpression::getNextRow() {
   vector<string> header = this->getHeaderVector();
   vector<string> row(header.size());
   vector<string> nextRow = this->expression->getNextRow();
-  for(int i = 0; i < header.size(); i++) {
-    row[i] = nextRow[this->expression->getHeaderIndex(header[i])];
+  for (int i = 0; i < header.size(); i++) {
+    row[i] = nextRow[this->expression->getHeaderIndex(getWrappedColumnName(header[i]))];
   }
   return row;
 }
 
+std::string ProjectionExpression::getWrappedColumnName(const std::string &name) const {
+  if (this->aliasToPreviousName.count(name) > 0) {
+    return this->aliasToPreviousName.at(name);
+  } else {
+    return name;
+  }
+}
