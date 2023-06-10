@@ -1,5 +1,5 @@
 #include "./console-command.h"
-#include "../tokenizer/tokenizer.h"
+#include "../../string-parsing/tokenizer/tokenizer.h"
 
 #include "../../../../src/test/test_list.h"
 

@@ -5,8 +5,8 @@
 
 #include "./commands/console-command.h"
 #include "../abstract/abstract.h"
-#include "./tokenizer/token.h"
-#include "./tokenizer/tokenizer.h"
+#include "../string-parsing/tokenizer/token.h"
+#include "../string-parsing/tokenizer/tokenizer.h"
 
 /**
  * Interface for interaction with user via command line
