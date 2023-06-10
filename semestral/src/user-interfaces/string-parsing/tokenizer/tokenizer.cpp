@@ -31,7 +31,7 @@ vector<Token> Tokenizer::tokenize(const string &command) {
         buffer.clear();
       }
     } else if (!in_quotes &&
-               std::find(specialCharacters.begin(), specialCharacters.end(), string(1, c)) != specialCharacters.end()) {
+               isSpecialCharacter(string(1, c))) {
       if (!buffer.empty()) {
         tokens.push_back(Token(buffer, false));
         buffer.clear();
@@ -47,4 +47,8 @@ vector<Token> Tokenizer::tokenize(const string &command) {
   }
 
   return tokens;
+}
+
+bool Tokenizer::isSpecialCharacter(const std::string &character) const {
+  return std::find(specialCharacters.begin(), specialCharacters.end(), character) != specialCharacters.end();
 }
