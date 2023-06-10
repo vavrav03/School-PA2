@@ -6,12 +6,15 @@
 #include "./token.h"
 
 /**
- * Tokenizer is used to split string command into tokens.
+ * Tokenizer removes or does similar operations on unformatted strings so that additional characters without any
+ * additional meaning do not effect the end result of a query - added spaces, new lines, tabs are removed. It also
+ * splits the string into tokens that are separated by special characters.
+ * cause syntax errors - e.g. extra spaces.
  */
 class Tokenizer {
 
 public:
-  Tokenizer(const std::vector<const std::string> specialCharacters);
+  Tokenizer(const std::vector<const std::string>& specialCharacters);
 
   std::vector<Token> tokenize(const std::string &command);
 

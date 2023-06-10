@@ -2,14 +2,15 @@
 
 using namespace std;
 
-Tokenizer::Tokenizer(const std::vector<const std::string> specialCharacters) : specialCharacters(specialCharacters) {}
+Tokenizer::Tokenizer(const std::vector<const std::string> &specialCharacters) : specialCharacters(specialCharacters) {}
 
 Tokenizer Tokenizer::createRelgebraInstance() {
-  vector<const string> specialCharacters;
-  specialCharacters.push_back("(");
-  specialCharacters.push_back(")");
-  specialCharacters.push_back("=");
-  return Tokenizer(specialCharacters);
+  // not all operations have to be here, but it makes sense to have them repeated despite being mentioned elsewhere
+  return Tokenizer({"∪", "∩", "\\", "×", "÷",
+                    "⊆", "⊂", "=",
+                    "{", "}", ",", "(", ")", "[", "]",
+                    "∧", "∨", "¬", "⇒", "⇔", "⊼", "⊽",
+                    "=", "≠", "<", ">", "≤", "≥", "~"});
 }
 
 vector<Token> Tokenizer::tokenize(const string &command) {
