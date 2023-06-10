@@ -12,4 +12,4 @@ public:
   VariablesMemory memory;
 };
 
-#endif //SEMESTRAL_ABSTRACT_DATA_SOURCE_H
+#endif //SEMESTRAL_ABSTRACT_INTERFACE_H
