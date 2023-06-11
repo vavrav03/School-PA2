@@ -6,6 +6,8 @@
 #include "../../string-parsing/tokenizer/token.h"
 #include <iostream>
 #include "../../abstract/variables-memory.h"
+#include "../../string-parsing/tokenizer/tokenizer.h"
+#include "../../string-parsing/relational-expression/relational-expression-parser.h"
 
 /**
  * Abstract class for all commands used by console interface
@@ -27,7 +29,7 @@ public:
   explicit VariablesDependentCommand(VariablesMemory &memory) : ConsoleCommand(), memory(memory) {}
 
 protected:
-  VariablesMemory & memory;
+  VariablesMemory &memory;
 };
 
 class ExitCommand : public VariablesDependentCommand {
@@ -62,7 +64,7 @@ public:
   bool matchesSyntactically(std::vector<Token> command) override;
 };
 
-class PrintCommand: public VariablesDependentCommand {
+class PrintCommand : public VariablesDependentCommand {
 public:
   explicit PrintCommand(VariablesMemory &memory);
 
@@ -70,7 +72,7 @@ public:
   bool matchesSyntactically(std::vector<Token> command) override;
 };
 
-class PrintVariablesCommand: public VariablesDependentCommand {
+class PrintVariablesCommand : public VariablesDependentCommand {
 public:
   explicit PrintVariablesCommand(VariablesMemory &memory);
 
@@ -78,7 +80,7 @@ public:
   bool matchesSyntactically(std::vector<Token> command) override;
 };
 
-class ExportCommand: public VariablesDependentCommand {
+class ExportCommand : public VariablesDependentCommand {
 public:
   explicit ExportCommand(VariablesMemory &memory);
 
@@ -86,12 +88,23 @@ public:
   bool matchesSyntactically(std::vector<Token> command) override;
 };
 
-class SequelizeCommand: public VariablesDependentCommand {
+class SequelizeCommand : public VariablesDependentCommand {
 public:
   explicit SequelizeCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
   bool matchesSyntactically(std::vector<Token> command) override;
+};
+
+class StoreExpressionToVariable : public VariablesDependentCommand {
+public:
+  explicit StoreExpressionToVariable(VariablesMemory &memory, const
+  RelationalExpressionParser &parser);
+
+  void run(std::vector<Token> command) override;
+  bool matchesSyntactically(std::vector<Token> command) override;
+private:
+  const RelationalExpressionParser &parser;
 };
 
 #endif //SEMESTRAL_CONSOLE_COMMAND_H

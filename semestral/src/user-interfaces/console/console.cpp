@@ -4,10 +4,13 @@
 
 using namespace std;
 
-ConsoleInterface::ConsoleInterface() : AbstractInterface(), tokenizer(Tokenizer::createRelgebraInstance()) {
+ConsoleInterface::ConsoleInterface() : AbstractInterface(), tokenizer(Tokenizer::createRelgebraInstance()),
+                                       stringToRelationParser(
+                                               RelationalExpressionParser::createDefaultInstance(tokenizer, memory)) {
   commands.push_back(new ExitCommand(memory));
   commands.push_back(new HelpCommand());
   commands.push_back(new ImportCommand(memory));
+  commands.push_back(new StoreExpressionToVariable(memory, stringToRelationParser));
   commands.push_back(new PrintCommand(memory));
   commands.push_back(new PrintVariablesCommand(memory));
   commands.push_back(new ExportCommand(memory));

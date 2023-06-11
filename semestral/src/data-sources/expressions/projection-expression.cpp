@@ -17,7 +17,6 @@ ProjectionExpression::ProjectionExpression(shared_ptr<AbstractExpression> expres
     }
   }
   this->headerMap = vectorToIndexMap(columns);
-  // check that aliases
 }
 
 string ProjectionExpression::toSQL() const {

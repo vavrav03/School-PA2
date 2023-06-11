@@ -7,6 +7,7 @@
 #include "../abstract/abstract.h"
 #include "../string-parsing/tokenizer/token.h"
 #include "../string-parsing/tokenizer/tokenizer.h"
+#include "../string-parsing/relational-expression/relational-expression-parser.h"
 
 /**
  * Interface for interaction with user via command line
@@ -39,6 +40,7 @@ private:
    */
   std::vector<ConsoleCommand *> commands;
   Tokenizer tokenizer;
+  RelationalExpressionParser stringToRelationParser;
 };
 
 #endif //SEMESTRAL_CONSOLE_INTERFACE_H
