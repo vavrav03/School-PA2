@@ -107,5 +107,18 @@ public:
   void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override;
 };
 
+class CartesianProductOperatorFactory : public OperationPartFactory {
+public:
+  CartesianProductOperatorFactory(const Tokenizer &tokenizer);
+  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+};
+
+class CartesianProductOperator : public OperationPart {
+public:
+  CartesianProductOperator();
+  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override;
+};
+
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H

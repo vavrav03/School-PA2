@@ -66,3 +66,24 @@ void ExceptOperator::evaluate(std::stack<std::shared_ptr<AbstractExpression> > &
   parts.pop();
   return parts.push(make_shared<ExceptExpression>(left, right, operationAlias));
 }
+
+CartesianProductOperatorFactory::CartesianProductOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
+
+bool CartesianProductOperatorFactory::canCreate(const vector<Token> &tokens, int nextTokenIndex) const {
+  return tokens[nextTokenIndex].value == "×";
+}
+
+OperationPart* CartesianProductOperatorFactory::create(const vector<Token> &tokens, int& nextTokenIndex) const {
+  nextTokenIndex++;
+  return new CartesianProductOperator();
+}
+
+CartesianProductOperator::CartesianProductOperator(): OperationPart(OperationPartType::BINARY_OPERATOR, 11) {}
+
+void CartesianProductOperator::evaluate(std::stack<std::shared_ptr<AbstractExpression> > &parts, std::string &operationAlias) {
+  auto right = parts.top();
+  parts.pop();
+  auto left = parts.top();
+  parts.pop();
+  return parts.push(make_shared<CartesianProductExpression>(left, right, operationAlias));
+}

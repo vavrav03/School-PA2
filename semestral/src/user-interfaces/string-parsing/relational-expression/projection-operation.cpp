@@ -63,7 +63,7 @@ ProjectionOperatorFactory::create(const std::vector<Token> &tokens, int &nextTok
 
 ProjectionOperator::ProjectionOperator(const vector<string> &header,
                                        const unordered_map<string, string> &aliasToOldName) : OperationPart(
-        OperationPartType::POSTFIX_UNARY_OPERATOR, 2), header(header), aliasToOldName(aliasToOldName) {}
+        OperationPartType::POSTFIX_UNARY_OPERATOR, 50), header(header), aliasToOldName(aliasToOldName) {}
 
 void ProjectionOperator::evaluate(stack<std::shared_ptr<AbstractExpression> > &parts, string &operationAlias) {
   shared_ptr<ProjectionExpression> projection = make_shared<ProjectionExpression>(parts.top(), header, aliasToOldName,

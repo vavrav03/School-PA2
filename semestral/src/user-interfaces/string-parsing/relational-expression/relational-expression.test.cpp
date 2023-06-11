@@ -158,6 +158,8 @@ void testExcept(Tokenizer &tokenizer) {
   assert(!expression->hasNextRow());
 }
 
+
+
 void testExpression() {
   Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
   testProjection(tokenizer);

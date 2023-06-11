@@ -175,4 +175,22 @@ private:
   std::vector<std::string> getNextRowDirectly();
 };
 
+class CartesianProductExpression: public AbstractBinaryExpression {
+public:
+  CartesianProductExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
+                         const std::string &name);
+
+  std::string toSQL() const override;
+  void reset() override;
+  bool hasNextRow() const override;
+  const std::vector<std::string> getNextRow() override;
+  std::vector<std::string> getHeaderVector() const override;
+  std::unordered_map<std::string, int> getHeaderMap() const override;
+  int getHeaderIndex(const std::string &name) const override;
+  const std::string &getHeaderName(int index) const override;
+  int getHeaderSize() const override;
+private:
+  std::vector<std::string> currentLeftRow;
+};
+
 #endif //SEMESTRAL_EXPRESSIONS_H

@@ -11,10 +11,10 @@ vector<string> indexMapToVector(const unordered_map<string, int> &map) {
   return vector;
 }
 
-unordered_map<string, int> vectorToIndexMap(const vector<string> &vector){
+unordered_map<string, int> vectorToIndexMap(const vector<string> &vector) {
   unordered_map<string, int> map(vector.size());
   map.reserve(vector.size());
-  for(int i = 0; i < vector.size(); i++){
+  for (int i = 0; i < vector.size(); i++) {
     map[vector[i]] = i;
   }
   return map;
@@ -33,7 +33,7 @@ string join(const vector<string> &vector, const string &delimiter) {
 
 string toLowerCase(const string &stringToConvert) {
   string result = stringToConvert;
-  for (char &c : result) {
+  for (char &c: result) {
     c = tolower(c);
   }
   return result;
@@ -56,4 +56,30 @@ bool equalsStringVectors(const vector<string> &a, const vector<string> &b) {
     }
   }
   return true;
+}
+
+vector<string> joinStringVectors(const vector<string> &a, const vector<string> &b) {
+  vector<string> result(a.size() + b.size());
+  result.reserve(a.size() + b.size());
+  for (int i = 0; i < a.size(); i++) {
+    result[i] = a[i];
+  }
+  for (int i = 0; i < b.size(); i++) {
+    result[i + a.size()] = b[i];
+  }
+  return result;
+}
+
+bool mapsContainSameKey(const unordered_map<string, int> &a, const unordered_map<string, int> &b) {
+  for (auto &pair: a) {
+    if (b.find(pair.first) != b.end()) {
+      return true;
+    }
+  }
+  for (auto &pair: b) {
+    if (a.find(pair.first) != a.end()) {
+      return true;
+    }
+  }
+  return false;
 }
