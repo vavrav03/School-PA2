@@ -19,6 +19,7 @@ void testImportCommand(Tokenizer &tokenizer) {
 
   assert(command.matchesSyntactically(tokenizer.tokenize(correct1)));
   command.run(tokenizer.tokenize(correct1));
+  cout << memory.get("abc");
   assert(memory.get("abc")->getHeaderName(0) == "name");
   assert(memory.get("abc")->getHeaderName(1) == "age");
   assert(memory.get("abc")->getHeaderName(2) == "height");

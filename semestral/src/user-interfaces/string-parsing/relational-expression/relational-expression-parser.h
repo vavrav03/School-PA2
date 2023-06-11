@@ -8,7 +8,7 @@
 
 class RelationalExpressionParser {
 public:
-  RelationalExpressionParser(std::vector<std::shared_ptr<OperationPartFactory>> &factories);
+  RelationalExpressionParser(std::vector<std::shared_ptr<OperationPartFactory>> &factories, VariablesMemory &memory);
   static RelationalExpressionParser createDefaultInstance(const Tokenizer &tokenizer, VariablesMemory &memory);
   std::shared_ptr<AbstractExpression> createExpressionFromTokens(const std::vector<Token> &tokens) const;
 private:
@@ -17,6 +17,7 @@ private:
   createExpressionFromPostfix(const std::vector<OperationPart*> &parts) const;
   std::string getNextAlias(std::string lastAlias) const;
   std::vector<std::shared_ptr<OperationPartFactory>> factories;
+  VariablesMemory &memory;
 };
 
 

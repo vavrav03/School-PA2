@@ -1,7 +1,5 @@
 #include "expression-operation-part.h"
 
-#include <iostream>
-
 using namespace std;
 
 ProjectionOperatorFactory::ProjectionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}

@@ -23,12 +23,14 @@ public:
    * @return
    */
   static Tokenizer createRelgebraInstance();
-public:
+
   /**
    * If these characters are found in a non-quoted part, they are assumed to be separate tokens
    */
   const std::vector<const std::string> specialCharacters;
   bool isSpecialCharacter(const std::string &character) const;
+
+  static std::string tokenVectorToString(const std::vector<Token> &tokens);
 
 };
 

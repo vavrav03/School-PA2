@@ -60,7 +60,7 @@ const string &ProjectionExpression::getHeaderName(int index) const {
 int ProjectionExpression::getHeaderSize() const {
   return this->headerMap.size();
 }
-#include <iostream>
+
 const vector<string> ProjectionExpression::getNextRow() {
   vector<string> header = this->getHeaderVector();
   vector<string> row(header.size());

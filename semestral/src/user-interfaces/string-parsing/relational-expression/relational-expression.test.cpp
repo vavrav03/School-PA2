@@ -15,8 +15,7 @@ void testProjection(Tokenizer &tokenizer) {
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
   shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
           tokenizer.tokenize("abc  [height   -  >vyska,    age]"));
-  cout << expression->toSQL() << endl;
-  assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from abc) as b");
+  assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from abc) as a");
   assert(expression->getHeaderSize() == 2);
   assert(expression->hasNextRow());
   vector<string> rows = expression->getNextRow();
@@ -27,6 +26,18 @@ void testProjection(Tokenizer &tokenizer) {
   assert(rows[0] == "180");
   assert(rows[1] == "25");
   assert(!expression->hasNextRow());
+
+  shared_ptr<AbstractExpression> expression2 = parser.createExpressionFromTokens(
+          tokenizer.tokenize("{{abc  [height   -  >vyska,    age]}}[vyska->height][height->opetvyska]"));
+  assert(toLowerCase(expression2->toSQL()) ==
+         toLowerCase(
+                 "SELECT height AS opetvyska FROM (SELECT vyska AS height FROM (SELECT height AS vyska, age FROM (select * from abc) AS a) AS b) AS c"));
+  assert(expression2->getHeaderSize() == 1);
+  rows = expression2->getNextRow();
+  assert(expression2->getHeaderIndex("opetvyska") == 0);
+  assert(expression2->getHeaderName(0) == "opetvyska");
+  assert(rows[0] == "180");
+  assert(!expression2->hasNextRow());
 }
 
 void testExpression() {

@@ -8,7 +8,7 @@ Tokenizer Tokenizer::createRelgebraInstance() {
   // not all operations have to be here, but it makes sense to have them repeated despite being mentioned elsewhere
   return Tokenizer({"∪", "∩", "\\", "×", "÷",
                     "⊆", "⊂", "=",
-                    "{", "}", ",", "(", ")", "[", "]",
+                    "{", "}", ",", "(", ")", "[", "]", "-",
                     "∧", "∨", "¬", "⇒", "⇔", "⊼", "⊽",
                     "=", "≠", "<", ">", "≤", "≥", "~"});
 }
@@ -51,4 +51,12 @@ vector<Token> Tokenizer::tokenize(const string &command) {
 
 bool Tokenizer::isSpecialCharacter(const std::string &character) const {
   return std::find(specialCharacters.begin(), specialCharacters.end(), character) != specialCharacters.end();
+}
+
+string Tokenizer::tokenVectorToString(const std::vector<Token> &tokens) {
+  string result;
+  for (const Token &token: tokens) {
+    result += "\"" + token.value + "\" ";
+  }
+  return result;
 }

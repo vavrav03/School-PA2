@@ -1,9 +1,9 @@
 #include "relational-expression-parser.h"
-#include <iostream>
+
 using namespace std;
 
-RelationalExpressionParser::RelationalExpressionParser(vector<shared_ptr<OperationPartFactory> > &factories)
-        : factories(factories) {}
+RelationalExpressionParser::RelationalExpressionParser(vector<shared_ptr<OperationPartFactory> > &factories, VariablesMemory &memory)
+        : factories(factories), memory(memory) {}
 
 RelationalExpressionParser
 RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, VariablesMemory &memory) {
@@ -12,7 +12,7 @@ RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, Va
   factories.push_back(make_shared<RightBracketRelationOperandFactory>(tokenizer));
   factories.push_back(make_shared<ProjectionOperatorFactory>(tokenizer));
   factories.push_back(make_shared<DataSourceExpressionOperationPartFactory>(tokenizer, memory));
-  return RelationalExpressionParser(factories);
+  return RelationalExpressionParser(factories, memory);
 }
 
 shared_ptr<AbstractExpression> RelationalExpressionParser::createExpressionFromTokens(
@@ -48,7 +48,11 @@ string RelationalExpressionParser::getNextAlias(string lastAlias) const {
   if (lastAlias.back() == 'z') {
     return lastAlias + "a";
   }
-  return lastAlias.substr(0, lastAlias.size() - 1) + (char) (lastAlias.back() + 1);
+  string probableNewAlias = lastAlias.substr(0, lastAlias.size() - 1) + (char) (lastAlias.back() + 1);
+  if (!memory.exists(probableNewAlias)) {
+    return probableNewAlias;
+  }
+  return getNextAlias(probableNewAlias);
 }
 
 shared_ptr<AbstractExpression> RelationalExpressionParser::createExpressionFromPostfix(
@@ -57,10 +61,13 @@ shared_ptr<AbstractExpression> RelationalExpressionParser::createExpressionFromP
   string lastAlias;
   string currentAlias;
   for (auto part: parts) {
-    currentAlias = getNextAlias(lastAlias);
-    lastAlias = currentAlias;
+    if(part->type != OperationPartType::OPERAND && part->type != OperationPartType::LEFT_BRACKET && part->type != OperationPartType::RIGHT_BRACKET) {
+      currentAlias = getNextAlias(lastAlias);
+      lastAlias = currentAlias;
+    }
     part->evaluate(expressions, currentAlias);
     delete part;
   }
+  expressions.top()->reset();
   return expressions.top();
 }
