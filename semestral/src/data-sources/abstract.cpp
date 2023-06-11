@@ -17,15 +17,15 @@ vector<string> FileDataSource::getHeaderVector() const {
   return indexMapToVector(this->header);
 }
 
-unordered_map<string, int> FileDataSource::getHeaderMap() const {
+unordered_map<string, size_t> FileDataSource::getHeaderMap() const {
   return this->header;
 }
 
-int FileDataSource::getHeaderIndex(const string &name) const {
+size_t FileDataSource::getHeaderIndex(const string &name) const {
   return this->header.at(name);
 }
 
-const string & FileDataSource::getHeaderName(int index) const {
+const string & FileDataSource::getHeaderName(size_t index) const {
   for(auto &pair: this->header){
     if(pair.second == index){
       return pair.first;
@@ -34,7 +34,7 @@ const string & FileDataSource::getHeaderName(int index) const {
   throw runtime_error("Index not found");
 }
 
-int FileDataSource::getHeaderSize() const {
+size_t FileDataSource::getHeaderSize() const {
   return this->header.size();
 }
 

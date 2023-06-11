@@ -6,7 +6,7 @@ DataSourceExpressionOperationPartFactory::DataSourceExpressionOperationPartFacto
                                                                                    VariablesMemory &memory)
         : OperationPartFactory(tokenizer), memory(memory) {}
 
-bool DataSourceExpressionOperationPartFactory::canCreate(const vector<Token> &tokens, int nextTokenIndex) const {
+bool DataSourceExpressionOperationPartFactory::canCreate(const vector<Token> &tokens, size_t nextTokenIndex) const {
   if (tokens[nextTokenIndex].quoted) {
     return true;
   }
@@ -14,7 +14,7 @@ bool DataSourceExpressionOperationPartFactory::canCreate(const vector<Token> &to
 }
 
 OperationPart *
-DataSourceExpressionOperationPartFactory::create(const vector<Token> &tokens, int &nextTokenIndex) const {
+DataSourceExpressionOperationPartFactory::create(const vector<Token> &tokens, size_t &nextTokenIndex) const {
   OperationPart * returnValue = new DataSourceExpressionOperationPart(memory.get(tokens[nextTokenIndex].value));
   nextTokenIndex++;
   return returnValue;

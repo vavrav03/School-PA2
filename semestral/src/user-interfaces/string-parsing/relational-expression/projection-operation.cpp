@@ -4,12 +4,12 @@ using namespace std;
 
 ProjectionOperatorFactory::ProjectionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
-bool ProjectionOperatorFactory::canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const {
+bool ProjectionOperatorFactory::canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const {
   if (tokens[nextTokenIndex].value != "[") {
     return false;
   }
   bool lastWasSpecial = false;
-  for (int i = nextTokenIndex + 1; i < tokens.size(); i++) {
+  for (size_t i = nextTokenIndex + 1; i < tokens.size(); i++) {
     if (tokens[i].value == "]") {
       return i != nextTokenIndex + 1; // empty projection is not allowed
     } else if (tokens[i].value == "[") {
@@ -38,7 +38,7 @@ bool ProjectionOperatorFactory::canCreate(const std::vector<Token> &tokens, int 
 }
 
 OperationPart *
-ProjectionOperatorFactory::create(const std::vector<Token> &tokens, int &nextTokenIndex) const {
+ProjectionOperatorFactory::create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const {
   vector<string> header;
   unordered_map<string, string> aliasToOldName;
   nextTokenIndex++; // skip [

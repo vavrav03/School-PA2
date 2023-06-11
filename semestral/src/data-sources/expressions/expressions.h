@@ -3,8 +3,10 @@
 
 #include <string>
 #include <iostream>
+#include <initializer_list>
 #include "../abstract.h"
 #include "../../utils/utils.h"
+#include <memory>
 
 class AbstractExpression : public AbstractDataSource {
 public:
@@ -17,46 +19,44 @@ protected:
 
 class AbstractBinaryExpression : public AbstractExpression {
 public:
-  AbstractBinaryExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
+  AbstractBinaryExpression(std::shared_ptr<AbstractExpression> leftExpression, std::shared_ptr<AbstractExpression> rightExpression,
                            const std::string &name)
-          : AbstractExpression(name), left(left), right(right) {}
+          : AbstractExpression(name), leftExpression(leftExpression), rightExpression(rightExpression) {}
 
   void reset() override {
-    left->reset();
-    right->reset();
+    leftExpression->reset();
+    rightExpression->reset();
   }
 
   std::vector<std::string> getHeaderVector() const override {
-    return left->getHeaderVector();
+    return leftExpression->getHeaderVector();
   }
 
-  std::unordered_map<std::string, int> getHeaderMap() const override {
-    return left->getHeaderMap();
+  std::unordered_map<std::string, size_t> getHeaderMap() const override {
+    return leftExpression->getHeaderMap();
   }
 
-  int getHeaderIndex(const std::string &name) const override {
-    return left->getHeaderIndex(name);
+  size_t getHeaderIndex(const std::string &name) const override {
+    return leftExpression->getHeaderIndex(name);
   }
 
-  const std::string &getHeaderName(int index) const override {
-    return left->getHeaderName(index);
+  const std::string &getHeaderName(size_t index) const override {
+    return leftExpression->getHeaderName(index);
   }
 
-  int getHeaderSize() const override {
-    return left->getHeaderSize();
+  size_t getHeaderSize() const override {
+    return leftExpression->getHeaderSize();
   }
 
 protected:
-  std::shared_ptr<AbstractExpression> left;
-  std::shared_ptr<AbstractExpression> right;
+  std::shared_ptr<AbstractExpression> leftExpression;
+  std::shared_ptr<AbstractExpression> rightExpression;
 };
 
 class AbstractUnaryExpression : public AbstractExpression {
 public:
   AbstractUnaryExpression(std::shared_ptr<AbstractExpression> expression, const std::string &name) : AbstractExpression(
-          name),
-                                                                                                     expression(
-                                                                                                             expression) {}
+          name), expression(expression) {}
 
   void reset() override {
     expression->reset();
@@ -74,19 +74,19 @@ public:
     return expression->getHeaderVector();
   }
 
-  std::unordered_map<std::string, int> getHeaderMap() const override {
+  std::unordered_map<std::string, size_t> getHeaderMap() const override {
     return expression->getHeaderMap();
   }
 
-  int getHeaderIndex(const std::string &name) const override {
+  size_t getHeaderIndex(const std::string &name) const override {
     return expression->getHeaderIndex(name);
   }
 
-  const std::string &getHeaderName(int index) const override {
+  const std::string &getHeaderName(size_t index) const override {
     return expression->getHeaderName(index);
   }
 
-  int getHeaderSize() const override {
+  size_t getHeaderSize() const override {
     return expression->getHeaderSize();
   }
 
@@ -103,10 +103,10 @@ public:
   DataSourceExpressionWrapper(std::shared_ptr<AbstractDataSource> dataSource, const std::string &name);
   std::string toSQL() const override;
   virtual std::vector<std::string> getHeaderVector() const override;
-  virtual std::unordered_map<std::string, int> getHeaderMap() const override;
-  virtual int getHeaderIndex(const std::string &name) const override;
-  virtual const std::string &getHeaderName(int index) const override;
-  virtual int getHeaderSize() const override;
+  virtual std::unordered_map<std::string, size_t> getHeaderMap() const override;
+  virtual size_t getHeaderIndex(const std::string &name) const override;
+  virtual const std::string &getHeaderName(size_t index) const override;
+  virtual size_t getHeaderSize() const override;
   virtual void reset() override;
   virtual bool hasNextRow() const override;
   virtual const std::vector<std::string> getNextRow() override;
@@ -122,20 +122,20 @@ public:
 
   std::string toSQL() const override;
   std::vector<std::string> getHeaderVector() const override;
-  std::unordered_map<std::string, int> getHeaderMap() const override;
-  int getHeaderIndex(const std::string &name) const override;
-  const std::string &getHeaderName(int index) const override;
-  int getHeaderSize() const override;
+  std::unordered_map<std::string, size_t> getHeaderMap() const override;
+  size_t getHeaderIndex(const std::string &name) const override;
+  const std::string &getHeaderName(size_t index) const override;
+  size_t getHeaderSize() const override;
   const std::vector<std::string> getNextRow() override;
 private:
-  std::unordered_map<std::string, int> headerMap;
+  std::unordered_map<std::string, size_t> headerMap;
   std::unordered_map<std::string, std::string> aliasToPreviousName;
   std::string getWrappedColumnName(const std::string &name) const;
 };
 
-class IntersectionExpression: public AbstractBinaryExpression {
+class IntersectionExpression : public AbstractBinaryExpression {
 public:
-  IntersectionExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
+  IntersectionExpression(std::shared_ptr<AbstractExpression> leftExpression, std::shared_ptr<AbstractExpression> rightExpression,
                          const std::string &name);
 
   std::string toSQL() const override;
@@ -147,10 +147,10 @@ private:
   std::vector<std::string> getNextRowDirectly();
 };
 
-class UnionExpression: public AbstractBinaryExpression {
+class UnionExpression : public AbstractBinaryExpression {
 public:
-  UnionExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
-                         const std::string &name);
+  UnionExpression(std::shared_ptr<AbstractExpression> leftExpression, std::shared_ptr<AbstractExpression> rightExpression,
+                  const std::string &name);
 
   std::string toSQL() const override;
   void reset() override;
@@ -161,10 +161,10 @@ private:
   std::vector<std::string> getNextRowDirectly();
 };
 
-class ExceptExpression: public AbstractBinaryExpression {
+class ExceptExpression : public AbstractBinaryExpression {
 public:
-  ExceptExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
-                         const std::string &name);
+  ExceptExpression(std::shared_ptr<AbstractExpression> leftExpression, std::shared_ptr<AbstractExpression> rightExpression,
+                   const std::string &name);
 
   std::string toSQL() const override;
   void reset() override;
@@ -175,20 +175,20 @@ private:
   std::vector<std::string> getNextRowDirectly();
 };
 
-class CartesianProductExpression: public AbstractBinaryExpression {
+class CartesianProductExpression : public AbstractBinaryExpression {
 public:
-  CartesianProductExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
-                         const std::string &name);
+  CartesianProductExpression(std::shared_ptr<AbstractExpression> leftExpression, std::shared_ptr<AbstractExpression> rightExpression,
+                             const std::string &name);
 
   std::string toSQL() const override;
   void reset() override;
   bool hasNextRow() const override;
   const std::vector<std::string> getNextRow() override;
   std::vector<std::string> getHeaderVector() const override;
-  std::unordered_map<std::string, int> getHeaderMap() const override;
-  int getHeaderIndex(const std::string &name) const override;
-  const std::string &getHeaderName(int index) const override;
-  int getHeaderSize() const override;
+  std::unordered_map<std::string, size_t> getHeaderMap() const override;
+  size_t getHeaderIndex(const std::string &name) const override;
+  const std::string &getHeaderName(size_t index) const override;
+  size_t getHeaderSize() const override;
 private:
   std::vector<std::string> currentLeftRow;
 };

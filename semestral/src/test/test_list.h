@@ -3,6 +3,7 @@
 
 // this is relative to makefile location
 #define TEST_ASSETS_DIR "./src/test/assets/"
+#include <cassert>
 
 void testCsvDataSource();
 void testJSONDataSource();

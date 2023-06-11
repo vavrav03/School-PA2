@@ -89,7 +89,7 @@ void testSampleRead() {
     assert(dataSource1.getNextRow().size() == 3);
   } // must not throw
 
-  for (int i = 1; i <= 3; i++) {
+  for (size_t i = 1; i <= 3; i++) {
     try {
       JSONDataSource dataSource2(string(TEST_ASSETS_DIR) + "test-error" + to_string(i) +".json");
       while (dataSource2.hasNextRow()) {

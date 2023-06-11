@@ -2,7 +2,7 @@
 
 using namespace std;
 
-vector<string> indexMapToVector(const unordered_map<string, int> &map) {
+vector<string> indexMapToVector(const unordered_map<string, size_t> &map) {
   vector<string> vector(map.size());
   vector.reserve(map.size());
   for (auto &pair: map) {
@@ -11,10 +11,10 @@ vector<string> indexMapToVector(const unordered_map<string, int> &map) {
   return vector;
 }
 
-unordered_map<string, int> vectorToIndexMap(const vector<string> &vector) {
-  unordered_map<string, int> map(vector.size());
+unordered_map<string, size_t> vectorToIndexMap(const vector<string> &vector) {
+  unordered_map<string, size_t> map(vector.size());
   map.reserve(vector.size());
-  for (int i = 0; i < vector.size(); i++) {
+  for (size_t i = 0; i < vector.size(); i++) {
     map[vector[i]] = i;
   }
   return map;
@@ -22,7 +22,7 @@ unordered_map<string, int> vectorToIndexMap(const vector<string> &vector) {
 
 string join(const vector<string> &vector, const string &delimiter) {
   string result;
-  for (int i = 0; i < vector.size(); i++) {
+  for (size_t i = 0; i < vector.size(); i++) {
     result += vector[i];
     if (i != vector.size() - 1) {
       result += delimiter;
@@ -50,7 +50,7 @@ bool equalsStringVectors(const vector<string> &a, const vector<string> &b) {
   if (a.size() != b.size()) {
     return false;
   }
-  for (int i = 0; i < a.size(); i++) {
+  for (size_t i = 0; i < a.size(); i++) {
     if (a[i] != b[i]) {
       return false;
     }
@@ -61,16 +61,16 @@ bool equalsStringVectors(const vector<string> &a, const vector<string> &b) {
 vector<string> joinStringVectors(const vector<string> &a, const vector<string> &b) {
   vector<string> result(a.size() + b.size());
   result.reserve(a.size() + b.size());
-  for (int i = 0; i < a.size(); i++) {
+  for (size_t i = 0; i < a.size(); i++) {
     result[i] = a[i];
   }
-  for (int i = 0; i < b.size(); i++) {
+  for (size_t i = 0; i < b.size(); i++) {
     result[i + a.size()] = b[i];
   }
   return result;
 }
 
-bool mapsContainSameKey(const unordered_map<string, int> &a, const unordered_map<string, int> &b) {
+bool mapsContainSameKey(const unordered_map<string, size_t> &a, const unordered_map<string, size_t> &b) {
   for (auto &pair: a) {
     if (b.find(pair.first) != b.end()) {
       return true;

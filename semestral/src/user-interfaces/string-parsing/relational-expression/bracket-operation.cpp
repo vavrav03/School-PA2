@@ -5,11 +5,11 @@ using namespace std;
 LeftBracketRelationOperandFactory::LeftBracketRelationOperandFactory(const Tokenizer &tokenizer) : OperationPartFactory(
         tokenizer) {}
 
-bool LeftBracketRelationOperandFactory::canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const {
+bool LeftBracketRelationOperandFactory::canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const {
   return tokens[nextTokenIndex].value == "{";
 }
 
-OperationPart *LeftBracketRelationOperandFactory::create(const std::vector<Token> &tokens, int &nextTokenIndex) const {
+OperationPart *LeftBracketRelationOperandFactory::create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const {
   nextTokenIndex++;
   return new LeftBracketRelationOperand();
 }
@@ -19,11 +19,11 @@ LeftBracketRelationOperand::LeftBracketRelationOperand() : OperationPart(Operati
 RightBracketRelationOperandFactory::RightBracketRelationOperandFactory(const Tokenizer &tokenizer)
         : OperationPartFactory(tokenizer) {}
 
-bool RightBracketRelationOperandFactory::canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const {
+bool RightBracketRelationOperandFactory::canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const {
   return tokens[nextTokenIndex].value == "}";
 }
 
-OperationPart *RightBracketRelationOperandFactory::create(const std::vector<Token> &tokens, int &nextTokenIndex) const {
+OperationPart *RightBracketRelationOperandFactory::create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const {
   nextTokenIndex++;
   return new RightBracketRelationOperand();
 }

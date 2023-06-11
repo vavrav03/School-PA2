@@ -5,18 +5,18 @@ using namespace std;
 UnionExpression::UnionExpression(shared_ptr<AbstractExpression> left,
                                  shared_ptr<AbstractExpression> right, const string &name)
         : AbstractBinaryExpression(left, right, name) {
-  for (int i = 0; i < left->getHeaderSize(); i++) {
-    if (left->getHeaderName(i) != right->getHeaderName(i)) {
+  for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
+    if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {
       throw runtime_error("Cannot intersect expressions with different headers");
     }
   }
-  left->reset();
-  right->reset();
+  leftExpression->reset();
+  rightExpression->reset();
   nextRow = getNextRowDirectly();
 }
 
 string UnionExpression::toSQL() const {
-  return "(" + left->toSQL() + " UNION " + right->toSQL() + ") AS " + name;
+  return "(" + leftExpression->toSQL() + " UNION " + rightExpression->toSQL() + ") AS " + name;
 }
 
 bool UnionExpression::hasNextRow() const {
@@ -24,31 +24,31 @@ bool UnionExpression::hasNextRow() const {
 }
 
 void UnionExpression::reset() {
-  left->reset();
-  right->reset();
+  leftExpression->reset();
+  rightExpression->reset();
   nextRow = getNextRowDirectly();
 }
 
 vector<string> UnionExpression::getNextRowDirectly() {
   // first we look for all rows on left that are not on the right
   // then we just take all items from the right
-  while (left->hasNextRow()) {
+  while (leftExpression->hasNextRow()) {
     bool hasMatch = false;
-    vector<string> leftRow = left->getNextRow();
-    while (right->hasNextRow()) {
-      vector<string> rightRow = right->getNextRow();
+    vector<string> leftRow = leftExpression->getNextRow();
+    while (rightExpression->hasNextRow()) {
+      vector<string> rightRow = rightExpression->getNextRow();
       if (equalsStringVectors(leftRow, rightRow)) {
         hasMatch = true;
         break;
       }
     }
-    right->reset();
+    rightExpression->reset();
     if (!hasMatch) {
       return leftRow;
     }
   }
-  if (right->hasNextRow()) {
-    return right->getNextRow();
+  if (rightExpression->hasNextRow()) {
+    return rightExpression->getNextRow();
   }
   return vector<string>();
 }

@@ -8,16 +8,16 @@ using namespace std;
 
 void assertReturnMatches(shared_ptr<AbstractExpression> expression, vector<vector<string> > &expected) {
   vector<int> equalCounters(expected.size(), 0);
-  for (int i = 0; i < equalCounters.size(); i++) {
+  for (size_t i = 0; i < equalCounters.size(); i++) {
     assert(expression->hasNextRow());
     vector<string> row = expression->getNextRow();
-    for (int j = 0; j < expected.size(); j++) {
+    for (size_t j = 0; j < expected.size(); j++) {
       if (equalsStringVectors(row, expected[j])) {
         equalCounters[j]++;
       }
     }
   }
-  for (int i = 0; i < equalCounters.size(); i++) {
+  for (size_t i = 0; i < equalCounters.size(); i++) {
     assert(equalCounters[i] == 1);
   }
   assert(!expression->hasNextRow());

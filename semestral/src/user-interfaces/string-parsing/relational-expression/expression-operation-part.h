@@ -11,8 +11,8 @@
 class LeftBracketRelationOperandFactory : public OperationPartFactory {
 public:
   LeftBracketRelationOperandFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class LeftBracketRelationOperand : public OperationPart {
@@ -24,8 +24,8 @@ class RightBracketRelationOperandFactory : public OperationPartFactory {
 
 public:
   RightBracketRelationOperandFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class RightBracketRelationOperand : public OperationPart {
@@ -36,8 +36,8 @@ public:
 class ProjectionOperatorFactory : public OperationPartFactory {
 public:
   ProjectionOperatorFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class ProjectionOperator : public OperationPart {
@@ -54,8 +54,8 @@ private:
 class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
 public:
   DataSourceExpressionOperationPartFactory(const Tokenizer &tokenizer, VariablesMemory &memory);
-  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 private:
   VariablesMemory &memory;
 };
@@ -71,8 +71,8 @@ private:
 class IntersectionOperatorFactory : public OperationPartFactory {
 public:
   IntersectionOperatorFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class IntersectionOperator : public OperationPart {
@@ -84,8 +84,8 @@ public:
 class UnionOperatorFactory : public OperationPartFactory {
 public:
   UnionOperatorFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class UnionOperator : public OperationPart {
@@ -97,8 +97,8 @@ public:
 class ExceptOperatorFactory : public OperationPartFactory {
 public:
   ExceptOperatorFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class ExceptOperator : public OperationPart {
@@ -110,8 +110,8 @@ public:
 class CartesianProductOperatorFactory : public OperationPartFactory {
 public:
   CartesianProductOperatorFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class CartesianProductOperator : public OperationPart {

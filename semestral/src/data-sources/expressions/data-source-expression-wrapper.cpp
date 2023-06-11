@@ -30,19 +30,19 @@ std::vector<std::string> DataSourceExpressionWrapper::getHeaderVector() const {
   return expression->getHeaderVector();
 }
 
-std::unordered_map<std::string, int> DataSourceExpressionWrapper::getHeaderMap() const {
+std::unordered_map<std::string, size_t> DataSourceExpressionWrapper::getHeaderMap() const {
   return expression->getHeaderMap();
 }
 
-int DataSourceExpressionWrapper::getHeaderIndex(const std::string &name) const {
+size_t DataSourceExpressionWrapper::getHeaderIndex(const std::string &name) const {
   return expression->getHeaderIndex(name);
 }
 
-const std::string &DataSourceExpressionWrapper::getHeaderName(int index) const {
+const std::string &DataSourceExpressionWrapper::getHeaderName(size_t index) const {
   return expression->getHeaderName(index);
 }
 
-int DataSourceExpressionWrapper::getHeaderSize() const {
+size_t DataSourceExpressionWrapper::getHeaderSize() const {
   return expression->getHeaderSize();
 }
 

@@ -6,75 +6,75 @@ CartesianProductExpression::CartesianProductExpression(std::shared_ptr<AbstractE
                                                        std::shared_ptr<AbstractExpression> right,
                                                        const std::string &name) : AbstractBinaryExpression(left, right,
                                                                                                            name) {
-  left->reset();
-  right->reset();
-  if(!left->hasNextRow()) {
+  leftExpression->reset();
+  rightExpression->reset();
+  if(!leftExpression->hasNextRow()) {
     throw runtime_error("Cannot perform cartesian product on empty left expression");
   }
-  if(!right->hasNextRow()) {
+  if(!rightExpression->hasNextRow()) {
     throw runtime_error("Cannot perform cartesian product on empty right expression");
   }
-  if(mapsContainSameKey(left->getHeaderMap(), right->getHeaderMap())) {
+  if(mapsContainSameKey(leftExpression->getHeaderMap(), rightExpression->getHeaderMap())) {
     throw runtime_error("Cannot perform cartesian product on expressions with same column names");
   }
-  currentLeftRow = left->getNextRow();
+  currentLeftRow = leftExpression->getNextRow();
 }
 
 string CartesianProductExpression::toSQL() const {
-  return "(" + left->toSQL() + " CROSS JOIN " + right->toSQL() + ") AS " + name;
+  return "(" + leftExpression->toSQL() + " CROSS JOIN " + rightExpression->toSQL() + ") AS " + name;
 }
 
 bool CartesianProductExpression::hasNextRow() const {
-  return left->hasNextRow() || right->hasNextRow();
+  return leftExpression->hasNextRow() || rightExpression->hasNextRow();
 }
 
 void CartesianProductExpression::reset() {
-  left->reset();
-  right->reset();
-  currentLeftRow = left->getNextRow();
+  leftExpression->reset();
+  rightExpression->reset();
+  currentLeftRow = leftExpression->getNextRow();
 }
 
 const vector<string> CartesianProductExpression::getNextRow() {
-  if(!right->hasNextRow()) {
-    right->reset();
-    if(!left->hasNextRow()) {
+  if(!rightExpression->hasNextRow()) {
+    rightExpression->reset();
+    if(!leftExpression->hasNextRow()) {
       throw runtime_error("No more rows in cartesian product expression");
     }
-    currentLeftRow = left->getNextRow();
+    currentLeftRow = leftExpression->getNextRow();
   }
-  vector<string> rightRow = right->getNextRow();
+  vector<string> rightRow = rightExpression->getNextRow();
   return joinStringVectors(currentLeftRow, rightRow);
 }
 
 vector<string> CartesianProductExpression::getHeaderVector() const {
-  return joinStringVectors(left->getHeaderVector(), right->getHeaderVector());
+  return joinStringVectors(leftExpression->getHeaderVector(), rightExpression->getHeaderVector());
 }
 
-int CartesianProductExpression::getHeaderSize() const {
-  return left->getHeaderSize() + right->getHeaderSize();
+size_t CartesianProductExpression::getHeaderSize() const {
+  return leftExpression->getHeaderSize() + rightExpression->getHeaderSize();
 }
 
-unordered_map<string, int> CartesianProductExpression::getHeaderMap() const {
-  unordered_map<string, int> headerMap = left->getHeaderMap();
-  unordered_map<string, int> rightHeaderMap = right->getHeaderMap();
+unordered_map<string, size_t> CartesianProductExpression::getHeaderMap() const {
+  unordered_map<string, size_t> headerMap = leftExpression->getHeaderMap();
+  unordered_map<string, size_t> rightHeaderMap = rightExpression->getHeaderMap();
   for (auto &pair: rightHeaderMap) {
-    headerMap[pair.first] = pair.second + left->getHeaderSize();
+    headerMap[pair.first] = pair.second + leftExpression->getHeaderSize();
   }
   return headerMap;
 }
 
-const string &CartesianProductExpression::getHeaderName(int index) const {
-  if (index < left->getHeaderSize()) {
-    return left->getHeaderName(index);
+const string &CartesianProductExpression::getHeaderName(size_t index) const {
+  if (index < leftExpression->getHeaderSize()) {
+    return leftExpression->getHeaderName(index);
   } else {
-    return right->getHeaderName(index - left->getHeaderSize());
+    return rightExpression->getHeaderName(index - leftExpression->getHeaderSize());
   }
 }
 
-int CartesianProductExpression::getHeaderIndex(const string &name) const {
-  if (left->getHeaderMap().count(name) > 0) {
-    return left->getHeaderMap().at(name);
+size_t CartesianProductExpression::getHeaderIndex(const string &name) const {
+  if (leftExpression->getHeaderMap().count(name) > 0) {
+    return leftExpression->getHeaderMap().at(name);
   } else {
-    return right->getHeaderMap().at(name) + left->getHeaderSize();
+    return rightExpression->getHeaderMap().at(name) + leftExpression->getHeaderSize();
   }
 }

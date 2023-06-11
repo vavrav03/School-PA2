@@ -5,24 +5,24 @@ using namespace std;
 IntersectionExpression::IntersectionExpression(shared_ptr<AbstractExpression> left,
                                                shared_ptr<AbstractExpression> right, const string &name)
         : AbstractBinaryExpression(left, right, name) {
-  for (int i = 0; i < left->getHeaderSize(); i++) {
-    if (left->getHeaderName(i) != right->getHeaderName(i)) {
+  for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
+    if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {
       throw runtime_error("Cannot intersect expressions with different headers");
     }
   }
-  left->reset();
-  right->reset();
+  leftExpression->reset();
+  rightExpression->reset();
   nextRow = getNextRowDirectly();
 }
 
 void IntersectionExpression::reset() {
-  left->reset();
-  right->reset();
+  leftExpression->reset();
+  rightExpression->reset();
   nextRow = getNextRowDirectly();
 }
 
 string IntersectionExpression::toSQL() const {
-  return "(" + left->toSQL() + " INTERSECT " + right->toSQL() + ") AS " + name;
+  return "(" + leftExpression->toSQL() + " INTERSECT " + rightExpression->toSQL() + ") AS " + name;
 }
 
 bool IntersectionExpression::hasNextRow() const {
@@ -30,11 +30,11 @@ bool IntersectionExpression::hasNextRow() const {
 }
 
 vector<string> IntersectionExpression::getNextRowDirectly() {
-  while(left->hasNextRow()) {
-    vector<string> leftRow = left->getNextRow();
-    right->reset();
-    while(right->hasNextRow()) {
-      vector<string> rightRow = right->getNextRow();
+  while(leftExpression->hasNextRow()) {
+    vector<string> leftRow = leftExpression->getNextRow();
+    rightExpression->reset();
+    while(rightExpression->hasNextRow()) {
+      vector<string> rightRow = rightExpression->getNextRow();
       if (equalsStringVectors(leftRow, rightRow)) {
         return leftRow;
       }

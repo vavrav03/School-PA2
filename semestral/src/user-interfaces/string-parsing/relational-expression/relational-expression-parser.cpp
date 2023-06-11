@@ -27,7 +27,7 @@ shared_ptr<AbstractExpression> RelationalExpressionParser::createExpressionFromT
 }
 
 vector<OperationPart*> RelationalExpressionParser::createInfixFromTokens(const vector<Token> &tokens) const {
-  int nextTokenIndex = 0;
+  size_t nextTokenIndex = 0;
   vector<OperationPart *> infix;
   while (nextTokenIndex < tokens.size()) {
     bool found = false;

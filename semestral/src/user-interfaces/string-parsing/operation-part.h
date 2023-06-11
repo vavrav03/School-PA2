@@ -42,8 +42,8 @@ public:
    * @param nextTokenIndex It is guaranteed to never exceed tokens.size(). Item with this index potentially belongs to this operation part
    * @return
    */
-  virtual bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const = 0;
-  virtual OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const = 0;
+  virtual bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const = 0;
+  virtual OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const = 0;
   virtual ~OperationPartFactory() = default;
 protected:
   const Tokenizer &tokenizer;

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Tokenizer::Tokenizer(const std::vector<const std::string> &specialCharacters) : specialCharacters(specialCharacters) {}
+Tokenizer::Tokenizer(const std::vector<std::string> &specialCharacters) : specialCharacters(specialCharacters) {}
 
 Tokenizer Tokenizer::createRelgebraInstance() {
   // not all operations have to be here, but it makes sense to have them repeated despite being mentioned elsewhere
@@ -50,7 +50,12 @@ vector<Token> Tokenizer::tokenize(const string &command) {
 }
 
 bool Tokenizer::isSpecialCharacter(const std::string &character) const {
-  return std::find(specialCharacters.begin(), specialCharacters.end(), character) != specialCharacters.end();
+  for (const string &specialCharacter: specialCharacters) {
+    if (specialCharacter == character) {
+      return true;
+    }
+  }
+  return false;
 }
 
 string Tokenizer::tokenVectorToString(const std::vector<Token> &tokens) {

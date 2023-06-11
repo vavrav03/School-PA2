@@ -14,7 +14,7 @@
 class Tokenizer {
 
 public:
-  Tokenizer(const std::vector<const std::string>& specialCharacters);
+  Tokenizer(const std::vector<std::string>& specialCharacters);
 
   std::vector<Token> tokenize(const std::string &command);
 
@@ -27,7 +27,7 @@ public:
   /**
    * If these characters are found in a non-quoted part, they are assumed to be separate tokens
    */
-  const std::vector<const std::string> specialCharacters;
+  const std::vector<std::string> specialCharacters;
   bool isSpecialCharacter(const std::string &character) const;
 
   static std::string tokenVectorToString(const std::vector<Token> &tokens);

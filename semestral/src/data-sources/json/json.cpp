@@ -23,11 +23,11 @@ const std::vector<std::string> JSONDataSource::getNextRow() {
   }
   vector<string> newRowInBuilding(this->header.size());
   vector<int> setCounts(this->header.size(), 0);
-  for(int i = 0; i < block.first.size(); i++) {
+  for(size_t i = 0; i < block.first.size(); i++) {
     newRowInBuilding[header[block.first[i]]] = block.second[i];
     setCounts[header[block.first[i]]]++;
   }
-  for(int i = 0; i < this->header.size(); i++) {
+  for(size_t i = 0; i < this->header.size(); i++) {
     if(setCounts[i] != 1) {
       throw std::runtime_error("JSON array file must contain objects with the same fields");
     }
@@ -39,7 +39,7 @@ const std::vector<std::string> JSONDataSource::getNextRow() {
 void JSONDataSource::reset() {
   FileDataSource::reset();
   reachedEndOfArray = false;
-  header = unordered_map<string, int>();
+  header = unordered_map<string, size_t>();
   nextRow = vector<string>();
   readFirstBlockAndSetHeader();
 }

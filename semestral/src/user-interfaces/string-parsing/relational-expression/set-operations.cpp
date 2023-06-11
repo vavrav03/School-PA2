@@ -4,11 +4,11 @@ using namespace std;
 
 IntersectionOperatorFactory::IntersectionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
-bool IntersectionOperatorFactory::canCreate(const vector<Token> &tokens, int nextTokenIndex) const {
+bool IntersectionOperatorFactory::canCreate(const vector<Token> &tokens, size_t nextTokenIndex) const {
   return tokens[nextTokenIndex].value == "∩";
 }
 
-OperationPart* IntersectionOperatorFactory::create(const vector<Token> &tokens, int& nextTokenIndex) const {
+OperationPart* IntersectionOperatorFactory::create(const vector<Token> &tokens, size_t &nextTokenIndex) const {
   nextTokenIndex++;
   return new IntersectionOperator();
 }
@@ -27,11 +27,11 @@ IntersectionOperator::evaluate(std::stack<std::shared_ptr<AbstractExpression> > 
 
 UnionOperatorFactory::UnionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
-bool UnionOperatorFactory::canCreate(const vector<Token> &tokens, int nextTokenIndex) const {
+bool UnionOperatorFactory::canCreate(const vector<Token> &tokens, size_t nextTokenIndex) const {
   return tokens[nextTokenIndex].value == "∪";
 }
 
-OperationPart* UnionOperatorFactory::create(const vector<Token> &tokens, int& nextTokenIndex) const {
+OperationPart* UnionOperatorFactory::create(const vector<Token> &tokens, size_t &nextTokenIndex) const {
   nextTokenIndex++;
   return new UnionOperator();
 }
@@ -48,11 +48,11 @@ void UnionOperator::evaluate(std::stack<std::shared_ptr<AbstractExpression> > &p
 
 ExceptOperatorFactory::ExceptOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
-bool ExceptOperatorFactory::canCreate(const vector<Token> &tokens, int nextTokenIndex) const {
+bool ExceptOperatorFactory::canCreate(const vector<Token> &tokens, size_t nextTokenIndex) const {
   return tokens[nextTokenIndex].value == "\\";
 }
 
-OperationPart* ExceptOperatorFactory::create(const vector<Token> &tokens, int& nextTokenIndex) const {
+OperationPart* ExceptOperatorFactory::create(const vector<Token> &tokens, size_t &nextTokenIndex) const {
   nextTokenIndex++;
   return new ExceptOperator();
 }
@@ -69,11 +69,11 @@ void ExceptOperator::evaluate(std::stack<std::shared_ptr<AbstractExpression> > &
 
 CartesianProductOperatorFactory::CartesianProductOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
-bool CartesianProductOperatorFactory::canCreate(const vector<Token> &tokens, int nextTokenIndex) const {
+bool CartesianProductOperatorFactory::canCreate(const vector<Token> &tokens, size_t nextTokenIndex) const {
   return tokens[nextTokenIndex].value == "×";
 }
 
-OperationPart* CartesianProductOperatorFactory::create(const vector<Token> &tokens, int& nextTokenIndex) const {
+OperationPart* CartesianProductOperatorFactory::create(const vector<Token> &tokens, size_t &nextTokenIndex) const {
   nextTokenIndex++;
   return new CartesianProductOperator();
 }

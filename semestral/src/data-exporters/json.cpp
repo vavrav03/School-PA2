@@ -11,9 +11,9 @@ void JSONDataExporter::exportData() {
   file << "[";
   while (this->dataSource->hasNextRow()) {
     vector<string> row = this->dataSource->getNextRow();
-    int rowSize = row.size();
+    size_t rowSize = row.size();
     file << "{";
-    for (int i = 0; i < rowSize; i++) {
+    for (size_t i = 0; i < rowSize; i++) {
       file << "\"" << header[i] << "\":\"" << row[i] << "\"";
       if (i < rowSize - 1) {
         file << ",";
