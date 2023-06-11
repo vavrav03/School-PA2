@@ -2,6 +2,7 @@
 #define SEMESTRAL_EXPRESSIONS_H
 
 #include <string>
+#include <iostream>
 #include "../abstract.h"
 #include "../../utils/utils.h"
 
@@ -16,9 +17,34 @@ protected:
 
 class AbstractBinaryExpression : public AbstractExpression {
 public:
-  AbstractBinaryExpression(std::shared_ptr<AbstractExpression> _left, std::shared_ptr<AbstractExpression> _right,
+  AbstractBinaryExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
                            const std::string &name)
-          : AbstractExpression(name), left(_left), right(_right) {}
+          : AbstractExpression(name), left(left), right(right) {}
+
+  void reset() override {
+    left->reset();
+    right->reset();
+  }
+
+  std::vector<std::string> getHeaderVector() const override {
+    return left->getHeaderVector();
+  }
+
+  std::unordered_map<std::string, int> getHeaderMap() const override {
+    return left->getHeaderMap();
+  }
+
+  int getHeaderIndex(const std::string &name) const override {
+    return left->getHeaderIndex(name);
+  }
+
+  const std::string &getHeaderName(int index) const override {
+    return left->getHeaderName(index);
+  }
+
+  int getHeaderSize() const override {
+    return left->getHeaderSize();
+  }
 
 protected:
   std::shared_ptr<AbstractExpression> left;
@@ -107,20 +133,17 @@ private:
   std::string getWrappedColumnName(const std::string &name) const;
 };
 
-//class SelectionExpression : public AbstractUnaryExpression {
-//public:
-//  SelectionExpression(shared_ptr<AbstractExpression>_expression, const std::string &_column, const std::string &_value,
-//                      const std::string &name);
-//
-//  std::string toSQL() const override;
-//  std::vector<std::string> getHeaderVector() const override;
-//  std::unordered_map<std::string, int> getHeaderMap() const override;
-//  int getHeaderIndex(const std::string &name) const override;
-//  const std::string &getHeaderName(int index) const override;
-//  int getHeaderSize() const override;
-//  void reset() override;
-//  bool hasNextRow() const override;
-//  const std::vector<std::string> getNextRow() override;
-//};
+class IntersectionExpression: public AbstractBinaryExpression {
+public:
+  IntersectionExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
+                         const std::string &name);
+
+  std::string toSQL() const override;
+  const std::vector<std::string> getNextRow() override;
+  bool hasNextRow() const override;
+private:
+  std::vector<std::string> nextRow;
+  std::vector<std::string> getNextRowDirectly();
+};
 
 #endif //SEMESTRAL_EXPRESSIONS_H

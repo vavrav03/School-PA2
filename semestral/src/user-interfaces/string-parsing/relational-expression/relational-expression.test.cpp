@@ -40,7 +40,36 @@ void testProjection(Tokenizer &tokenizer) {
   assert(!expression2->hasNextRow());
 }
 
+void testIntersection(Tokenizer &tokenizer) {
+  VariablesMemory memory;
+  string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
+  string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
+  ImportCommand command(memory);
+  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
+  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
+          tokenizer.tokenize("test1 ∩    test2"));
+  assert(toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 INTERSECT select * from test2) AS a"));
+  assert(expression->getHeaderSize() == 3);
+  assert(expression->getHeaderName(0) == "name");
+  assert(expression->getHeaderName(1) == "age");
+  assert(expression->getHeaderName(2) == "height");
+  assert(expression->hasNextRow());
+  vector<string> row1 = expression->getNextRow();
+  assert(expression->hasNextRow());
+  vector<string> row2 = expression->getNextRow();
+  assert(!expression->hasNextRow());
+  assert((row1[0] == "Alfred" && row1[1] == "30" && row1[2] == "175") ||
+         (row1[0] == "Betty" && row1[1] == "20" && row1[2] == "165"));
+  assert((row2[0] == "Alfred" && row2[1] == "30" && row2[2] == "175") ||
+         (row2[0] == "Betty" && row2[1] == "20" && row2[2] == "165"));
+
+}
+
 void testExpression() {
   Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
   testProjection(tokenizer);
+  testIntersection(tokenizer);
 }

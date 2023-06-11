@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <iostream>
 
 /**
  * @param map
@@ -21,5 +22,9 @@ std::unordered_map<std::string, int> vectorToIndexMap(const std::vector<std::str
 std::string join(const std::vector<std::string> &vector, const std::string &delimiter);
 
 std::string toLowerCase(const std::string &string);
+
+void printStringVector(const std::vector<std::string> &vector);
+
+bool equalsStringVectors(const std::vector<std::string> &a, const std::vector<std::string> &b);
 
 #endif //SEMESTRAL_UTILS_H

@@ -11,6 +11,7 @@ RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, Va
   factories.push_back(make_shared<LeftBracketRelationOperandFactory>(tokenizer));
   factories.push_back(make_shared<RightBracketRelationOperandFactory>(tokenizer));
   factories.push_back(make_shared<ProjectionOperatorFactory>(tokenizer));
+  factories.push_back(make_shared<IntersectionOperatorFactory>(tokenizer));
   factories.push_back(make_shared<DataSourceExpressionOperationPartFactory>(tokenizer, memory));
   return RelationalExpressionParser(factories, memory);
 }
@@ -19,7 +20,7 @@ shared_ptr<AbstractExpression> RelationalExpressionParser::createExpressionFromT
         const std::vector<Token> &tokens) const {
   vector<OperationPart*> infix = createInfixFromTokens(tokens);
   vector<OperationPart*> postfix = createPostfixFromInfix(infix);
-  return createExpressionFromPostfix(infix);
+  return createExpressionFromPostfix(postfix);
 }
 
 vector<OperationPart*> RelationalExpressionParser::createInfixFromTokens(const vector<Token> &tokens) const {

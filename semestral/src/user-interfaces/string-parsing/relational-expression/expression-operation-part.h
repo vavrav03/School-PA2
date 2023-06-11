@@ -68,5 +68,18 @@ private:
   std::shared_ptr<AbstractExpression> expression;
 };
 
+class IntersectionOperatorFactory : public OperationPartFactory {
+public:
+  IntersectionOperatorFactory(const Tokenizer &tokenizer);
+  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+};
+
+class IntersectionOperator : public OperationPart {
+public:
+  IntersectionOperator();
+  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override;
+};
+
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H
