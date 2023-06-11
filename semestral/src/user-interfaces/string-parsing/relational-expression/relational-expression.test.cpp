@@ -106,7 +106,7 @@ void testUnion(Tokenizer &tokenizer) {
           {"Benjamin", "26",  "80"},
           {"Octopus",  "281", "1170"}
   };
-  vector<int> equalCounters(6, 0);
+  vector<int> equalCounters(data.size(), 0);
   for (int i = 0; i < equalCounters.size(); i++) {
     assert(expression->hasNextRow());
     vector<string> row = expression->getNextRow();
@@ -122,10 +122,46 @@ void testUnion(Tokenizer &tokenizer) {
   assert(!expression->hasNextRow());
 }
 
+void testExcept(Tokenizer &tokenizer) {
+  VariablesMemory memory;
+  string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
+  string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
+  ImportCommand command(memory);
+  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
+  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
+          tokenizer.tokenize("test1  \\   test2"));
+  assert(toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 EXCEPT select * from test2) AS a"));
+  assert(expression->getHeaderSize() == 3);
+  assert(expression->getHeaderName(0) == "name");
+  assert(expression->getHeaderName(1) == "age");
+  assert(expression->getHeaderName(2) == "height");
+  std::vector<std::vector<std::string> > data = {
+          {"Mary", "28", "170"},
+          {"John", "25", "180"},
+  };
+  vector<int> equalCounters(data.size(), 0);
+  for (int i = 0; i < equalCounters.size(); i++) {
+    assert(expression->hasNextRow());
+    vector<string> row = expression->getNextRow();
+    for (int j = 0; j < data.size(); j++) {
+      if (equalsStringVectors(row, data[j])) {
+        equalCounters[j]++;
+      }
+    }
+  }
+  for (int i = 0; i < equalCounters.size(); i++) {
+    assert(equalCounters[i] == 1);
+  }
+  assert(!expression->hasNextRow());
+}
 
 void testExpression() {
   Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
   testProjection(tokenizer);
   testIntersection(tokenizer);
   testUnion(tokenizer);
+  testExcept(tokenizer);
 }

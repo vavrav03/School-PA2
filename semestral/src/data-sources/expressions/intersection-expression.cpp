@@ -36,7 +36,6 @@ vector<string> IntersectionExpression::getNextRowDirectly() {
     while(right->hasNextRow()) {
       vector<string> rightRow = right->getNextRow();
       if (equalsStringVectors(leftRow, rightRow)) {
-        printStringVector(leftRow);
         return leftRow;
       }
     }

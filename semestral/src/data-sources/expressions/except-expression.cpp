@@ -2,7 +2,7 @@
 
 using namespace std;
 
-UnionExpression::UnionExpression(shared_ptr<AbstractExpression> left,
+ExceptExpression::ExceptExpression(shared_ptr<AbstractExpression> left,
                                  shared_ptr<AbstractExpression> right, const string &name)
         : AbstractBinaryExpression(left, right, name) {
   for (int i = 0; i < left->getHeaderSize(); i++) {
@@ -15,26 +15,25 @@ UnionExpression::UnionExpression(shared_ptr<AbstractExpression> left,
   nextRow = getNextRowDirectly();
 }
 
-string UnionExpression::toSQL() const {
-  return "(" + left->toSQL() + " UNION " + right->toSQL() + ") AS " + name;
+string ExceptExpression::toSQL() const {
+  return "(" + left->toSQL() + " EXCEPT " + right->toSQL() + ") AS " + name;
 }
 
-bool UnionExpression::hasNextRow() const {
+bool ExceptExpression::hasNextRow() const {
   return nextRow.size() > 0;
 }
 
-void UnionExpression::reset() {
+void ExceptExpression::reset() {
   left->reset();
   right->reset();
   nextRow = getNextRowDirectly();
 }
 
-vector<string> UnionExpression::getNextRowDirectly() {
-  // first we look for all rows on left that are not on the right
-  // then we just take all items from the right
+vector<string> ExceptExpression::getNextRowDirectly() {
   while (left->hasNextRow()) {
     bool hasMatch = false;
     vector<string> leftRow = left->getNextRow();
+    right->reset();
     while (right->hasNextRow()) {
       vector<string> rightRow = right->getNextRow();
       if (equalsStringVectors(leftRow, rightRow)) {
@@ -42,20 +41,15 @@ vector<string> UnionExpression::getNextRowDirectly() {
         break;
       }
     }
-    right->reset();
     if (!hasMatch) {
       return leftRow;
     }
   }
-  if (right->hasNextRow()) {
-    return right->getNextRow();
-  }
   return vector<string>();
 }
 
-const vector<string> UnionExpression::getNextRow() {
+const vector<string> ExceptExpression::getNextRow() {
   vector<string> rowToReturn = nextRow;
   nextRow = getNextRowDirectly();
   return rowToReturn;
 }
-

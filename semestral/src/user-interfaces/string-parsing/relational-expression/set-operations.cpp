@@ -45,3 +45,24 @@ void UnionOperator::evaluate(std::stack<std::shared_ptr<AbstractExpression> > &p
   parts.pop();
   return parts.push(make_shared<UnionExpression>(left, right, operationAlias));
 }
+
+ExceptOperatorFactory::ExceptOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
+
+bool ExceptOperatorFactory::canCreate(const vector<Token> &tokens, int nextTokenIndex) const {
+  return tokens[nextTokenIndex].value == "\\";
+}
+
+OperationPart* ExceptOperatorFactory::create(const vector<Token> &tokens, int& nextTokenIndex) const {
+  nextTokenIndex++;
+  return new ExceptOperator();
+}
+
+ExceptOperator::ExceptOperator(): OperationPart(OperationPartType::BINARY_OPERATOR, 10) {}
+
+void ExceptOperator::evaluate(std::stack<std::shared_ptr<AbstractExpression> > &parts, std::string &operationAlias) {
+  auto right = parts.top();
+  parts.pop();
+  auto left = parts.top();
+  parts.pop();
+  return parts.push(make_shared<ExceptExpression>(left, right, operationAlias));
+}

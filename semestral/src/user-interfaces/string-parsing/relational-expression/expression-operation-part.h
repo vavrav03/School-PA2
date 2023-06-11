@@ -94,5 +94,18 @@ public:
   void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override;
 };
 
+class ExceptOperatorFactory : public OperationPartFactory {
+public:
+  ExceptOperatorFactory(const Tokenizer &tokenizer);
+  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+};
+
+class ExceptOperator : public OperationPart {
+public:
+  ExceptOperator();
+  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override;
+};
+
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H

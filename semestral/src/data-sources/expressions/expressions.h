@@ -161,4 +161,18 @@ private:
   std::vector<std::string> getNextRowDirectly();
 };
 
+class ExceptExpression: public AbstractBinaryExpression {
+public:
+  ExceptExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right,
+                         const std::string &name);
+
+  std::string toSQL() const override;
+  void reset() override;
+  const std::vector<std::string> getNextRow() override;
+  bool hasNextRow() const override;
+private:
+  std::vector<std::string> nextRow;
+  std::vector<std::string> getNextRowDirectly();
+};
+
 #endif //SEMESTRAL_EXPRESSIONS_H
