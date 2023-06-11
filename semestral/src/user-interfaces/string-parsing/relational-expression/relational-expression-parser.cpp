@@ -12,6 +12,7 @@ RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, Va
   factories.push_back(make_shared<RightBracketRelationOperandFactory>(tokenizer));
   factories.push_back(make_shared<ProjectionOperatorFactory>(tokenizer));
   factories.push_back(make_shared<IntersectionOperatorFactory>(tokenizer));
+  factories.push_back(make_shared<UnionOperatorFactory>(tokenizer));
   factories.push_back(make_shared<DataSourceExpressionOperationPartFactory>(tokenizer, memory));
   return RelationalExpressionParser(factories, memory);
 }

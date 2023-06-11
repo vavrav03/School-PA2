@@ -81,5 +81,18 @@ public:
   void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override;
 };
 
+class UnionOperatorFactory : public OperationPartFactory {
+public:
+  UnionOperatorFactory(const Tokenizer &tokenizer);
+  bool canCreate(const std::vector<Token> &tokens, int nextTokenIndex) const override;
+  OperationPart *create(const std::vector<Token> &tokens, int &nextTokenIndex) const override;
+};
+
+class UnionOperator : public OperationPart {
+public:
+  UnionOperator();
+  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override;
+};
+
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H

@@ -57,19 +57,75 @@ void testIntersection(Tokenizer &tokenizer) {
   assert(expression->getHeaderName(1) == "age");
   assert(expression->getHeaderName(2) == "height");
   assert(expression->hasNextRow());
+
   vector<string> row1 = expression->getNextRow();
   assert(expression->hasNextRow());
   vector<string> row2 = expression->getNextRow();
   assert(!expression->hasNextRow());
-  assert((row1[0] == "Alfred" && row1[1] == "30" && row1[2] == "175") ||
-         (row1[0] == "Betty" && row1[1] == "20" && row1[2] == "165"));
-  assert((row2[0] == "Alfred" && row2[1] == "30" && row2[2] == "175") ||
-         (row2[0] == "Betty" && row2[1] == "20" && row2[2] == "165"));
-
+  if (row1[0] == "Alfred") {
+    assert(row1[1] == "30");
+    assert(row1[2] == "175");
+    assert(row2[0] == "Betty");
+    assert(row2[1] == "20");
+    assert(row2[2] == "165");
+  } else {
+    assert(row1[0] == "Betty");
+    assert(row1[1] == "20");
+    assert(row1[2] == "165");
+    assert(row2[0] == "Alfred");
+    assert(row2[1] == "30");
+    assert(row2[2] == "175");
+  }
+//  assert((row1[0] == "Alfred" && row1[1] == "30" && row1[2] == "175") ||
+//         (row1[0] == "Betty" && row1[1] == "20" && row1[2] == "165"));
+//  assert((row2[0] == "Alfred" && row2[1] == "30" && row2[2] == "175") ||
+//         (row2[0] == "Betty" && row2[1] == "20" && row2[2] == "165"));
 }
+
+void testUnion(Tokenizer &tokenizer) {
+  VariablesMemory memory;
+  string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
+  string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
+  ImportCommand command(memory);
+  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
+  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
+          tokenizer.tokenize("test1  ∪   test2"));
+  assert(toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 UNION select * from test2) AS a"));
+  assert(expression->getHeaderSize() == 3);
+  assert(expression->getHeaderName(0) == "name");
+  assert(expression->getHeaderName(1) == "age");
+  assert(expression->getHeaderName(2) == "height");
+  std::vector<std::vector<std::string> > data = {
+          {"Mary",     "28",  "170"},
+          {"John",     "25",  "180"},
+          {"Alfred",   "30",  "175"},
+          {"Betty",    "20",  "165"},
+          {"Benjamin", "26",  "80"},
+          {"Octopus",  "281", "1170"}
+  };
+  vector<int> equalCounters(6, 0);
+  for (int i = 0; i < equalCounters.size(); i++) {
+    assert(expression->hasNextRow());
+    vector<string> row = expression->getNextRow();
+    for (int j = 0; j < data.size(); j++) {
+      if (equalsStringVectors(row, data[j])) {
+        equalCounters[j]++;
+      }
+    }
+  }
+  for (int i = 0; i < equalCounters.size(); i++) {
+    assert(equalCounters[i] == 1);
+  }
+  assert(!expression->hasNextRow());
+}
+
 
 void testExpression() {
   Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
   testProjection(tokenizer);
   testIntersection(tokenizer);
+  testUnion(tokenizer);
 }

@@ -15,6 +15,12 @@ IntersectionExpression::IntersectionExpression(shared_ptr<AbstractExpression> le
   nextRow = getNextRowDirectly();
 }
 
+void IntersectionExpression::reset() {
+  left->reset();
+  right->reset();
+  nextRow = getNextRowDirectly();
+}
+
 string IntersectionExpression::toSQL() const {
   return "(" + left->toSQL() + " INTERSECT " + right->toSQL() + ") AS " + name;
 }
@@ -26,13 +32,14 @@ bool IntersectionExpression::hasNextRow() const {
 vector<string> IntersectionExpression::getNextRowDirectly() {
   while(left->hasNextRow()) {
     vector<string> leftRow = left->getNextRow();
+    right->reset();
     while(right->hasNextRow()) {
       vector<string> rightRow = right->getNextRow();
       if (equalsStringVectors(leftRow, rightRow)) {
+        printStringVector(leftRow);
         return leftRow;
       }
     }
-    right->reset();
   }
   return vector<string>();
 }
