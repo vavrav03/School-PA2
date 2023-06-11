@@ -136,9 +136,36 @@ void testComplexQuery(Tokenizer &tokenizer) {
   assertReturnMatches(expression, expected);
 }
 
-void testUnionSelf(Tokenizer & tokenizer){
+void testCartesian(Tokenizer &tokenizer) {
   VariablesMemory memory;
-  importTest1And2(memory, tokenizer);
+  string testFile1 = string(TEST_ASSETS_DIR) + "test.json";
+  string testFile2 = string(TEST_ASSETS_DIR) + "test-set1.csv";
+  ImportCommand command(memory);
+  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
+  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
+          tokenizer.tokenize("test1 × test2"));
+  assert(toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 CROSS JOIN select * from test2) AS a"));
+  assert(expression->getHeaderSize() == 6);
+  assert(expression->getHeaderName(0) == "a");
+  assert(expression->getHeaderName(1) == "b");
+  assert(expression->getHeaderName(2) == "c");
+  assert(expression->getHeaderName(3) == "name");
+  assert(expression->getHeaderName(4) == "age");
+  assert(expression->getHeaderName(5) == "height");
+  vector<vector<string> > expected = {
+          {"1", "2", "3", "Mary",   "28", "170"},
+          {"1", "2", "3", "John",   "25", "180"},
+          {"1", "2", "3", "Alfred", "30", "175"},
+          {"1", "2", "3", "Betty",  "20", "165"},
+          {"4", "5", "6", "Mary",   "28", "170"},
+          {"4", "5", "6", "John",   "25", "180"},
+          {"4", "5", "6", "Alfred", "30", "175"},
+          {"4", "5", "6", "Betty",  "20", "165"}
+  };
+  assertReturnMatches(expression, expected);
 }
 
 
@@ -149,4 +176,5 @@ void testExpression() {
   testUnion(tokenizer);
   testExcept(tokenizer);
   testComplexQuery(tokenizer);
+  testCartesian(tokenizer);
 }
