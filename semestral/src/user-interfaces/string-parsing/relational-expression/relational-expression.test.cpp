@@ -6,6 +6,31 @@
 
 using namespace std;
 
+void assertReturnMatches(shared_ptr<AbstractExpression> expression, vector<vector<string> > &expected) {
+  vector<int> equalCounters(expected.size(), 0);
+  for (int i = 0; i < equalCounters.size(); i++) {
+    assert(expression->hasNextRow());
+    vector<string> row = expression->getNextRow();
+    for (int j = 0; j < expected.size(); j++) {
+      if (equalsStringVectors(row, expected[j])) {
+        equalCounters[j]++;
+      }
+    }
+  }
+  for (int i = 0; i < equalCounters.size(); i++) {
+    assert(equalCounters[i] == 1);
+  }
+  assert(!expression->hasNextRow());
+}
+
+void importTest1And2(VariablesMemory &memory, Tokenizer &tokenizer) {
+  string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
+  string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
+  ImportCommand command(memory);
+  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
+  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+}
+
 void testProjection(Tokenizer &tokenizer) {
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
@@ -42,11 +67,7 @@ void testProjection(Tokenizer &tokenizer) {
 
 void testIntersection(Tokenizer &tokenizer) {
   VariablesMemory memory;
-  string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
-  string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
-  ImportCommand command(memory);
-  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
-  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+  importTest1And2(memory, tokenizer);
 
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
   shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
@@ -56,39 +77,14 @@ void testIntersection(Tokenizer &tokenizer) {
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
   assert(expression->getHeaderName(2) == "height");
-  assert(expression->hasNextRow());
-
-  vector<string> row1 = expression->getNextRow();
-  assert(expression->hasNextRow());
-  vector<string> row2 = expression->getNextRow();
-  assert(!expression->hasNextRow());
-  if (row1[0] == "Alfred") {
-    assert(row1[1] == "30");
-    assert(row1[2] == "175");
-    assert(row2[0] == "Betty");
-    assert(row2[1] == "20");
-    assert(row2[2] == "165");
-  } else {
-    assert(row1[0] == "Betty");
-    assert(row1[1] == "20");
-    assert(row1[2] == "165");
-    assert(row2[0] == "Alfred");
-    assert(row2[1] == "30");
-    assert(row2[2] == "175");
-  }
-//  assert((row1[0] == "Alfred" && row1[1] == "30" && row1[2] == "175") ||
-//         (row1[0] == "Betty" && row1[1] == "20" && row1[2] == "165"));
-//  assert((row2[0] == "Alfred" && row2[1] == "30" && row2[2] == "175") ||
-//         (row2[0] == "Betty" && row2[1] == "20" && row2[2] == "165"));
+  vector<vector<string> > expected = {{"Alfred", "30", "175"},
+                                      {"Betty",  "20", "165"}};
+  assertReturnMatches(expression, expected);
 }
 
 void testUnion(Tokenizer &tokenizer) {
   VariablesMemory memory;
-  string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
-  string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
-  ImportCommand command(memory);
-  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
-  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+  importTest1And2(memory, tokenizer);
 
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
   shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
@@ -106,29 +102,12 @@ void testUnion(Tokenizer &tokenizer) {
           {"Benjamin", "26",  "80"},
           {"Octopus",  "281", "1170"}
   };
-  vector<int> equalCounters(data.size(), 0);
-  for (int i = 0; i < equalCounters.size(); i++) {
-    assert(expression->hasNextRow());
-    vector<string> row = expression->getNextRow();
-    for (int j = 0; j < data.size(); j++) {
-      if (equalsStringVectors(row, data[j])) {
-        equalCounters[j]++;
-      }
-    }
-  }
-  for (int i = 0; i < equalCounters.size(); i++) {
-    assert(equalCounters[i] == 1);
-  }
-  assert(!expression->hasNextRow());
+  assertReturnMatches(expression, data);
 }
 
 void testExcept(Tokenizer &tokenizer) {
   VariablesMemory memory;
-  string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
-  string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
-  ImportCommand command(memory);
-  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
-  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+  importTest1And2(memory, tokenizer);
 
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
   shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
@@ -142,22 +121,25 @@ void testExcept(Tokenizer &tokenizer) {
           {"Mary", "28", "170"},
           {"John", "25", "180"},
   };
-  vector<int> equalCounters(data.size(), 0);
-  for (int i = 0; i < equalCounters.size(); i++) {
-    assert(expression->hasNextRow());
-    vector<string> row = expression->getNextRow();
-    for (int j = 0; j < data.size(); j++) {
-      if (equalsStringVectors(row, data[j])) {
-        equalCounters[j]++;
-      }
-    }
-  }
-  for (int i = 0; i < equalCounters.size(); i++) {
-    assert(equalCounters[i] == 1);
-  }
-  assert(!expression->hasNextRow());
+  assertReturnMatches(expression, data);
 }
 
+void testComplexQuery(Tokenizer &tokenizer) {
+  VariablesMemory memory;
+  importTest1And2(memory, tokenizer);
+
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  shared_ptr<AbstractExpression> expression = parser.createExpressionFromTokens(
+          tokenizer.tokenize("{{test1  \\   test2} ∩ {test2  \\   test1}} ∪ {test1  ∩   test2}"));
+  vector<vector<string> > expected = {{"Alfred", "30", "175"},
+                                      {"Betty",  "20", "165"}};
+  assertReturnMatches(expression, expected);
+}
+
+void testUnionSelf(Tokenizer & tokenizer){
+  VariablesMemory memory;
+  importTest1And2(memory, tokenizer);
+}
 
 
 void testExpression() {
@@ -166,4 +148,5 @@ void testExpression() {
   testIntersection(tokenizer);
   testUnion(tokenizer);
   testExcept(tokenizer);
+  testComplexQuery(tokenizer);
 }
