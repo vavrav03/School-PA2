@@ -21,7 +21,7 @@ DataSourceExpressionOperationPartFactory::create(const vector<Token> &tokens, in
 }
 
 DataSourceExpressionOperationPart::DataSourceExpressionOperationPart(const shared_ptr<AbstractExpression> &expression)
-        : OperationPart(OperationPartType::OPERAND, 999), expression(expression) {}
+        : OperationPart(OperationPartType::OPERAND, 1999), expression(expression) {}
 
 void
 DataSourceExpressionOperationPart::evaluate(stack<shared_ptr<AbstractExpression> > &parts, string &operationAlias) {

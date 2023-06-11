@@ -4,6 +4,7 @@
 #include "tokenizer/tokenizer.h"
 #include "../../data-sources/expressions/expressions.h"
 #include <stack>
+#include <iostream>
 
 enum class OperationPartType {
   OPERAND,
@@ -53,7 +54,7 @@ protected:
  * @param infix
  * @return
  */
-std::vector<OperationPart> createPostfixFromInfix(const std::vector<OperationPart> &infix);
+std::vector<OperationPart*> createPostfixFromInfix(const std::vector<OperationPart*> &infix);
 
 
 #endif //SEMESTRAL_OPERATION_PART_H

@@ -18,6 +18,7 @@ RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, Va
 shared_ptr<AbstractExpression> RelationalExpressionParser::createExpressionFromTokens(
         const std::vector<Token> &tokens) const {
   vector<OperationPart*> infix = createInfixFromTokens(tokens);
+  vector<OperationPart*> postfix = createPostfixFromInfix(infix);
   return createExpressionFromPostfix(infix);
 }
 

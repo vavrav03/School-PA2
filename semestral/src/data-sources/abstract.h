@@ -59,8 +59,6 @@ public:
    */
   virtual void reset() = 0;
   virtual ~AbstractDataSource();
-
-protected:
 };
 
 /**
