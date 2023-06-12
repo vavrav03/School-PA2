@@ -1,7 +1,7 @@
 #ifndef SEMESTRAL_JSON_DATA_SOURCE_H
 #define SEMESTRAL_JSON_DATA_SOURCE_H
 
-#include "../abstract.h"
+#include "../file-sources.h"
 #include <string>
 #include <vector>
 

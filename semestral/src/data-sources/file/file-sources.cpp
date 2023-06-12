@@ -1,11 +1,7 @@
-#include "abstract.h"
-#include "../utils/utils.h"
+#include "./file-sources.h"
+#include "../../utils/utils.h"
 
 using namespace std;
-
-AbstractDataSource::AbstractDataSource() = default;
-
-AbstractDataSource::~AbstractDataSource() = default;
 
 FileDataSource::FileDataSource(const std::string &path) : file(path) {
   if (file.fail()) {

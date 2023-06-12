@@ -1,7 +1,7 @@
 
 #include "./json.h"
 #include <iostream>
-#include "../../../src/test/test_list.h"
+#include "../../../test/test_list.h"
 
 using namespace std;
 
