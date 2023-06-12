@@ -57,11 +57,3 @@ bool Tokenizer::isSpecialCharacter(const std::string &character) const {
   }
   return false;
 }
-
-string Tokenizer::tokenVectorToString(const std::vector<Token> &tokens) {
-  string result;
-  for (const Token &token: tokens) {
-    result += "\"" + token.value + "\" ";
-  }
-  return result;
-}

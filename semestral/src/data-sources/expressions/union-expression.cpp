@@ -37,7 +37,7 @@ vector<string> UnionExpression::getNextRowDirectly() {
     vector<string> leftRow = leftExpression->getNextRow();
     while (rightExpression->hasNextRow()) {
       vector<string> rightRow = rightExpression->getNextRow();
-      if (equalsStringVectors(leftRow, rightRow)) {
+      if (equalsVectors(leftRow, rightRow)) {
         hasMatch = true;
         break;
       }

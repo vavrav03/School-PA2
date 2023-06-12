@@ -27,11 +27,9 @@ public:
   /**
    * If these characters are found in a non-quoted part, they are assumed to be separate tokens
    */
-  const std::vector<std::string> specialCharacters;
   bool isSpecialCharacter(const std::string &character) const;
-
-  static std::string tokenVectorToString(const std::vector<Token> &tokens);
-
+private:
+  const std::vector<std::string> specialCharacters;
 };
 
 

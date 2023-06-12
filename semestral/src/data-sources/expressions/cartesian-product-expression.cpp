@@ -43,11 +43,11 @@ const vector<string> CartesianProductExpression::getNextRow() {
     currentLeftRow = leftExpression->getNextRow();
   }
   vector<string> rightRow = rightExpression->getNextRow();
-  return joinStringVectors(currentLeftRow, rightRow);
+  return joinVectors(currentLeftRow, rightRow);
 }
 
 vector<string> CartesianProductExpression::getHeaderVector() const {
-  return joinStringVectors(leftExpression->getHeaderVector(), rightExpression->getHeaderVector());
+  return joinVectors(leftExpression->getHeaderVector(), rightExpression->getHeaderVector());
 }
 
 size_t CartesianProductExpression::getHeaderSize() const {

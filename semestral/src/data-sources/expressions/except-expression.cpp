@@ -36,7 +36,7 @@ vector<string> ExceptExpression::getNextRowDirectly() {
     rightExpression->reset();
     while (rightExpression->hasNextRow()) {
       vector<string> rightRow = rightExpression->getNextRow();
-      if (equalsStringVectors(leftRow, rightRow)) {
+      if (equalsVectors(leftRow, rightRow)) {
         hasMatch = true;
         break;
       }

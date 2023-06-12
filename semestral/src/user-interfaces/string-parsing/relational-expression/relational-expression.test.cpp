@@ -12,7 +12,7 @@ void assertReturnMatches(shared_ptr<AbstractExpression> expression, vector<vecto
     assert(expression->hasNextRow());
     vector<string> row = expression->getNextRow();
     for (size_t j = 0; j < expected.size(); j++) {
-      if (equalsStringVectors(row, expected[j])) {
+      if (equalsVectors(row, expected[j])) {
         equalCounters[j]++;
       }
     }
