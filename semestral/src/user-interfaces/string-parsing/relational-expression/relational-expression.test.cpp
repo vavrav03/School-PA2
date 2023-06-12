@@ -32,6 +32,7 @@ void importTest1And2(VariablesMemory &memory, Tokenizer &tokenizer) {
 }
 
 void testProjection(Tokenizer &tokenizer) {
+  cout << "RUNNING: testProjection" << endl;
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand command(memory);
@@ -66,6 +67,7 @@ void testProjection(Tokenizer &tokenizer) {
 }
 
 void testIntersection(Tokenizer &tokenizer) {
+  cout << "RUNNING: testIntersection" << endl;
   VariablesMemory memory;
   importTest1And2(memory, tokenizer);
 
@@ -83,6 +85,7 @@ void testIntersection(Tokenizer &tokenizer) {
 }
 
 void testUnion(Tokenizer &tokenizer) {
+  cout << "RUNNING: testUnion" << endl;
   VariablesMemory memory;
   importTest1And2(memory, tokenizer);
 
@@ -106,6 +109,7 @@ void testUnion(Tokenizer &tokenizer) {
 }
 
 void testExcept(Tokenizer &tokenizer) {
+  cout << "RUNNING: testExcept" << endl;
   VariablesMemory memory;
   importTest1And2(memory, tokenizer);
 
@@ -125,6 +129,7 @@ void testExcept(Tokenizer &tokenizer) {
 }
 
 void testComplexQuery(Tokenizer &tokenizer) {
+  cout << "RUNNING: testComplexQuery" << endl;
   VariablesMemory memory;
   importTest1And2(memory, tokenizer);
 
@@ -137,6 +142,7 @@ void testComplexQuery(Tokenizer &tokenizer) {
 }
 
 void testCartesian(Tokenizer &tokenizer) {
+  cout << "RUNNING: testCartesian" << endl;
   VariablesMemory memory;
   string testFile1 = string(TEST_ASSETS_DIR) + "test.json";
   string testFile2 = string(TEST_ASSETS_DIR) + "test-set1.csv";

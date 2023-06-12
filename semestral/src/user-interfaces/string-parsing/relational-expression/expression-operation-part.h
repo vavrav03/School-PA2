@@ -8,29 +8,44 @@
 #include "../tokenizer/tokenizer.h"
 #include "../../abstract/variables-memory.h"
 
-class LeftBracketRelationOperandFactory : public OperationPartFactory {
-public:
-  LeftBracketRelationOperandFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
-};
-
 class LeftBracketRelationOperand : public OperationPart {
 public:
-  LeftBracketRelationOperand();
+  LeftBracketRelationOperand() : OperationPart(OperationPartType::LEFT_BRACKET, 999) {}
+};
+
+class LeftBracketRelationOperandFactory : public OperationPartFactory {
+public:
+  LeftBracketRelationOperandFactory(const Tokenizer &tokenizer) : OperationPartFactory(
+          tokenizer) {}
+
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
+    return tokens[nextTokenIndex].value == "{";
+  }
+
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+    nextTokenIndex++;
+    return new LeftBracketRelationOperand();
+  }
+};
+
+class RightBracketRelationOperand : public OperationPart {
+public:
+  RightBracketRelationOperand() : OperationPart(OperationPartType::RIGHT_BRACKET, 999) {}
 };
 
 class RightBracketRelationOperandFactory : public OperationPartFactory {
 
 public:
-  RightBracketRelationOperandFactory(const Tokenizer &tokenizer);
-  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
-};
+  RightBracketRelationOperandFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
-class RightBracketRelationOperand : public OperationPart {
-public:
-  RightBracketRelationOperand();
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
+    return tokens[nextTokenIndex].value == "}";
+  }
+
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+    nextTokenIndex++;
+    return new RightBracketRelationOperand();
+  }
 };
 
 class ProjectionOperatorFactory : public OperationPartFactory {
@@ -51,21 +66,39 @@ private:
   std::unordered_map<std::string, std::string> aliasToOldName;
 };
 
-class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
-public:
-  DataSourceExpressionOperationPartFactory(const Tokenizer &tokenizer, VariablesMemory &memory);
-  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
-private:
-  VariablesMemory &memory;
-};
-
 class DataSourceExpressionOperationPart : public OperationPart {
 public:
-  DataSourceExpressionOperationPart(const std::shared_ptr<AbstractExpression> &expression);
-  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override;
+  DataSourceExpressionOperationPart(const std::shared_ptr<AbstractExpression> &expression) : OperationPart(
+          OperationPartType::OPERAND, 1999), expression(expression) {}
+
+  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override {
+    parts.push(expression);
+  }
+
 private:
   std::shared_ptr<AbstractExpression> expression;
+};
+
+class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
+public:
+  DataSourceExpressionOperationPartFactory(const Tokenizer &tokenizer, VariablesMemory &memory) : OperationPartFactory(
+          tokenizer), memory(memory) {}
+
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
+    if (tokens[nextTokenIndex].quoted) {
+      return true;
+    }
+    return !tokenizer.isSpecialCharacter(tokens[nextTokenIndex].value);
+  }
+
+  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+    OperationPart *returnValue = new DataSourceExpressionOperationPart(memory.get(tokens[nextTokenIndex].value));
+    nextTokenIndex++;
+    return returnValue;
+  }
+
+private:
+  VariablesMemory &memory;
 };
 
 class IntersectionOperator : public OperationPart {
@@ -112,7 +145,7 @@ class UnionOperatorFactory : public OperationPartFactory {
 public:
   UnionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
-  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) {
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].value == "∪";
   }
 
