@@ -11,7 +11,7 @@ DataSourceExpressionWrapper::DataSourceExpressionWrapper(shared_ptr<AbstractData
  * @return
  */
 std::string DataSourceExpressionWrapper::toSQL() const {
-  return "select * from " + name;
+  return "SELECT * FROM " + name;
 }
 
 bool DataSourceExpressionWrapper::hasNextRow() const {
