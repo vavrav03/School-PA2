@@ -1,7 +1,7 @@
 #include "../user-interfaces/console/commands/console-command.h"
 #include "../user-interfaces/string-parsing/tokenizer/tokenizer.h"
 
-#include "test_list.h"
+#include "test-list.h"
 
 using namespace std;
 

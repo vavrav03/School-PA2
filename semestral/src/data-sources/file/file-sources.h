@@ -8,7 +8,7 @@
  */
 class FileDataSource : public AbstractDataSource {
 public:
-  FileDataSource(const std::string &path);
+  FileDataSource(const std::string &path, const std::string &name);
   virtual std::vector<std::string> getHeaderVector() const override;
   virtual std::unordered_map<std::string, size_t> getHeaderMap() const override;
   virtual size_t getHeaderIndex(const std::string &name) const override;

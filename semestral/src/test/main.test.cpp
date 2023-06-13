@@ -1,7 +1,8 @@
 
-#include "./test_list.h"
+#include "./test-list.h"
 
 int main() {
+  testUtils();
   testCsvDataSource();
   testJSONDataSource();
   testTokenizeMethod();

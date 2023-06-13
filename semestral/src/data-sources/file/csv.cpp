@@ -5,8 +5,8 @@
 
 using namespace std;
 
-CSVDataSource::CSVDataSource(const string &path)
-        : FileDataSource(path) {
+CSVDataSource::CSVDataSource(const string &path, const string &name)
+        : FileDataSource(path, name) {
   CSVDataSource::reset();
 }
 

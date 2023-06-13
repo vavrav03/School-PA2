@@ -2,8 +2,8 @@
 
 using namespace std;
 
-CartesianProductExpression::CartesianProductExpression(std::shared_ptr<AbstractExpression> left,
-                                                       std::shared_ptr<AbstractExpression> right,
+CartesianProductExpression::CartesianProductExpression(std::shared_ptr<AbstractDataSource> left,
+                                                       std::shared_ptr<AbstractDataSource> right,
                                                        const std::string &name) : AbstractBinaryExpression(left, right,
                                                                                                            name) {
   if(mapsContainSameKey(leftExpression->getHeaderMap(), rightExpression->getHeaderMap())) {
@@ -26,6 +26,7 @@ const vector<string> CartesianProductExpression::getNextRow() {
   vector<string> rightRow = rightExpression->getNextRow();
   if(rightRow.empty()) {
     rightExpression->reset();
+    rightRow = rightExpression->getNextRow();
     currentLeftRow = leftExpression->getNextRow();
     if(currentLeftRow.empty()) {
       return vector<string>();

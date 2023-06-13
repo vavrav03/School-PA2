@@ -60,7 +60,7 @@ public:
   ProjectionOperator(const std::vector<std::string> &header,
                      const std::unordered_map<std::string, std::string> &aliasToOldName);
 
-  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias);
+  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias);
 private:
   std::vector<std::string> header;
   std::unordered_map<std::string, std::string> aliasToOldName;
@@ -68,15 +68,15 @@ private:
 
 class DataSourceExpressionOperationPart : public OperationPart {
 public:
-  DataSourceExpressionOperationPart(const std::shared_ptr<AbstractExpression> &expression) : OperationPart(
+  DataSourceExpressionOperationPart(const std::shared_ptr<AbstractDataSource> &expression) : OperationPart(
           OperationPartType::OPERAND, 1999), expression(expression) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override {
+  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
     parts.push(expression);
   }
 
 private:
-  std::shared_ptr<AbstractExpression> expression;
+  std::shared_ptr<AbstractDataSource> expression;
 };
 
 class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
@@ -105,7 +105,7 @@ class IntersectionOperator : public OperationPart {
 public:
   IntersectionOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 9) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override {
+  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
     auto right = parts.top();
     parts.pop();
     auto left = parts.top();
@@ -132,7 +132,7 @@ class UnionOperator : public OperationPart {
 public:
   UnionOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 10) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override {
+  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
     auto right = parts.top();
     parts.pop();
     auto left = parts.top();
@@ -159,7 +159,7 @@ class ExceptOperator : public OperationPart {
 public:
   ExceptOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 10) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override {
+  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
     auto right = parts.top();
     parts.pop();
     auto left = parts.top();
@@ -186,7 +186,7 @@ class CartesianProductOperator : public OperationPart {
 public:
   CartesianProductOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 11) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &parts, std::string &operationAlias) override {
+  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
     auto right = parts.top();
     parts.pop();
     auto left = parts.top();

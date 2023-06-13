@@ -12,15 +12,17 @@ bool ImportCommand::matchesSyntactically(std::vector<Token> command) {
 
 void ImportCommand::run(std::vector<Token> command) {
   string variableName = command[0].value;
-  string fileName = command[3].value;
+  string filePath = command[3].value;
   if (memory.exists(variableName)) {
     throw runtime_error("Variable " + variableName + " already exists.");
   }
-  string extension = fileName.substr(fileName.find_last_of(".") + 1);
+  string extension = getExtensionFromPath(filePath);
+  string fileName = getNameWithoutExtension(filePath);
+  string alias = memory.getAvailableAlias(fileName);
   if (extension == "csv") {
-    memory.add(variableName, make_shared<CSVDataSource>(fileName));
+    memory.add(variableName, make_shared<CSVDataSource>(filePath, alias));
   } else if (extension == "json") {
-    memory.add(variableName, make_shared<JSONDataSource>(fileName));
+    memory.add(variableName, make_shared<JSONDataSource>(filePath, alias));
   } else {
     throw runtime_error("Unknown file extension " + extension + ".");
   }

@@ -12,7 +12,7 @@
  */
 class AbstractDataSource {
 public:
-  AbstractDataSource() = default;
+  AbstractDataSource(const std::string &name) : name(name) {}
 
   /**
    *
@@ -35,7 +35,7 @@ public:
    * @param index
    * @return name of column with given index.
    */
-  virtual const std::string& getHeaderName(size_t index) const = 0;
+  virtual const std::string &getHeaderName(size_t index) const = 0;
 
   /**
    *
@@ -53,9 +53,16 @@ public:
    * Resets the data source to the beginning of whatever it is iterating over.
    */
   virtual void reset() = 0;
-  virtual ~AbstractDataSource() = default;
-};
 
+  virtual ~AbstractDataSource() = default;
+
+  virtual std::string toSQL() const {
+    return "SELECT * FROM " + name;
+  }
+
+protected:
+  std::string name;
+};
 
 
 #endif // SEMESTRAL_RESULTSTREAM_H

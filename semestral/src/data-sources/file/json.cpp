@@ -3,7 +3,7 @@
 
 using namespace std;
 
-JSONDataSource::JSONDataSource(const std::string &path) : FileDataSource(path), reachedEndOfArray(false) {
+JSONDataSource::JSONDataSource(const std::string &path, const std::string & name) : FileDataSource(path, name), reachedEndOfArray(false) {
   readFirstBlockAndSetHeader();
 }
 

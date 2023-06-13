@@ -65,7 +65,7 @@ ProjectionOperator::ProjectionOperator(const vector<string> &header,
                                        const unordered_map<string, string> &aliasToOldName) : OperationPart(
         OperationPartType::POSTFIX_UNARY_OPERATOR, 50), header(header), aliasToOldName(aliasToOldName) {}
 
-void ProjectionOperator::evaluate(stack<std::shared_ptr<AbstractExpression> > &parts, string &operationAlias) {
+void ProjectionOperator::evaluate(stack<std::shared_ptr<AbstractDataSource> > &parts, string &operationAlias) {
   shared_ptr<ProjectionExpression> projection = make_shared<ProjectionExpression>(parts.top(), header, aliasToOldName,
                                                                                   operationAlias);
   parts.pop();

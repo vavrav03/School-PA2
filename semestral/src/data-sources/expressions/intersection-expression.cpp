@@ -2,8 +2,8 @@
 
 using namespace std;
 
-IntersectionExpression::IntersectionExpression(shared_ptr<AbstractExpression> left,
-                                               shared_ptr<AbstractExpression> right, const string &name)
+IntersectionExpression::IntersectionExpression(shared_ptr<AbstractDataSource> left,
+                                               shared_ptr<AbstractDataSource> right, const string &name)
         : AbstractBinaryExpression(left, right, name) {
   for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
     if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {

@@ -11,7 +11,7 @@
 class CSVDataSource : public FileDataSource {
 
 public:
-  CSVDataSource(const std::string &path);
+  CSVDataSource(const std::string &path, const std::string &name);
   const std::vector<std::string> getNextRow() override;
   void reset() override;
 

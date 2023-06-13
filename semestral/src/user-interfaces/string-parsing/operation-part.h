@@ -25,7 +25,7 @@ public:
   const int priority;
   virtual ~OperationPart() = default;
 
-  virtual void evaluate(std::stack<std::shared_ptr<AbstractExpression>> &evaluatedParts, std::string &operationAlias) {
+  virtual void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &evaluatedParts, std::string &operationAlias) {
     // do nothing
   };
 };

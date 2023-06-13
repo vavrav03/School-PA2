@@ -92,4 +92,13 @@ bool mapsContainSameKey(const std::unordered_map<T, size_t> &a, const std::unord
   return false;
 }
 
+/**
+ *
+ * @param path
+ * @return name + extension
+ */
+std::string getNameFromPath(const std::string &path);
+std::string getExtensionFromPath(const std::string &path);
+std::string getNameWithoutExtension(const std::string &filename);
+
 #endif //SEMESTRAL_UTILS_H

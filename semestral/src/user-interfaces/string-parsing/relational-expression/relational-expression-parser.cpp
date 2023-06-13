@@ -19,7 +19,7 @@ RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, Va
   return RelationalExpressionParser(factories, memory);
 }
 
-shared_ptr<AbstractExpression> RelationalExpressionParser::createExpressionFromTokens(
+shared_ptr<AbstractDataSource> RelationalExpressionParser::createExpressionFromTokens(
         const std::vector<Token> &tokens) const {
   vector<OperationPart*> infix = createInfixFromTokens(tokens);
   vector<OperationPart*> postfix = createPostfixFromInfix(infix);
@@ -46,28 +46,14 @@ vector<OperationPart*> RelationalExpressionParser::createInfixFromTokens(const v
   return infix;
 }
 
-string RelationalExpressionParser::getNextAlias(string lastAlias) const {
-  if (lastAlias.empty()) {
-    return "a";
-  }
-  if (lastAlias.back() == 'z') {
-    return lastAlias + "a";
-  }
-  string probableNewAlias = lastAlias.substr(0, lastAlias.size() - 1) + (char) (lastAlias.back() + 1);
-  if (!memory.exists(probableNewAlias)) {
-    return probableNewAlias;
-  }
-  return getNextAlias(probableNewAlias);
-}
-
-shared_ptr<AbstractExpression> RelationalExpressionParser::createExpressionFromPostfix(
+shared_ptr<AbstractDataSource> RelationalExpressionParser::createExpressionFromPostfix(
         const std::vector<OperationPart*> &parts) const {
-  stack<shared_ptr<AbstractExpression> > expressions;
+  stack<shared_ptr<AbstractDataSource> > expressions;
   string lastAlias;
   string currentAlias;
   for (auto part: parts) {
     if(part->type != OperationPartType::OPERAND && part->type != OperationPartType::LEFT_BRACKET && part->type != OperationPartType::RIGHT_BRACKET) {
-      currentAlias = getNextAlias(lastAlias);
+      currentAlias = memory.generateNewAvailableAlias(lastAlias);
       lastAlias = currentAlias;
     }
     part->evaluate(expressions, currentAlias);

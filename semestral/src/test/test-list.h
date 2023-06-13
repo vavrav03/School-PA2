@@ -10,5 +10,6 @@ void testJSONDataSource();
 void testTokenizeMethod();
 void testConsoleCommands();
 void testExpression();
+void testUtils();
 
 #endif //SEMESTRAL_TEST_LIST_H

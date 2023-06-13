@@ -2,7 +2,7 @@
 
 using namespace std;
 
-ProjectionExpression::ProjectionExpression(shared_ptr<AbstractExpression> expression,
+ProjectionExpression::ProjectionExpression(shared_ptr<AbstractDataSource> expression,
                                            const std::vector<std::string> &columns,
                                            const unordered_map<string, string> &aliasToPreviousName,
                                            const std::string &name) : AbstractUnaryExpression(expression, name) {

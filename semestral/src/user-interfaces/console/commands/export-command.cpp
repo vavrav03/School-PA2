@@ -15,7 +15,7 @@ void ExportCommand::run(std::vector<Token> command) {
   if (!memory.exists(variableName)) {
     throw runtime_error("Variable " + variableName + " does not exist.");
   }
-  shared_ptr<DataSourceExpressionWrapper>dataSource = memory.get(variableName);
+  shared_ptr<AbstractDataSource>dataSource = memory.get(variableName);
   string extension = fileName.substr(fileName.find_last_of(".") + 1);
   unique_ptr<AbstractDataExporter> exporter;
   if (extension == "csv") {
