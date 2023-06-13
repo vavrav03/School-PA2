@@ -45,13 +45,7 @@ public:
 
   /**
    *
-   * @return true if there is at least one more row to be read.
-   */
-  virtual bool hasNextRow() const = 0;
-
-  /**
-   * @throws std::runtime_error if there is no next row.
-   * @return the next row of data as a vector of strings.
+   * @return the next row of data as a vector of strings. If there is no more data, returns an empty vector.
    */
   virtual const std::vector<std::string> getNextRow() = 0;
 

@@ -1,31 +1,24 @@
 
-#include "./json.h"
+#include "../data-sources/file/json/json.h"
 #include <iostream>
-#include "../../../test/test_list.h"
+#include "test_list.h"
+#include "../utils/utils.h"
 
 using namespace std;
 
 void testJSONBlockParser() {
   cout << "- RUNNING: testJSONBlockParser" << endl;
   auto block = JSONDataSource::parseBlockString("\"a\": 1, \"b\": 2");
-  assert(block.first.size() == 2);
-  assert(block.first[0] == "a");
-  assert(block.first[1] == "b");
-  assert(block.second.size() == 2);
-  assert(block.second[0] == "1");
+  assert(equalsVectors(block.first, vector<string>{"a", "b"}));
+  assert(equalsVectors(block.second, vector<string>{"1", "2"}));
 
   block = JSONDataSource::parseBlockString("\"a\": 1");
-  assert(block.first.size() == 1);
   assert(block.first[0] == "a");
-  assert(block.second.size() == 1);
+  assert(block.second[0] == "1");
 
   block = JSONDataSource::parseBlockString("\"a\": 1, \n\t     \"b\":    \"2\"");
-  assert(block.first.size() == 2);
-  assert(block.first[0] == "a");
-  assert(block.first[1] == "b");
-  assert(block.second.size() == 2);
-  assert(block.second[0] == "1");
-  assert(block.second[1] == "2");
+  assert(equalsVectors(block.first, vector<string>{"a", "b"}));
+  assert(equalsVectors(block.second, vector<string>{"1", "2"}));
 
   try {
     block = JSONDataSource::parseBlockString("");
@@ -63,42 +56,35 @@ void testSampleRead() {
   cout << "- RUNNING: testSampleRead" << endl;
   JSONDataSource dataSource1(string(TEST_ASSETS_DIR) + "test.json");
   assert(dataSource1.getHeaderSize() == 3);
-  assert(dataSource1.getHeaderName(0) == "a");
-  assert(dataSource1.getHeaderName(1) == "b");
-  assert(dataSource1.getHeaderName(2) == "c");
-  vector<string> row1 = dataSource1.getNextRow();
-  assert(row1.size() == 3);
-  assert(row1[0] == "1");
-  assert(row1[1] == "2");
-  assert(row1[2] == "3");
-  vector<string> row2 = dataSource1.getNextRow();
-  assert(row2.size() == 3);
-  assert(row2[0] == "4");
-  assert(row2[1] == "5");
-  assert(row2[2] == "6");
+  assert(equalsVectors(dataSource1.getHeaderVector(), vector<string>{"a", "b", "c"}));
+  assert(equalsVectors(dataSource1.getNextRow(), vector<string>{"1", "2", "3"}));
+  assert(equalsVectors(dataSource1.getNextRow(), vector<string>{"4", "5", "6"}));
+  assert(dataSource1.getNextRow().empty());
+  cout << "- RUNNING: testSampleRead2" << endl;
 
   dataSource1.reset();
-  row1 = dataSource1.getNextRow();
-  assert(row1.size() == 3);
-  assert(row1[0] == "1");
-  assert(row1[1] == "2");
-  assert(row1[2] == "3");
+  dataSource1.reset();
+  dataSource1.reset();
+  dataSource1.reset();
+  assert(equalsVectors(dataSource1.getNextRow(), vector<string>{"1", "2", "3"}));
+  assert(equalsVectors(dataSource1.getNextRow(), vector<string>{"4", "5", "6"}));
+  assert(dataSource1.getNextRow().empty());
 
   dataSource1.reset();
-  while (dataSource1.hasNextRow()) {
-    assert(dataSource1.getNextRow().size() == 3);
-  } // must not throw
+  vector<string> result;
+  while (!(result = dataSource1.getNextRow()).empty()) {
+    assert(result.size() == 3);
+  }
 
   for (size_t i = 1; i <= 3; i++) {
     try {
-      JSONDataSource dataSource2(string(TEST_ASSETS_DIR) + "test-error" + to_string(i) +".json");
-      while (dataSource2.hasNextRow()) {
-        assert(dataSource2.getNextRow().size() == 3);
+      JSONDataSource dataSource2(string(TEST_ASSETS_DIR) + "test-error" + to_string(i) + ".json");
+      while (!(result = dataSource2.getNextRow()).empty()) {
+        assert(result.size() == 3);
       }
       assert(false);
     } catch (...) {}
   }
-
 }
 
 void testJSONDataSource() {

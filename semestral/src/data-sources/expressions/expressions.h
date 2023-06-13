@@ -62,10 +62,6 @@ public:
     expression->reset();
   }
 
-  bool hasNextRow() const override {
-    return expression->hasNextRow();
-  }
-
   const std::vector<std::string> getNextRow() override {
     return expression->getNextRow();
   }
@@ -108,7 +104,6 @@ public:
   virtual const std::string &getHeaderName(size_t index) const override;
   virtual size_t getHeaderSize() const override;
   virtual void reset() override;
-  virtual bool hasNextRow() const override;
   virtual const std::vector<std::string> getNextRow() override;
 private:
   std::shared_ptr<AbstractDataSource> expression;
@@ -141,10 +136,6 @@ public:
   std::string toSQL() const override;
   void reset() override;
   const std::vector<std::string> getNextRow() override;
-  bool hasNextRow() const override;
-private:
-  std::vector<std::string> nextRow;
-  std::vector<std::string> getNextRowDirectly();
 };
 
 class UnionExpression : public AbstractBinaryExpression {
@@ -155,10 +146,6 @@ public:
   std::string toSQL() const override;
   void reset() override;
   const std::vector<std::string> getNextRow() override;
-  bool hasNextRow() const override;
-private:
-  std::vector<std::string> nextRow;
-  std::vector<std::string> getNextRowDirectly();
 };
 
 class ExceptExpression : public AbstractBinaryExpression {
@@ -169,10 +156,6 @@ public:
   std::string toSQL() const override;
   void reset() override;
   const std::vector<std::string> getNextRow() override;
-  bool hasNextRow() const override;
-private:
-  std::vector<std::string> nextRow;
-  std::vector<std::string> getNextRowDirectly();
 };
 
 class CartesianProductExpression : public AbstractBinaryExpression {
@@ -182,7 +165,7 @@ public:
 
   std::string toSQL() const override;
   void reset() override;
-  bool hasNextRow() const override;
+
   const std::vector<std::string> getNextRow() override;
   std::vector<std::string> getHeaderVector() const override;
   std::unordered_map<std::string, size_t> getHeaderMap() const override;

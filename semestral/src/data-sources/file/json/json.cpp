@@ -7,28 +7,27 @@ JSONDataSource::JSONDataSource(const std::string &path) : FileDataSource(path), 
   readFirstBlockAndSetHeader();
 }
 
-bool JSONDataSource::hasNextRow() const {
-  return !reachedEndOfArray;
-}
-
 const std::vector<std::string> JSONDataSource::getNextRow() {
+  if (reachedEndOfArray) {
+    return vector<string>();
+  }
   vector<string> result = nextRow;
   auto block = readBlock();
   if (block.first.empty()) {
     reachedEndOfArray = true;
     return result;
   }
-  if(block.first.size() != header.size()) {
+  if (block.first.size() != header.size()) {
     throw std::runtime_error("JSON array file must contain objects with the same number of fields");
   }
   vector<string> newRowInBuilding(this->header.size());
   vector<int> setCounts(this->header.size(), 0);
-  for(size_t i = 0; i < block.first.size(); i++) {
+  for (size_t i = 0; i < block.first.size(); i++) {
     newRowInBuilding[header[block.first[i]]] = block.second[i];
     setCounts[header[block.first[i]]]++;
   }
-  for(size_t i = 0; i < this->header.size(); i++) {
-    if(setCounts[i] != 1) {
+  for (size_t i = 0; i < this->header.size(); i++) {
+    if (setCounts[i] != 1) {
       throw std::runtime_error("JSON array file must contain objects with the same fields");
     }
   }

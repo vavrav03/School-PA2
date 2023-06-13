@@ -20,8 +20,8 @@ void PrintCommand::run(std::vector<Token> command) {
     cout << columnName << " | ";
   }
   cout << endl;
-  while (dataSource->hasNextRow()) {
-    vector<string> row = dataSource->getNextRow();
+  vector<string> row;
+  while (!(row = dataSource->getNextRow()).empty()) {
     cout << "| ";
     for (string &value: row) {
       cout << value << " | ";

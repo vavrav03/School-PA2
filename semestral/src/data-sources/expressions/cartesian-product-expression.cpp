@@ -6,14 +6,6 @@ CartesianProductExpression::CartesianProductExpression(std::shared_ptr<AbstractE
                                                        std::shared_ptr<AbstractExpression> right,
                                                        const std::string &name) : AbstractBinaryExpression(left, right,
                                                                                                            name) {
-  leftExpression->reset();
-  rightExpression->reset();
-  if(!leftExpression->hasNextRow()) {
-    throw runtime_error("Cannot perform cartesian product on empty left expression");
-  }
-  if(!rightExpression->hasNextRow()) {
-    throw runtime_error("Cannot perform cartesian product on empty right expression");
-  }
   if(mapsContainSameKey(leftExpression->getHeaderMap(), rightExpression->getHeaderMap())) {
     throw runtime_error("Cannot perform cartesian product on expressions with same column names");
   }
@@ -24,10 +16,6 @@ string CartesianProductExpression::toSQL() const {
   return "(" + leftExpression->toSQL() + " CROSS JOIN " + rightExpression->toSQL() + ") AS " + name;
 }
 
-bool CartesianProductExpression::hasNextRow() const {
-  return leftExpression->hasNextRow() || rightExpression->hasNextRow();
-}
-
 void CartesianProductExpression::reset() {
   leftExpression->reset();
   rightExpression->reset();
@@ -35,14 +23,14 @@ void CartesianProductExpression::reset() {
 }
 
 const vector<string> CartesianProductExpression::getNextRow() {
-  if(!rightExpression->hasNextRow()) {
-    rightExpression->reset();
-    if(!leftExpression->hasNextRow()) {
-      throw runtime_error("No more rows in cartesian product expression");
-    }
-    currentLeftRow = leftExpression->getNextRow();
-  }
   vector<string> rightRow = rightExpression->getNextRow();
+  if(rightRow.empty()) {
+    rightExpression->reset();
+    currentLeftRow = leftExpression->getNextRow();
+    if(currentLeftRow.empty()) {
+      return vector<string>();
+    }
+  }
   return joinVectors(currentLeftRow, rightRow);
 }
 

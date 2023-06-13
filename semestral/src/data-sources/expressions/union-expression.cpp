@@ -10,33 +10,25 @@ UnionExpression::UnionExpression(shared_ptr<AbstractExpression> left,
       throw runtime_error("Cannot intersect expressions with different headers");
     }
   }
-  leftExpression->reset();
-  rightExpression->reset();
-  nextRow = getNextRowDirectly();
 }
 
 string UnionExpression::toSQL() const {
   return "(" + leftExpression->toSQL() + " UNION " + rightExpression->toSQL() + ") AS " + name;
 }
 
-bool UnionExpression::hasNextRow() const {
-  return nextRow.size() > 0;
-}
-
 void UnionExpression::reset() {
   leftExpression->reset();
   rightExpression->reset();
-  nextRow = getNextRowDirectly();
 }
 
-vector<string> UnionExpression::getNextRowDirectly() {
+const vector<string> UnionExpression::getNextRow() {
   // first we look for all rows on left that are not on the right
   // then we just take all items from the right
-  while (leftExpression->hasNextRow()) {
+  vector<string> leftRow;
+  while (!(leftRow = leftExpression->getNextRow()).empty()) {
     bool hasMatch = false;
-    vector<string> leftRow = leftExpression->getNextRow();
-    while (rightExpression->hasNextRow()) {
-      vector<string> rightRow = rightExpression->getNextRow();
+    vector<string> rightRow;
+    while (!(rightRow = rightExpression->getNextRow()).empty()) {
       if (equalsVectors(leftRow, rightRow)) {
         hasMatch = true;
         break;
@@ -47,15 +39,5 @@ vector<string> UnionExpression::getNextRowDirectly() {
       return leftRow;
     }
   }
-  if (rightExpression->hasNextRow()) {
-    return rightExpression->getNextRow();
-  }
-  return vector<string>();
+  return rightExpression->getNextRow(); // if nothing is there, it will return an empty vector
 }
-
-const vector<string> UnionExpression::getNextRow() {
-  vector<string> rowToReturn = nextRow;
-  nextRow = getNextRowDirectly();
-  return rowToReturn;
-}
-

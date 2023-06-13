@@ -6,34 +6,22 @@
 using namespace std;
 
 CSVDataSource::CSVDataSource(const string &path)
-    : FileDataSource(path) {
-  try {
-    readUnparsedRow();
-    this->header = vectorToIndexMap(this->nextRow);
-    readUnparsedRow();
-  } catch (...) {
-    throw runtime_error("Could not read header, CSV file is empty");
-  }
+        : FileDataSource(path) {
+  CSVDataSource::reset();
 }
 
-bool CSVDataSource::hasNextRow() const { return nextRow.size() > 0; }
-
 const vector<string> CSVDataSource::getNextRow() {
-  if(this->nextRow.size() == 0) {
-    throw runtime_error("Could not read row, CSV file is empty");
+  vector<string> nextRow = readNextRow();
+  if (nextRow.empty()) {
+    return nextRow;
   }
-  if(this->nextRow.size() != this->header.size()) {
+  if (nextRow.size() != this->header.size()) {
     throw runtime_error("Could not read row, CSV file has inconsistent number of columns");
   }
-  vector<string> nextRow;
-  for (string &value : this->nextRow) {
-    nextRow.push_back(value);
-  }
-  readUnparsedRow();
   return nextRow;
 }
 
-void CSVDataSource::readUnparsedRow() {
+vector<string> CSVDataSource::readNextRow() {
   string line;
   getline(file, line);
   stringstream ss(line);
@@ -42,11 +30,14 @@ void CSVDataSource::readUnparsedRow() {
   while (getline(ss, token, ',')) {
     row.push_back(token);
   }
-  this->nextRow = row;
+  return row;
 }
 
 void CSVDataSource::reset() {
-  FileDataSource::reset();
-  readUnparsedRow();
-  readUnparsedRow();
+  try {
+    FileDataSource::reset();
+    this->header = vectorToIndexMap(readNextRow());
+  } catch (...) {
+    throw runtime_error("Could not read header, CSV file is empty");
+  }
 }

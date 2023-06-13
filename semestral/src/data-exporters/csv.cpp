@@ -16,8 +16,8 @@ void CSVDataExporter::exportData() {
     }
   }
   file << endl;
-  while (this->dataSource->hasNextRow()) {
-    vector<string> row = this->dataSource->getNextRow();
+  vector<string> row;
+  while (!(row = this->dataSource->getNextRow()).empty()) {
     size_t rowSize = row.size();
     for (size_t i = 0; i < rowSize; i++) {
       file << row[i];

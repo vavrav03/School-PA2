@@ -14,10 +14,6 @@ std::string DataSourceExpressionWrapper::toSQL() const {
   return "SELECT * FROM " + name;
 }
 
-bool DataSourceExpressionWrapper::hasNextRow() const {
-  return expression->hasNextRow();
-}
-
 const std::vector<std::string> DataSourceExpressionWrapper::getNextRow() {
   return expression->getNextRow();
 }

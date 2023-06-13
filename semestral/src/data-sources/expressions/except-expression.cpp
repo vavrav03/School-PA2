@@ -10,32 +10,24 @@ ExceptExpression::ExceptExpression(shared_ptr<AbstractExpression> left,
       throw runtime_error("Cannot intersect expressions with different headers");
     }
   }
-  leftExpression->reset();
-  rightExpression->reset();
-  nextRow = getNextRowDirectly();
 }
 
 string ExceptExpression::toSQL() const {
   return "(" + leftExpression->toSQL() + " EXCEPT " + rightExpression->toSQL() + ") AS " + name;
 }
 
-bool ExceptExpression::hasNextRow() const {
-  return nextRow.size() > 0;
-}
-
 void ExceptExpression::reset() {
   leftExpression->reset();
   rightExpression->reset();
-  nextRow = getNextRowDirectly();
 }
 
-vector<string> ExceptExpression::getNextRowDirectly() {
-  while (leftExpression->hasNextRow()) {
+const vector<string> ExceptExpression::getNextRow() {
+  vector<string> leftRow;
+  while (!(leftRow = leftExpression->getNextRow()).empty()) {
     bool hasMatch = false;
-    vector<string> leftRow = leftExpression->getNextRow();
+    vector<string> rightRow;
     rightExpression->reset();
-    while (rightExpression->hasNextRow()) {
-      vector<string> rightRow = rightExpression->getNextRow();
+    while (!(rightRow = rightExpression->getNextRow()).empty()) {
       if (equalsVectors(leftRow, rightRow)) {
         hasMatch = true;
         break;
@@ -46,10 +38,4 @@ vector<string> ExceptExpression::getNextRowDirectly() {
     }
   }
   return vector<string>();
-}
-
-const vector<string> ExceptExpression::getNextRow() {
-  vector<string> rowToReturn = nextRow;
-  nextRow = getNextRowDirectly();
-  return rowToReturn;
 }
