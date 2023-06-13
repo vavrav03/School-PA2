@@ -1,4 +1,4 @@
-#include "../data-sources/file/csv/csv.h"
+#include "../data-sources/file/csv.h"
 #include <iostream>
 #include <cassert>
 #include "../utils/utils.h"

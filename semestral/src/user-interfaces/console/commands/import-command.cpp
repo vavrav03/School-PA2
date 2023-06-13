@@ -1,6 +1,6 @@
 #include "./console-command.h"
-#include "../../../data-sources/file/csv/csv.h"
-#include "../../../data-sources/file/json/json.h"
+#include "../../../data-sources/file/csv.h"
+#include "../../../data-sources/file/json.h"
 
 using namespace std;
 
