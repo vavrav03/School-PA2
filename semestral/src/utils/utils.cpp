@@ -4,7 +4,7 @@ using namespace std;
 
 string toLowerCase(const string &stringToConvert) {
   string result = stringToConvert;
-  for (char &c: result) {
+  for (char &c : result) {
     c = tolower(c);
   }
   return result;

@@ -9,7 +9,7 @@
  */
 class Token {
 
-public:
+ public:
   Token(const std::string &value, bool quoted) : value(value), quoted(quoted) {}
 
   friend std::ostream &operator<<(std::ostream &os, const Token &token) {
@@ -24,6 +24,5 @@ public:
   const std::string value;
   const bool quoted;
 };
-
 
 #endif //SEMESTRAL_TOKEN_H

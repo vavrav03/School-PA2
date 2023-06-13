@@ -14,7 +14,7 @@
  */
 class ConsoleCommand {
 
-public:
+ public:
   ConsoleCommand() = default;
 
   virtual void run(std::vector<Token> command) = 0;
@@ -25,15 +25,15 @@ public:
  * Abstract class for all commands that need access to variables memory
  */
 class VariablesDependentCommand : public ConsoleCommand {
-public:
+ public:
   explicit VariablesDependentCommand(VariablesMemory &memory) : ConsoleCommand(), memory(memory) {}
 
-protected:
+ protected:
   VariablesMemory &memory;
 };
 
 class ExitCommand : public VariablesDependentCommand {
-public:
+ public:
   explicit ExitCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
@@ -41,7 +41,7 @@ public:
 };
 
 class HelpCommand : public ConsoleCommand {
-public:
+ public:
   HelpCommand();
 
   void run(std::vector<Token> command) override;
@@ -49,7 +49,7 @@ public:
 };
 
 class UnknownCommand : public ConsoleCommand {
-public:
+ public:
   UnknownCommand();
 
   void run(std::vector<Token> command) override;
@@ -57,7 +57,7 @@ public:
 };
 
 class ImportCommand : public VariablesDependentCommand {
-public:
+ public:
   explicit ImportCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
@@ -65,7 +65,7 @@ public:
 };
 
 class PrintCommand : public VariablesDependentCommand {
-public:
+ public:
   explicit PrintCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
@@ -73,7 +73,7 @@ public:
 };
 
 class PrintVariablesCommand : public VariablesDependentCommand {
-public:
+ public:
   explicit PrintVariablesCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
@@ -81,7 +81,7 @@ public:
 };
 
 class ExportCommand : public VariablesDependentCommand {
-public:
+ public:
   explicit ExportCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
@@ -89,7 +89,7 @@ public:
 };
 
 class SequelizeCommand : public VariablesDependentCommand {
-public:
+ public:
   explicit SequelizeCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
@@ -97,13 +97,13 @@ public:
 };
 
 class StoreExpressionToVariable : public VariablesDependentCommand {
-public:
+ public:
   explicit StoreExpressionToVariable(VariablesMemory &memory, const
   RelationalExpressionParser &parser);
 
   void run(std::vector<Token> command) override;
   bool matchesSyntactically(std::vector<Token> command) override;
-private:
+ private:
   const RelationalExpressionParser &parser;
 };
 

@@ -2,8 +2,9 @@
 
 using namespace std;
 
-RelationalExpressionParser::RelationalExpressionParser(vector<shared_ptr<OperationPartFactory> > &factories, VariablesMemory &memory)
-        : factories(factories), memory(memory) {}
+RelationalExpressionParser::RelationalExpressionParser(vector<shared_ptr<OperationPartFactory> > &factories,
+                                                       VariablesMemory &memory)
+    : factories(factories), memory(memory) {}
 
 RelationalExpressionParser
 RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, VariablesMemory &memory) {
@@ -20,18 +21,18 @@ RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, Va
 }
 
 shared_ptr<AbstractDataSource> RelationalExpressionParser::createExpressionFromTokens(
-        const std::vector<Token> &tokens) const {
-  vector<OperationPart*> infix = createInfixFromTokens(tokens);
-  vector<OperationPart*> postfix = createPostfixFromInfix(infix);
+    const std::vector<Token> &tokens) const {
+  vector<OperationPart *> infix = createInfixFromTokens(tokens);
+  vector<OperationPart *> postfix = createPostfixFromInfix(infix);
   return createExpressionFromPostfix(postfix);
 }
 
-vector<OperationPart*> RelationalExpressionParser::createInfixFromTokens(const vector<Token> &tokens) const {
+vector<OperationPart *> RelationalExpressionParser::createInfixFromTokens(const vector<Token> &tokens) const {
   size_t nextTokenIndex = 0;
   vector<OperationPart *> infix;
   while (nextTokenIndex < tokens.size()) {
     bool found = false;
-    for (auto factory: factories) {
+    for (auto factory : factories) {
       if (factory->canCreate(tokens, nextTokenIndex)) {
         infix.push_back(factory->create(tokens, nextTokenIndex));
         found = true;
@@ -47,12 +48,13 @@ vector<OperationPart*> RelationalExpressionParser::createInfixFromTokens(const v
 }
 
 shared_ptr<AbstractDataSource> RelationalExpressionParser::createExpressionFromPostfix(
-        const std::vector<OperationPart*> &parts) const {
+    const std::vector<OperationPart *> &parts) const {
   stack<shared_ptr<AbstractDataSource> > expressions;
   string lastAlias;
   string currentAlias;
-  for (auto part: parts) {
-    if(part->type != OperationPartType::OPERAND && part->type != OperationPartType::LEFT_BRACKET && part->type != OperationPartType::RIGHT_BRACKET) {
+  for (auto part : parts) {
+    if (part->type != OperationPartType::OPERAND && part->type != OperationPartType::LEFT_BRACKET
+        && part->type != OperationPartType::RIGHT_BRACKET) {
       currentAlias = memory.generateNewAvailableAlias(lastAlias);
       lastAlias = currentAlias;
     }

@@ -10,7 +10,7 @@ bool PrintVariablesCommand::matchesSyntactically(std::vector<Token> command) {
 
 void PrintVariablesCommand::run(std::vector<Token> command) {
   vector<string> variablesNames = memory.getVariablesNames();
-  for(string &variableName : variablesNames) {
+  for (string &variableName : variablesNames) {
     cout << variableName << endl;
   }
 }

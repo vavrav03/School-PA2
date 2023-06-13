@@ -9,14 +9,14 @@
 #include "../../abstract/variables-memory.h"
 
 class LeftBracketRelationOperand : public OperationPart {
-public:
+ public:
   LeftBracketRelationOperand() : OperationPart(OperationPartType::LEFT_BRACKET, 999) {}
 };
 
 class LeftBracketRelationOperandFactory : public OperationPartFactory {
-public:
+ public:
   LeftBracketRelationOperandFactory(const Tokenizer &tokenizer) : OperationPartFactory(
-          tokenizer) {}
+      tokenizer) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].value == "{";
@@ -29,13 +29,13 @@ public:
 };
 
 class RightBracketRelationOperand : public OperationPart {
-public:
+ public:
   RightBracketRelationOperand() : OperationPart(OperationPartType::RIGHT_BRACKET, 999) {}
 };
 
 class RightBracketRelationOperandFactory : public OperationPartFactory {
 
-public:
+ public:
   RightBracketRelationOperandFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
@@ -49,40 +49,40 @@ public:
 };
 
 class ProjectionOperatorFactory : public OperationPartFactory {
-public:
+ public:
   ProjectionOperatorFactory(const Tokenizer &tokenizer);
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
   OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class ProjectionOperator : public OperationPart {
-public:
+ public:
   ProjectionOperator(const std::vector<std::string> &header,
                      const std::unordered_map<std::string, std::string> &aliasToOldName);
 
   void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias);
-private:
+ private:
   std::vector<std::string> header;
   std::unordered_map<std::string, std::string> aliasToOldName;
 };
 
 class DataSourceExpressionOperationPart : public OperationPart {
-public:
+ public:
   DataSourceExpressionOperationPart(const std::shared_ptr<AbstractDataSource> &expression) : OperationPart(
-          OperationPartType::OPERAND, 1999), expression(expression) {}
+      OperationPartType::OPERAND, 1999), expression(expression) {}
 
   void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
     parts.push(expression);
   }
 
-private:
+ private:
   std::shared_ptr<AbstractDataSource> expression;
 };
 
 class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
-public:
+ public:
   DataSourceExpressionOperationPartFactory(const Tokenizer &tokenizer, VariablesMemory &memory) : OperationPartFactory(
-          tokenizer), memory(memory) {}
+      tokenizer), memory(memory) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     if (tokens[nextTokenIndex].quoted) {
@@ -97,12 +97,12 @@ public:
     return returnValue;
   }
 
-private:
+ private:
   VariablesMemory &memory;
 };
 
 class IntersectionOperator : public OperationPart {
-public:
+ public:
   IntersectionOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 9) {}
 
   void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
@@ -115,7 +115,7 @@ public:
 };
 
 class IntersectionOperatorFactory : public OperationPartFactory {
-public:
+ public:
   IntersectionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
@@ -129,7 +129,7 @@ public:
 };
 
 class UnionOperator : public OperationPart {
-public:
+ public:
   UnionOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 10) {}
 
   void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
@@ -142,7 +142,7 @@ public:
 };
 
 class UnionOperatorFactory : public OperationPartFactory {
-public:
+ public:
   UnionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
@@ -156,7 +156,7 @@ public:
 };
 
 class ExceptOperator : public OperationPart {
-public:
+ public:
   ExceptOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 10) {}
 
   void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
@@ -169,7 +169,7 @@ public:
 };
 
 class ExceptOperatorFactory : public OperationPartFactory {
-public:
+ public:
   ExceptOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
@@ -183,7 +183,7 @@ public:
 };
 
 class CartesianProductOperator : public OperationPart {
-public:
+ public:
   CartesianProductOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 11) {}
 
   void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
@@ -196,7 +196,7 @@ public:
 };
 
 class CartesianProductOperatorFactory : public OperationPartFactory {
-public:
+ public:
   CartesianProductOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
@@ -208,6 +208,5 @@ public:
     return new CartesianProductOperator();
   }
 };
-
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H

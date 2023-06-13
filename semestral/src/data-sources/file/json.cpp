@@ -3,7 +3,8 @@
 
 using namespace std;
 
-JSONDataSource::JSONDataSource(const std::string &path, const std::string & name) : FileDataSource(path, name), reachedEndOfArray(false) {
+JSONDataSource::JSONDataSource(const std::string &path, const std::string &name) : FileDataSource(path, name),
+                                                                                   reachedEndOfArray(false) {
   readFirstBlockAndSetHeader();
 }
 
@@ -92,7 +93,7 @@ JSONDataSource::parseBlockString(const std::string &unparsedJsonObject) {
   vector<string> row;
   bool inQuotes = false;
   string currentString;
-  for (char c: unparsedJsonObject) {
+  for (char c : unparsedJsonObject) {
     if (c == '"') {
       inQuotes = !inQuotes;
     } else if (c == ':' && !inQuotes) {

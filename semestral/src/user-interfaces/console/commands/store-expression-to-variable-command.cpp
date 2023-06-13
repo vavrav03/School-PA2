@@ -4,7 +4,7 @@ using namespace std;
 
 StoreExpressionToVariable::StoreExpressionToVariable(VariablesMemory &memory,
                                                      const RelationalExpressionParser &parser)
-        : VariablesDependentCommand(memory), parser(parser) {
+    : VariablesDependentCommand(memory), parser(parser) {
 
 }
 

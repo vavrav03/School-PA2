@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void testPathUtils(){
+void testPathUtils() {
   cout << "RUNNING: testPathUtils" << endl;
   assert(getNameFromPath("test.json") == "test.json");
   assert(getNameFromPath("./test.json") == "test.json");
@@ -25,5 +25,5 @@ void testPathUtils(){
   assert(getNameWithoutExtension("test") == "test");
 }
 
-void testUtils(){
+void testUtils() {
 }

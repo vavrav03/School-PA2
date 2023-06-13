@@ -6,7 +6,7 @@ CartesianProductExpression::CartesianProductExpression(std::shared_ptr<AbstractD
                                                        std::shared_ptr<AbstractDataSource> right,
                                                        const std::string &name) : AbstractBinaryExpression(left, right,
                                                                                                            name) {
-  if(mapsContainSameKey(leftExpression->getHeaderMap(), rightExpression->getHeaderMap())) {
+  if (mapsContainSameKey(leftExpression->getHeaderMap(), rightExpression->getHeaderMap())) {
     throw runtime_error("Cannot perform cartesian product on expressions with same column names");
   }
   currentLeftRow = leftExpression->getNextRow();
@@ -24,11 +24,11 @@ void CartesianProductExpression::reset() {
 
 const vector<string> CartesianProductExpression::getNextRow() {
   vector<string> rightRow = rightExpression->getNextRow();
-  if(rightRow.empty()) {
+  if (rightRow.empty()) {
     rightExpression->reset();
     rightRow = rightExpression->getNextRow();
     currentLeftRow = leftExpression->getNextRow();
-    if(currentLeftRow.empty()) {
+    if (currentLeftRow.empty()) {
       return vector<string>();
     }
   }
@@ -46,7 +46,7 @@ size_t CartesianProductExpression::getHeaderSize() const {
 unordered_map<string, size_t> CartesianProductExpression::getHeaderMap() const {
   unordered_map<string, size_t> headerMap = leftExpression->getHeaderMap();
   unordered_map<string, size_t> rightHeaderMap = rightExpression->getHeaderMap();
-  for (auto &pair: rightHeaderMap) {
+  for (auto &pair : rightHeaderMap) {
     headerMap[pair.first] = pair.second + leftExpression->getHeaderSize();
   }
   return headerMap;

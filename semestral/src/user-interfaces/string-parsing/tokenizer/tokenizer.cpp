@@ -18,7 +18,7 @@ vector<Token> Tokenizer::tokenize(const string &command) {
   string buffer;
   bool in_quotes = false;
 
-  for (const char &c: command) {
+  for (const char &c : command) {
     if (c == '"') {
       in_quotes = !in_quotes;
       if (!buffer.empty()) {
@@ -31,7 +31,7 @@ vector<Token> Tokenizer::tokenize(const string &command) {
         buffer.clear();
       }
     } else if (!in_quotes &&
-               isSpecialCharacter(string(1, c))) {
+        isSpecialCharacter(string(1, c))) {
       if (!buffer.empty()) {
         tokens.push_back(Token(buffer, false));
         buffer.clear();
@@ -50,7 +50,7 @@ vector<Token> Tokenizer::tokenize(const string &command) {
 }
 
 bool Tokenizer::isSpecialCharacter(const std::string &character) const {
-  for (const string &specialCharacter: specialCharacters) {
+  for (const string &specialCharacter : specialCharacters) {
     if (specialCharacter == character) {
       return true;
     }

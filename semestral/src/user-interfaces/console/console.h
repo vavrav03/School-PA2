@@ -12,15 +12,14 @@
 /**
  * Interface for interaction with user via command line
  */
-class ConsoleInterface : public AbstractInterface
-{
-public:
+class ConsoleInterface : public AbstractInterface {
+ public:
   ConsoleInterface();
   /**
    * Wait in endless loop for next command separated by new line. Command is then tokenized and passed to processCommand
    */
   void run() override;
-private:
+ private:
 
   /**
    * Wait until user enters a command and return it

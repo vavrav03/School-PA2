@@ -5,7 +5,7 @@ using namespace std;
 vector<OperationPart *> createPostfixFromInfix(const std::vector<OperationPart *> &infix) {
   vector<OperationPart *> postfix;
   stack<OperationPart *> stack;
-  for (auto &part: infix) {
+  for (auto &part : infix) {
     if (part->type == OperationPartType::OPERAND) {
       postfix.push_back(part);
     } else if (part->type == OperationPartType::LEFT_BRACKET) {
@@ -27,9 +27,9 @@ vector<OperationPart *> createPostfixFromInfix(const std::vector<OperationPart *
       }
     } else {
       while (!stack.empty() &&
-             stack.top()->type != OperationPartType::LEFT_BRACKET &&
-             stack.top()->type != OperationPartType::RIGHT_BRACKET &&
-             stack.top()->priority >= part->priority) {
+          stack.top()->type != OperationPartType::LEFT_BRACKET &&
+          stack.top()->type != OperationPartType::RIGHT_BRACKET &&
+          stack.top()->priority >= part->priority) {
         postfix.push_back(stack.top());
         stack.pop();
       }

@@ -6,7 +6,7 @@ bool VariablesMemory::exists(const string &name) {
   return variables.find(name) != variables.end();
 }
 
-void VariablesMemory::add(const string &name, shared_ptr<AbstractDataSource>item) {
+void VariablesMemory::add(const string &name, shared_ptr<AbstractDataSource> item) {
   variables[name] = item;
 }
 
@@ -24,12 +24,12 @@ vector<string> VariablesMemory::getVariablesNames() {
 
 string VariablesMemory::getAvailableAlias(const string &preferredAlias) {
   string alias = preferredAlias;
-  if(!this->exists(preferredAlias)) {
+  if (!this->exists(preferredAlias)) {
     return alias;
   }
   alias += "_a";
-  while(this->exists(alias)) {
-    if(alias.back() == 'z') {
+  while (this->exists(alias)) {
+    if (alias.back() == 'z') {
       alias += 'a';
     } else {
       alias.back()++;
@@ -38,17 +38,17 @@ string VariablesMemory::getAvailableAlias(const string &preferredAlias) {
   return alias;
 }
 
-string VariablesMemory::generateNewAvailableAlias(const string & startingPoint) {
-  if(startingPoint.empty()) {
+string VariablesMemory::generateNewAvailableAlias(const string &startingPoint) {
+  if (startingPoint.empty()) {
     return "a";
   }
   string alias = startingPoint;
   do {
-    if(alias.back() == 'z') {
+    if (alias.back() == 'z') {
       alias += 'a';
     } else {
       alias.back()++;
     }
-  } while(this->exists(alias));
+  } while (this->exists(alias));
   return alias;
 }

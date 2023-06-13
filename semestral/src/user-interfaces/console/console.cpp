@@ -6,7 +6,7 @@ using namespace std;
 
 ConsoleInterface::ConsoleInterface() : AbstractInterface(), tokenizer(Tokenizer::createRelgebraInstance()),
                                        stringToRelationParser(
-                                               RelationalExpressionParser::createDefaultInstance(tokenizer, memory)) {
+                                           RelationalExpressionParser::createDefaultInstance(tokenizer, memory)) {
   commands.push_back(new ExitCommand(memory));
   commands.push_back(new HelpCommand());
   commands.push_back(new ImportCommand(memory));
@@ -41,7 +41,7 @@ void ConsoleInterface::printPrompt() {
 }
 
 void ConsoleInterface::processCommand(const vector<Token> &commandTokens) {
-  for (auto &command: commands) {
+  for (auto &command : commands) {
     if (command->matchesSyntactically(commandTokens)) {
       command->run(commandTokens);
       return;

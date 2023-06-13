@@ -6,9 +6,8 @@
 #include "../../data-sources/abstract.h"
 #include "../../data-sources/expressions/expressions.h"
 
-
 class VariablesMemory {
-public:
+ public:
   bool exists(const std::string &name);
   void add(const std::string &name, std::shared_ptr<AbstractDataSource> item);
   std::shared_ptr<AbstractDataSource> get(const std::string &name);
@@ -22,9 +21,8 @@ public:
   std::string getAvailableAlias(const std::string &preferredAlias);
   std::string generateNewAvailableAlias(const std::string &startingPoint);
 
-protected:
+ protected:
   std::unordered_map<std::string, std::shared_ptr<AbstractDataSource> > variables;
 };
-
 
 #endif //SEMESTRAL_VARIABLES_MEMORY_H

@@ -65,7 +65,7 @@ const vector<string> ProjectionExpression::getNextRow() {
   vector<string> header = this->getHeaderVector();
   vector<string> row(header.size());
   vector<string> nextRow = this->expression->getNextRow();
-  if(nextRow.empty()) {
+  if (nextRow.empty()) {
     return vector<string>();
   }
   for (size_t i = 0; i < header.size(); i++) {

@@ -2,7 +2,9 @@
 
 using namespace std;
 
-CSVDataExporter::CSVDataExporter(shared_ptr<AbstractDataSource>dataSource, string dstPath) : FileDataExporter(dataSource, dstPath) {}
+CSVDataExporter::CSVDataExporter(shared_ptr<AbstractDataSource> dataSource, string dstPath) : FileDataExporter(
+    dataSource,
+    dstPath) {}
 
 void CSVDataExporter::exportData() {
   AbstractDataExporter::exportData();

@@ -145,7 +145,7 @@ void testExportCommand(Tokenizer &tokenizer) {
   assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectMulitpleFiles)));
 }
 
-void testSequelizeCommand(Tokenizer & tokenizer){
+void testSequelizeCommand(Tokenizer &tokenizer) {
   cout << "- RUNNING: testSequelizeCommand" << endl;
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";

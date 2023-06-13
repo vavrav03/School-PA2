@@ -4,9 +4,8 @@
 #include <string>
 #include "./variables-memory.h"
 
-class AbstractInterface
-{
-public:
+class AbstractInterface {
+ public:
   virtual void run() = 0;
   static AbstractInterface *createInstance(const std::string &interfaceName);
   VariablesMemory memory;

@@ -17,7 +17,7 @@ enum class OperationPartType {
 
 class OperationPart {
 
-public:
+ public:
   OperationPart(OperationPartType type, int priority) : type(type),
                                                         priority(priority) {}
 
@@ -32,7 +32,7 @@ public:
 
 class OperationPartFactory {
 
-public:
+ public:
   OperationPartFactory(const Tokenizer &tokenizer) : tokenizer(tokenizer) {}
 
   /**
@@ -45,7 +45,7 @@ public:
   virtual bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const = 0;
   virtual OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const = 0;
   virtual ~OperationPartFactory() = default;
-protected:
+ protected:
   const Tokenizer &tokenizer;
 };
 
@@ -54,7 +54,6 @@ protected:
  * @param infix
  * @return
  */
-std::vector<OperationPart*> createPostfixFromInfix(const std::vector<OperationPart*> &infix);
-
+std::vector<OperationPart *> createPostfixFromInfix(const std::vector<OperationPart *> &infix);
 
 #endif //SEMESTRAL_OPERATION_PART_H
