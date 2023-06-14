@@ -11,7 +11,7 @@ ConsoleInterface::ConsoleInterface() : AbstractInterface(), tokenizer(Tokenizer:
   commands.push_back(make_unique<HelpCommand>());
   commands.push_back(make_unique<ImportCommand>(memory));
   commands.push_back(make_unique<StoreExpressionToVariable>(memory, stringToRelationParser));
-  commands.push_back(make_unique<PrintCommand>(memory));
+  commands.push_back(make_unique<PrintCommand>(memory, stringToRelationParser));
   commands.push_back(make_unique<PrintVariablesCommand>(memory));
   commands.push_back(make_unique<ExportCommand>(memory));
   commands.push_back(make_unique<SequelizeCommand>(memory));

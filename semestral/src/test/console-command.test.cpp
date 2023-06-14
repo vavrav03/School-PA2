@@ -56,13 +56,14 @@ void testPrintCommand(Tokenizer &tokenizer) {
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand importCommand(memory);
   importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
-  PrintCommand command(memory);
+  PrintCommand command(memory, RelationalExpressionParser::createDefaultInstance(tokenizer, memory));
   const string correct1 = "print abc";
   const string correct2 = "print abc";
   const string correct3 = "print \"abc\"";
+  const string correct4 = "print {{{abc[name]}}}";
   const string incorrectNonExistingVariable = "print ddd";
   const string incorrectWithoutPrint = "abc";
-  const string incorrectMultipleVariables = "print abc ddd";
+  const string incorrectExpression = "print abc[";
 
   assert(command.matchesSyntactically(tokenizer.tokenize(correct1)));
   command.run(tokenizer.tokenize(correct1));
@@ -80,8 +81,15 @@ void testPrintCommand(Tokenizer &tokenizer) {
     assert(true);
   }
 
+  try {
+    command.run(tokenizer.tokenize(incorrectExpression));
+    assert(false);
+  } catch (exception &e) {
+    assert(true);
+  }
+
   assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectWithoutPrint)));
-  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectMultipleVariables)));
+  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectWithoutPrint)));
 }
 
 void testExportCommand(Tokenizer &tokenizer) {

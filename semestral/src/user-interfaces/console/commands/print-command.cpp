@@ -2,21 +2,28 @@
 
 using namespace std;
 
-PrintCommand::PrintCommand(VariablesMemory &memory) : VariablesDependentCommand(memory) {}
+PrintCommand::PrintCommand(VariablesMemory &memory, const RelationalExpressionParser &parser)
+    : VariablesDependentCommand(memory), parser(parser) {}
 
 bool PrintCommand::matchesSyntactically(std::vector<Token> command) {
-  return command.size() == 2 && command[0].value == "print";
+  return command.size() >= 2 && command[0].value == "print";
 }
 
 void PrintCommand::run(std::vector<Token> command) {
   string variableName = command[1].value;
-  if (!memory.exists(variableName)) {
-    throw runtime_error("Variable " + variableName + " does not exist.");
+  unique_ptr<AbstractDataSource> dataSource;
+  if (command.size() == 2) {
+    if (!memory.exists(variableName)) {
+      throw runtime_error("Variable " + variableName + " does not exist.");
+    }
+    dataSource = memory.get(variableName);
+  } else {
+    vector<Token> expression(command.begin() + 2, command.end());
+    dataSource = parser.createExpressionFromTokens(expression);
   }
-  unique_ptr<AbstractDataSource> dataSource = memory.get(variableName);
   dataSource->reset();
   cout << "| ";
-  for (string columnName : dataSource->getHeaderVector()) {
+  for (string &columnName : dataSource->getHeaderVector()) {
     cout << columnName << " | ";
   }
   cout << endl;

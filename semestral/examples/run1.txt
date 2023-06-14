@@ -1,0 +1,2 @@
+a = import "examples/example1.csv"
+b = import "examples/example2.csv"

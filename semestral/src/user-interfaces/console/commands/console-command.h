@@ -67,10 +67,12 @@ class ImportCommand : public VariablesDependentCommand {
 
 class PrintCommand : public VariablesDependentCommand {
  public:
-  explicit PrintCommand(VariablesMemory &memory);
+  explicit PrintCommand(VariablesMemory &memory, const RelationalExpressionParser &parser);
 
   void run(std::vector<Token> command) override;
   bool matchesSyntactically(std::vector<Token> command) override;
+ private:
+  const RelationalExpressionParser &parser;
 };
 
 class PrintVariablesCommand : public VariablesDependentCommand {

@@ -5,11 +5,14 @@ using namespace std;
 ProjectionExpression::ProjectionExpression(unique_ptr<AbstractDataSource> expression,
                                            const std::vector<std::string> &columns,
                                            const unordered_map<string, string> &aliasToPreviousName,
-                                           const std::string &name) : AbstractUnaryExpression(std::move(expression), name) {
+                                           const std::string &name) : AbstractUnaryExpression(std::move(expression),
+                                                                                              name) {
   vector<int> indexes(this->expression->getHeaderSize());
   this->aliasToPreviousName = aliasToPreviousName;
-  for (const std::string &column: columns) {
-    indexes[this->expression->getHeaderIndex(getWrappedColumnName(column))]++;
+  for (const std::string &column : columns) {
+    try { indexes[this->expression->getHeaderIndex(getWrappedColumnName(column))]++; } catch (...) {
+      throw runtime_error("Column " + column + " does not exist");
+    }
   }
   for (size_t i = 0; i < indexes.size(); i++) {
     if (indexes[i] > 1) {
@@ -49,7 +52,7 @@ size_t ProjectionExpression::getHeaderIndex(const string &name) const {
 }
 
 const string &ProjectionExpression::getHeaderName(size_t index) const {
-  for (auto &pair: this->headerMap) {
+  for (auto &pair : this->headerMap) {
     if (pair.second == index) {
       return pair.first;
     }
@@ -83,5 +86,8 @@ std::string ProjectionExpression::getWrappedColumnName(const std::string &name) 
 }
 
 unique_ptr<AbstractDataSource> ProjectionExpression::clone() const {
-  return make_unique<ProjectionExpression>(this->expression->clone(), this->getHeaderVector(), this->aliasToPreviousName, this->name);
+  return make_unique<ProjectionExpression>(this->expression->clone(),
+                                           this->getHeaderVector(),
+                                           this->aliasToPreviousName,
+                                           this->name);
 }

@@ -23,7 +23,7 @@ class LeftBracketRelationOperandFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "{";
   }
 
-  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<LeftBracketRelationOperand>();
   }
@@ -43,7 +43,7 @@ class RightBracketRelationOperandFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "}";
   }
 
-  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<RightBracketRelationOperand>();
   }
@@ -53,7 +53,7 @@ class ProjectionOperatorFactory : public OperationPartFactory {
  public:
   ProjectionOperatorFactory(const Tokenizer &tokenizer);
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
-  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
+  std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class ProjectionOperator : public OperationPart {
@@ -92,8 +92,12 @@ class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
     return !tokenizer.isSpecialCharacter(tokens[nextTokenIndex].value);
   }
 
-  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
-    std::unique_ptr<OperationPart>returnValue = std::make_unique<DataSourceExpressionOperationPart>(memory.get(tokens[nextTokenIndex].value));
+  std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+    if (!memory.exists(tokens[nextTokenIndex].value)) {
+      throw std::runtime_error("Variable " + tokens[nextTokenIndex].value + " does not exist.");
+    }
+    std::unique_ptr<OperationPart>
+        returnValue = std::make_unique<DataSourceExpressionOperationPart>(memory.get(tokens[nextTokenIndex].value));
     nextTokenIndex++;
     return returnValue;
   }
@@ -123,7 +127,7 @@ class IntersectionOperatorFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "∩";
   }
 
-  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<IntersectionOperator>();
   }
@@ -150,7 +154,7 @@ class UnionOperatorFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "∪";
   }
 
-  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<UnionOperator>();
   }
@@ -177,7 +181,7 @@ class ExceptOperatorFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "\\";
   }
 
-  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<ExceptOperator>();
   }
@@ -204,7 +208,7 @@ class CartesianProductOperatorFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "×";
   }
 
-  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<CartesianProductOperator>();
   }
