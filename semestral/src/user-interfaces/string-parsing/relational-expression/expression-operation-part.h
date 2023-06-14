@@ -3,6 +3,7 @@
 
 #include "../operation-part.h"
 #include <string>
+#include <stack>
 #include "../../../data-sources/expressions/expressions.h"
 #include "../tokenizer/token.h"
 #include "../tokenizer/tokenizer.h"
@@ -22,9 +23,9 @@ class LeftBracketRelationOperandFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "{";
   }
 
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
-    return new LeftBracketRelationOperand();
+    return std::make_unique<LeftBracketRelationOperand>();
   }
 };
 
@@ -42,9 +43,9 @@ class RightBracketRelationOperandFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "}";
   }
 
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
-    return new RightBracketRelationOperand();
+    return std::make_unique<RightBracketRelationOperand>();
   }
 };
 
@@ -52,7 +53,7 @@ class ProjectionOperatorFactory : public OperationPartFactory {
  public:
   ProjectionOperatorFactory(const Tokenizer &tokenizer);
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
+  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
 
 class ProjectionOperator : public OperationPart {
@@ -60,7 +61,7 @@ class ProjectionOperator : public OperationPart {
   ProjectionOperator(const std::vector<std::string> &header,
                      const std::unordered_map<std::string, std::string> &aliasToOldName);
 
-  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias);
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias);
  private:
   std::vector<std::string> header;
   std::unordered_map<std::string, std::string> aliasToOldName;
@@ -68,15 +69,15 @@ class ProjectionOperator : public OperationPart {
 
 class DataSourceExpressionOperationPart : public OperationPart {
  public:
-  DataSourceExpressionOperationPart(const std::shared_ptr<AbstractDataSource> &expression) : OperationPart(
-      OperationPartType::OPERAND, 1999), expression(expression) {}
+  DataSourceExpressionOperationPart(std::unique_ptr<AbstractDataSource> expression) : OperationPart(
+      OperationPartType::OPERAND, 1999), expression(std::move(expression)) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
-    parts.push(expression);
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
+    parts.push(std::move(expression));
   }
 
  private:
-  std::shared_ptr<AbstractDataSource> expression;
+  std::unique_ptr<AbstractDataSource> expression;
 };
 
 class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
@@ -91,8 +92,8 @@ class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
     return !tokenizer.isSpecialCharacter(tokens[nextTokenIndex].value);
   }
 
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
-    OperationPart *returnValue = new DataSourceExpressionOperationPart(memory.get(tokens[nextTokenIndex].value));
+  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+    std::unique_ptr<OperationPart>returnValue = std::make_unique<DataSourceExpressionOperationPart>(memory.get(tokens[nextTokenIndex].value));
     nextTokenIndex++;
     return returnValue;
   }
@@ -105,12 +106,12 @@ class IntersectionOperator : public OperationPart {
  public:
   IntersectionOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 9) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
-    auto right = parts.top();
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
+    auto right = std::move(parts.top());
     parts.pop();
-    auto left = parts.top();
+    auto left = std::move(parts.top());
     parts.pop();
-    return parts.push(std::make_shared<IntersectionExpression>(left, right, operationAlias));
+    parts.push(std::make_unique<IntersectionExpression>(std::move(left), std::move(right), operationAlias));
   }
 };
 
@@ -122,9 +123,9 @@ class IntersectionOperatorFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "∩";
   }
 
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
-    return new IntersectionOperator();
+    return std::make_unique<IntersectionOperator>();
   }
 };
 
@@ -132,12 +133,12 @@ class UnionOperator : public OperationPart {
  public:
   UnionOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 10) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
-    auto right = parts.top();
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
+    auto right = std::move(parts.top());
     parts.pop();
-    auto left = parts.top();
+    auto left = std::move(parts.top());
     parts.pop();
-    return parts.push(std::make_shared<UnionExpression>(left, right, operationAlias));
+    parts.push(std::make_unique<UnionExpression>(std::move(left), std::move(right), operationAlias));
   }
 };
 
@@ -149,9 +150,9 @@ class UnionOperatorFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "∪";
   }
 
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
-    return new UnionOperator();
+    return std::make_unique<UnionOperator>();
   }
 };
 
@@ -159,12 +160,12 @@ class ExceptOperator : public OperationPart {
  public:
   ExceptOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 10) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
-    auto right = parts.top();
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
+    auto right = std::move(parts.top());
     parts.pop();
-    auto left = parts.top();
+    auto left = std::move(parts.top());
     parts.pop();
-    return parts.push(std::make_shared<ExceptExpression>(left, right, operationAlias));
+    parts.push(std::make_unique<ExceptExpression>(std::move(left), std::move(right), operationAlias));
   }
 };
 
@@ -176,9 +177,9 @@ class ExceptOperatorFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "\\";
   }
 
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
-    return new ExceptOperator();
+    return std::make_unique<ExceptOperator>();
   }
 };
 
@@ -186,12 +187,12 @@ class CartesianProductOperator : public OperationPart {
  public:
   CartesianProductOperator() : OperationPart(OperationPartType::BINARY_OPERATOR, 11) {}
 
-  void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
-    auto right = parts.top();
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
+    auto right = std::move(parts.top());
     parts.pop();
-    auto left = parts.top();
+    auto left = std::move(parts.top());
     parts.pop();
-    return parts.push(std::make_shared<CartesianProductExpression>(left, right, operationAlias));
+    parts.push(std::make_unique<CartesianProductExpression>(std::move(left), std::move(right), operationAlias));
   }
 };
 
@@ -203,9 +204,9 @@ class CartesianProductOperatorFactory : public OperationPartFactory {
     return tokens[nextTokenIndex].value == "×";
   }
 
-  OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
     nextTokenIndex++;
-    return new CartesianProductOperator();
+    return std::make_unique<CartesianProductOperator>();
   }
 };
 

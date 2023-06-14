@@ -2,8 +2,8 @@
 
 using namespace std;
 
-JSONDataExporter::JSONDataExporter(shared_ptr<AbstractDataSource> dataSource, std::string dstPath) : FileDataExporter(
-    dataSource, dstPath) {}
+JSONDataExporter::JSONDataExporter(unique_ptr<AbstractDataSource> dataSource, const std::string& dstPath) : FileDataExporter(
+    std::move(dataSource), dstPath) {}
 
 void JSONDataExporter::exportData() {
   AbstractDataExporter::exportData();

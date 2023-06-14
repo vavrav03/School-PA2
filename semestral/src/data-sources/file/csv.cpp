@@ -41,3 +41,7 @@ void CSVDataSource::reset() {
     throw runtime_error("Could not read header, CSV file is empty");
   }
 }
+
+unique_ptr<AbstractDataSource> CSVDataSource::clone() const {
+  return make_unique<CSVDataSource>(this->path, this->name);
+}

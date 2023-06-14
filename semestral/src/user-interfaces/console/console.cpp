@@ -7,15 +7,15 @@ using namespace std;
 ConsoleInterface::ConsoleInterface() : AbstractInterface(), tokenizer(Tokenizer::createRelgebraInstance()),
                                        stringToRelationParser(
                                            RelationalExpressionParser::createDefaultInstance(tokenizer, memory)) {
-  commands.push_back(new ExitCommand(memory));
-  commands.push_back(new HelpCommand());
-  commands.push_back(new ImportCommand(memory));
-  commands.push_back(new StoreExpressionToVariable(memory, stringToRelationParser));
-  commands.push_back(new PrintCommand(memory));
-  commands.push_back(new PrintVariablesCommand(memory));
-  commands.push_back(new ExportCommand(memory));
-  commands.push_back(new SequelizeCommand(memory));
-  commands.push_back(new UnknownCommand());
+  commands.push_back(make_unique<ExitCommand>(memory));
+  commands.push_back(make_unique<HelpCommand>());
+  commands.push_back(make_unique<ImportCommand>(memory));
+  commands.push_back(make_unique<StoreExpressionToVariable>(memory, stringToRelationParser));
+  commands.push_back(make_unique<PrintCommand>(memory));
+  commands.push_back(make_unique<PrintVariablesCommand>(memory));
+  commands.push_back(make_unique<ExportCommand>(memory));
+  commands.push_back(make_unique<SequelizeCommand>(memory));
+  commands.push_back(make_unique<UnknownCommand>());
 }
 
 void ConsoleInterface::run() {

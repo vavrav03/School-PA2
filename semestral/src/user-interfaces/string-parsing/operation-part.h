@@ -25,7 +25,7 @@ class OperationPart {
   const int priority;
   virtual ~OperationPart() = default;
 
-  virtual void evaluate(std::stack<std::shared_ptr<AbstractDataSource>> &evaluatedParts, std::string &operationAlias) {
+  virtual void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &evaluatedParts, std::string &operationAlias) {
     // do nothing
   };
 };
@@ -43,7 +43,7 @@ class OperationPartFactory {
    * @return
    */
   virtual bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const = 0;
-  virtual OperationPart *create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const = 0;
+  virtual std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const = 0;
   virtual ~OperationPartFactory() = default;
  protected:
   const Tokenizer &tokenizer;
@@ -54,6 +54,6 @@ class OperationPartFactory {
  * @param infix
  * @return
  */
-std::vector<OperationPart *> createPostfixFromInfix(const std::vector<OperationPart *> &infix);
+std::vector<std::unique_ptr<OperationPart>> createPostfixFromInfix(std::vector<std::unique_ptr<OperationPart>> &&infix);
 
 #endif //SEMESTRAL_OPERATION_PART_H

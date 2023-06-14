@@ -122,3 +122,7 @@ JSONDataSource::parseBlockString(const std::string &unparsedJsonObject) {
   }
   return make_pair(header, row);
 }
+
+unique_ptr<AbstractDataSource> JSONDataSource::clone() const {
+  return make_unique<JSONDataSource>(path, name);
+}

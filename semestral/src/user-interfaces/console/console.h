@@ -37,7 +37,7 @@ class ConsoleInterface : public AbstractInterface {
   /**
    * List of all available commands
    */
-  std::vector<ConsoleCommand *> commands;
+  std::vector<std::unique_ptr<ConsoleCommand> > commands;
   Tokenizer tokenizer;
   RelationalExpressionParser stringToRelationParser;
 };

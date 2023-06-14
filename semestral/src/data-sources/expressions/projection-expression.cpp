@@ -2,18 +2,18 @@
 
 using namespace std;
 
-ProjectionExpression::ProjectionExpression(shared_ptr<AbstractDataSource> expression,
+ProjectionExpression::ProjectionExpression(unique_ptr<AbstractDataSource> expression,
                                            const std::vector<std::string> &columns,
                                            const unordered_map<string, string> &aliasToPreviousName,
-                                           const std::string &name) : AbstractUnaryExpression(expression, name) {
-  vector<int> indexes(expression->getHeaderSize());
+                                           const std::string &name) : AbstractUnaryExpression(std::move(expression), name) {
+  vector<int> indexes(this->expression->getHeaderSize());
   this->aliasToPreviousName = aliasToPreviousName;
   for (const std::string &column: columns) {
-    indexes[expression->getHeaderIndex(getWrappedColumnName(column))]++;
+    indexes[this->expression->getHeaderIndex(getWrappedColumnName(column))]++;
   }
   for (size_t i = 0; i < indexes.size(); i++) {
     if (indexes[i] > 1) {
-      throw runtime_error("Column " + expression->getHeaderName(i) + " is duplicated");
+      throw runtime_error("Column " + this->expression->getHeaderName(i) + " is duplicated");
     }
   }
   this->headerMap = vectorToIndexMap(columns);
@@ -80,4 +80,8 @@ std::string ProjectionExpression::getWrappedColumnName(const std::string &name) 
   } else {
     return name;
   }
+}
+
+unique_ptr<AbstractDataSource> ProjectionExpression::clone() const {
+  return make_unique<ProjectionExpression>(this->expression->clone(), this->getHeaderVector(), this->aliasToPreviousName, this->name);
 }

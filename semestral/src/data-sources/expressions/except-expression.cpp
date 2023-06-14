@@ -2,9 +2,9 @@
 
 using namespace std;
 
-ExceptExpression::ExceptExpression(shared_ptr<AbstractDataSource> left,
-                                   shared_ptr<AbstractDataSource> right, const string &name)
-    : AbstractBinaryExpression(left, right, name) {
+ExceptExpression::ExceptExpression(unique_ptr<AbstractDataSource> left,
+                                   unique_ptr<AbstractDataSource> right, const string &name)
+    : AbstractBinaryExpression(std::move(left), std::move(right), name) {
   for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
     if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {
       throw runtime_error("Cannot intersect expressions with different headers");
@@ -38,4 +38,8 @@ const vector<string> ExceptExpression::getNextRow() {
     }
   }
   return vector<string>();
+}
+
+unique_ptr<AbstractDataSource> ExceptExpression::clone() const {
+  return make_unique<ExceptExpression>(leftExpression->clone(), rightExpression->clone(), name);
 }

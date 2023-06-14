@@ -3,7 +3,6 @@
 
 #include "../data-sources/abstract.h"
 #include <fstream>
-#
 
 /**
  * Everything that tries to export data to a source outside of this app should inherit from this class.
@@ -11,14 +10,14 @@
  */
 class AbstractDataExporter {
 public:
-  AbstractDataExporter(std::shared_ptr<AbstractDataSource>dataSource) : dataSource(dataSource) {}
+  explicit AbstractDataExporter(std::unique_ptr<AbstractDataSource>dataSource) : dataSource(std::move(dataSource)) {}
 
   virtual void exportData() {
     this->dataSource->reset();
   }
-  virtual ~AbstractDataExporter(){}
+  virtual ~AbstractDataExporter() = default;
 protected:
-  std::shared_ptr<AbstractDataSource>dataSource;
+  std::unique_ptr<AbstractDataSource>dataSource;
 };
 
 /**
@@ -26,21 +25,21 @@ protected:
  */
 class FileDataExporter : public AbstractDataExporter {
 public:
-  FileDataExporter(std::shared_ptr<AbstractDataSource>dataSource, std::string dstPath) : AbstractDataExporter(dataSource), dstPath(dstPath) {}
+  FileDataExporter(std::unique_ptr<AbstractDataSource>dataSource, const std::string& dstPath) : AbstractDataExporter(std::move(dataSource)), dstPath(dstPath) {}
 protected:
-  std::string dstPath;
+  const std::string & dstPath;
 };
 
 class CSVDataExporter : public FileDataExporter {
 public:
-  CSVDataExporter(std::shared_ptr<AbstractDataSource>dataSource, std::string dstPath);
+  CSVDataExporter(std::unique_ptr<AbstractDataSource> dataSource, const std::string &dstPath);
 
   void exportData() override;
 };
 
 class JSONDataExporter : public FileDataExporter {
 public:
-  JSONDataExporter(std::shared_ptr<AbstractDataSource>dataSource, std::string dstPath);
+  JSONDataExporter(std::unique_ptr<AbstractDataSource>dataSource, const std::string& dstPath);
 
   void exportData() override;
 };

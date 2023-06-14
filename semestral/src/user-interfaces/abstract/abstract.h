@@ -7,7 +7,8 @@
 class AbstractInterface {
  public:
   virtual void run() = 0;
-  static AbstractInterface *createInstance(const std::string &interfaceName);
+  static std::unique_ptr<AbstractInterface> createInstance(const std::string &interfaceName);
+  virtual ~AbstractInterface() = default;
   VariablesMemory memory;
 };
 

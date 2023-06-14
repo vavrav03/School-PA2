@@ -9,11 +9,13 @@
 #include <memory>
 
 class AbstractBinaryExpression : public AbstractDataSource {
-public:
-  AbstractBinaryExpression(std::shared_ptr<AbstractDataSource> leftExpression,
-                           std::shared_ptr<AbstractDataSource> rightExpression,
+ public:
+  AbstractBinaryExpression(std::unique_ptr<AbstractDataSource> leftExpression,
+                           std::unique_ptr<AbstractDataSource> rightExpression,
                            const std::string &name)
-          : AbstractDataSource(name), leftExpression(leftExpression), rightExpression(rightExpression) {}
+      : AbstractDataSource(name),
+        leftExpression(std::move(leftExpression)),
+        rightExpression(std::move(rightExpression)) {}
 
   void reset() override {
     leftExpression->reset();
@@ -40,15 +42,15 @@ public:
     return leftExpression->getHeaderSize();
   }
 
-protected:
-  std::shared_ptr<AbstractDataSource> leftExpression;
-  std::shared_ptr<AbstractDataSource> rightExpression;
+ protected:
+  std::unique_ptr<AbstractDataSource> leftExpression;
+  std::unique_ptr<AbstractDataSource> rightExpression;
 };
 
 class AbstractUnaryExpression : public AbstractDataSource {
-public:
-  AbstractUnaryExpression(std::shared_ptr<AbstractDataSource> expression, const std::string &name) : AbstractDataSource(
-          name), expression(expression) {}
+ public:
+  AbstractUnaryExpression(std::unique_ptr<AbstractDataSource> expression, const std::string &name) : AbstractDataSource(
+      name), expression(std::move(expression)) {}
 
   void reset() override {
     expression->reset();
@@ -78,99 +80,81 @@ public:
     return expression->getHeaderSize();
   }
 
-protected:
-  std::shared_ptr<AbstractDataSource> expression;
+ protected:
+  std::unique_ptr<AbstractDataSource> expression;
 };
 
 class ProjectionExpression : public AbstractUnaryExpression {
-public:
-  ProjectionExpression(std::shared_ptr<AbstractDataSource> expression, const std::vector<std::string> &columns,
+ public:
+  ProjectionExpression(std::unique_ptr<AbstractDataSource> expression, const std::vector<std::string> &columns,
                        const std::unordered_map<std::string, std::string> &aliases,
                        const std::string &name);
 
   std::string toSQL() const override;
-
   std::vector<std::string> getHeaderVector() const override;
-
   std::unordered_map<std::string, size_t> getHeaderMap() const override;
-
   size_t getHeaderIndex(const std::string &name) const override;
-
   const std::string &getHeaderName(size_t index) const override;
-
   size_t getHeaderSize() const override;
-
   const std::vector<std::string> getNextRow() override;
-
-private:
+  std::unique_ptr<AbstractDataSource> clone() const override;
+ private:
   std::unordered_map<std::string, size_t> headerMap;
   std::unordered_map<std::string, std::string> aliasToPreviousName;
-
   std::string getWrappedColumnName(const std::string &name) const;
 };
 
 class IntersectionExpression : public AbstractBinaryExpression {
-public:
-  IntersectionExpression(std::shared_ptr<AbstractDataSource> leftExpression,
-                         std::shared_ptr<AbstractDataSource> rightExpression,
+ public:
+  IntersectionExpression(std::unique_ptr<AbstractDataSource> leftExpression,
+                         std::unique_ptr<AbstractDataSource> rightExpression,
                          const std::string &name);
-
   std::string toSQL() const override;
-
   void reset() override;
-
   const std::vector<std::string> getNextRow() override;
+  std::unique_ptr<AbstractDataSource> clone() const override;
 };
 
 class UnionExpression : public AbstractBinaryExpression {
-public:
-  UnionExpression(std::shared_ptr<AbstractDataSource> leftExpression,
-                  std::shared_ptr<AbstractDataSource> rightExpression,
+ public:
+  UnionExpression(std::unique_ptr<AbstractDataSource> leftExpression,
+                  std::unique_ptr<AbstractDataSource> rightExpression,
                   const std::string &name);
 
   std::string toSQL() const override;
-
   void reset() override;
-
   const std::vector<std::string> getNextRow() override;
+  std::unique_ptr<AbstractDataSource> clone() const override;
 };
 
 class ExceptExpression : public AbstractBinaryExpression {
-public:
-  ExceptExpression(std::shared_ptr<AbstractDataSource> leftExpression,
-                   std::shared_ptr<AbstractDataSource> rightExpression,
+ public:
+  ExceptExpression(std::unique_ptr<AbstractDataSource> leftExpression,
+                   std::unique_ptr<AbstractDataSource> rightExpression,
                    const std::string &name);
 
   std::string toSQL() const override;
-
   void reset() override;
-
   const std::vector<std::string> getNextRow() override;
+  std::unique_ptr<AbstractDataSource> clone() const override;
 };
 
 class CartesianProductExpression : public AbstractBinaryExpression {
-public:
-  CartesianProductExpression(std::shared_ptr<AbstractDataSource> leftExpression,
-                             std::shared_ptr<AbstractDataSource> rightExpression,
+ public:
+  CartesianProductExpression(std::unique_ptr<AbstractDataSource> leftExpression,
+                             std::unique_ptr<AbstractDataSource> rightExpression,
                              const std::string &name);
 
   std::string toSQL() const override;
-
   void reset() override;
-
   const std::vector<std::string> getNextRow() override;
-
   std::vector<std::string> getHeaderVector() const override;
-
   std::unordered_map<std::string, size_t> getHeaderMap() const override;
-
   size_t getHeaderIndex(const std::string &name) const override;
-
   const std::string &getHeaderName(size_t index) const override;
-
   size_t getHeaderSize() const override;
-
-private:
+  std::unique_ptr<AbstractDataSource> clone() const override;
+ private:
   std::vector<std::string> currentLeftRow;
 };
 

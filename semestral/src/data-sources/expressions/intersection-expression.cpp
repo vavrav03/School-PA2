@@ -2,9 +2,9 @@
 
 using namespace std;
 
-IntersectionExpression::IntersectionExpression(shared_ptr<AbstractDataSource> left,
-                                               shared_ptr<AbstractDataSource> right, const string &name)
-        : AbstractBinaryExpression(left, right, name) {
+IntersectionExpression::IntersectionExpression(unique_ptr<AbstractDataSource> left,
+                                               unique_ptr<AbstractDataSource> right, const string &name)
+        : AbstractBinaryExpression(std::move(left), std::move(right), name) {
   for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
     if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {
       throw runtime_error("Cannot intersect expressions with different headers");
@@ -33,4 +33,8 @@ const vector<string> IntersectionExpression::getNextRow() {
     }
   }
   return vector<string>();
+}
+
+unique_ptr<AbstractDataSource> IntersectionExpression::clone() const {
+  return make_unique<IntersectionExpression>(leftExpression->clone(), rightExpression->clone(), name);
 }

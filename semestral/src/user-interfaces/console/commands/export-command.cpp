@@ -15,13 +15,13 @@ void ExportCommand::run(std::vector<Token> command) {
   if (!memory.exists(variableName)) {
     throw runtime_error("Variable " + variableName + " does not exist.");
   }
-  shared_ptr<AbstractDataSource> dataSource = memory.get(variableName);
+  unique_ptr<AbstractDataSource> dataSource = memory.get(variableName);
   string extension = fileName.substr(fileName.find_last_of(".") + 1);
   unique_ptr<AbstractDataExporter> exporter;
   if (extension == "csv") {
-    exporter = make_unique<CSVDataExporter>(dataSource, fileName);
+    exporter = make_unique<CSVDataExporter>(std::move(dataSource), fileName);
   } else if (extension == "json") {
-    exporter = make_unique<JSONDataExporter>(dataSource, fileName);
+    exporter = make_unique<JSONDataExporter>(std::move(dataSource), fileName);
   } else {
     throw runtime_error("Unknown file extension " + extension + ".");
   }

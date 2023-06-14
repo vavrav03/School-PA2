@@ -6,10 +6,10 @@
 
 using namespace std;
 
-void assertReturnMatches(shared_ptr<AbstractDataSource> expression, vector<vector<string> > &expected) {
+void assertReturnMatches(AbstractDataSource &expression, vector<vector<string> > &expected) {
   vector<int> equalCounters(expected.size(), 0);
   for (size_t i = 0; i < equalCounters.size(); i++) {
-    vector<string> row = expression->getNextRow();
+    vector<string> row = expression.getNextRow();
     for (size_t j = 0; j < expected.size(); j++) {
       if (equalsVectors(row, expected[j])) {
         equalCounters[j]++;
@@ -19,7 +19,7 @@ void assertReturnMatches(shared_ptr<AbstractDataSource> expression, vector<vecto
   for (size_t i = 0; i < equalCounters.size(); i++) {
     assert(equalCounters[i] == 1);
   }
-  assert(expression->getNextRow().empty());
+  assert(expression.getNextRow().empty());
 }
 
 void importTest1And2(VariablesMemory &memory, Tokenizer &tokenizer) {
@@ -38,8 +38,8 @@ void testProjection(Tokenizer &tokenizer) {
   command.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
 
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
-  shared_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
-      tokenizer.tokenize("abc  [height   -  >vyska,    age]"));
+  unique_ptr<AbstractDataSource>
+      expression = parser.createExpressionFromTokens(tokenizer.tokenize("abc  [height   -  >vyska,    age]"));
   assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from test) as a");
   assert(expression->getHeaderSize() == 2);
   vector<string> rows = expression->getNextRow();
@@ -49,7 +49,7 @@ void testProjection(Tokenizer &tokenizer) {
   assert(expression->getHeaderName(1) == "age");
   assert(equalsVectors(rows, vector<string>{"180", "25"}));
 
-  shared_ptr<AbstractDataSource> expression2 = parser.createExpressionFromTokens(
+  unique_ptr<AbstractDataSource> expression2 = parser.createExpressionFromTokens(
       tokenizer.tokenize("{{abc  [height   -  >vyska,    age]}}[vyska->height][height->opetvyska]"));
   assert(toLowerCase(expression2->toSQL()) ==
       toLowerCase(
@@ -67,7 +67,7 @@ void testIntersection(Tokenizer &tokenizer) {
   importTest1And2(memory, tokenizer);
 
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
-  shared_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 ∩    test2"));
   assert(toLowerCase(expression->toSQL())
              == toLowerCase("(select * from test-set1 INTERSECT select * from test-set2) AS a"));
@@ -77,7 +77,7 @@ void testIntersection(Tokenizer &tokenizer) {
   assert(expression->getHeaderName(2) == "height");
   vector<vector<string> > expected = {{"Alfred", "30", "175"},
                                       {"Betty", "20", "165"}};
-  assertReturnMatches(expression, expected);
+  assertReturnMatches(*expression, expected);
 }
 
 void testUnion(Tokenizer &tokenizer) {
@@ -86,7 +86,7 @@ void testUnion(Tokenizer &tokenizer) {
   importTest1And2(memory, tokenizer);
 
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
-  shared_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  ∪   test2"));
   assert(
       toLowerCase(expression->toSQL()) == toLowerCase("(select * from test-set1 UNION select * from test-set2) AS a"));
@@ -102,7 +102,7 @@ void testUnion(Tokenizer &tokenizer) {
       {"Benjamin", "26", "80"},
       {"Octopus", "281", "1170"}
   };
-  assertReturnMatches(expression, data);
+  assertReturnMatches(*expression, data);
 }
 
 void testExcept(Tokenizer &tokenizer) {
@@ -111,7 +111,7 @@ void testExcept(Tokenizer &tokenizer) {
   importTest1And2(memory, tokenizer);
 
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
-  shared_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  \\   test2"));
   assert(
       toLowerCase(expression->toSQL()) == toLowerCase("(select * from test-set1 EXCEPT select * from test-set2) AS a"));
@@ -123,7 +123,7 @@ void testExcept(Tokenizer &tokenizer) {
       {"Mary", "28", "170"},
       {"John", "25", "180"},
   };
-  assertReturnMatches(expression, data);
+  assertReturnMatches(*expression, data);
 }
 
 void testCartesian(Tokenizer &tokenizer) {
@@ -136,7 +136,7 @@ void testCartesian(Tokenizer &tokenizer) {
   command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
 
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
-  shared_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 × test2"));
   assert(
       toLowerCase(expression->toSQL()) == toLowerCase("(select * from test CROSS JOIN select * from test-set1) AS a"));
@@ -157,7 +157,7 @@ void testCartesian(Tokenizer &tokenizer) {
       {"4", "5", "6", "Alfred", "30", "175"},
       {"4", "5", "6", "Betty", "20", "165"}
   };
-  assertReturnMatches(expression, expected);
+  assertReturnMatches(*expression, expected);
 }
 
 void testExpression() {

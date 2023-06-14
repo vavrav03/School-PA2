@@ -4,7 +4,7 @@
 using namespace std;
 
 FileDataSource::FileDataSource(const std::string &path, const std::string &name) : AbstractDataSource(name),
-                                                                                   file(path) {
+                                                                                   file(path), path(path) {
   if (file.fail()) {
     throw runtime_error("File not found");
   }
@@ -38,10 +38,4 @@ size_t FileDataSource::getHeaderSize() const {
 void FileDataSource::reset() {
   file.clear();
   file.seekg(0, ios::beg);
-
 }
-
-FileDataSource::~FileDataSource() {
-  file.close();
-}
-

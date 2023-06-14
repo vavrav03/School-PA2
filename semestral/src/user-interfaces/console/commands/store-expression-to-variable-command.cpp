@@ -18,6 +18,6 @@ void StoreExpressionToVariable::run(std::vector<Token> command) {
     throw runtime_error("Variable " + variableName + " already exists.");
   }
   vector<Token> expression(command.begin() + 2, command.end());
-  shared_ptr<AbstractDataSource> parsedExpression = parser.createExpressionFromTokens(expression);
-  memory.add(variableName, parsedExpression);
+  unique_ptr<AbstractDataSource> parsedExpression = parser.createExpressionFromTokens(expression);
+  memory.add(variableName, std::move(parsedExpression));
 }

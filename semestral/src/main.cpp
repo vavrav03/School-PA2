@@ -33,7 +33,7 @@ string getValue(string name, int argc, char **argv)
 int main(int argc, char **argv)
 {
   string interfaceName = "console";
-  AbstractInterface *interface;
+  unique_ptr<AbstractInterface> interface;
   try
   {
     interfaceName = getValue("--interface", argc, argv);

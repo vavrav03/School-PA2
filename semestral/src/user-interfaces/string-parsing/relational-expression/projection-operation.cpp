@@ -37,7 +37,7 @@ bool ProjectionOperatorFactory::canCreate(const std::vector<Token> &tokens, size
   return false; // no ]
 }
 
-OperationPart *
+unique_ptr<OperationPart>
 ProjectionOperatorFactory::create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const {
   vector<string> header;
   unordered_map<string, string> aliasToOldName;
@@ -58,16 +58,15 @@ ProjectionOperatorFactory::create(const std::vector<Token> &tokens, size_t &next
       nextTokenIndex++;
     }
   }
-  return new ProjectionOperator(header, aliasToOldName);
+  return make_unique<ProjectionOperator>(header, aliasToOldName);
 }
 
 ProjectionOperator::ProjectionOperator(const vector<string> &header,
                                        const unordered_map<string, string> &aliasToOldName) : OperationPart(
     OperationPartType::POSTFIX_UNARY_OPERATOR, 50), header(header), aliasToOldName(aliasToOldName) {}
 
-void ProjectionOperator::evaluate(stack<std::shared_ptr<AbstractDataSource> > &parts, string &operationAlias) {
-  shared_ptr<ProjectionExpression> projection = make_shared<ProjectionExpression>(parts.top(), header, aliasToOldName,
-                                                                                  operationAlias);
+void ProjectionOperator::evaluate(stack<std::unique_ptr<AbstractDataSource> > &parts, string &operationAlias) {
+  auto projection = make_unique<ProjectionExpression>(std::move(parts.top()), header, aliasToOldName, operationAlias);
   parts.pop();
-  parts.push(projection);
+  parts.push(std::move(projection));
 }

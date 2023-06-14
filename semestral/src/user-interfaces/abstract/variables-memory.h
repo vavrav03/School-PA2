@@ -9,8 +9,8 @@
 class VariablesMemory {
  public:
   bool exists(const std::string &name);
-  void add(const std::string &name, std::shared_ptr<AbstractDataSource> item);
-  std::shared_ptr<AbstractDataSource> get(const std::string &name);
+  void add(const std::string &name, std::unique_ptr<AbstractDataSource> item);
+  std::unique_ptr<AbstractDataSource> get(const std::string &name);
   std::vector<std::string> getVariablesNames();
 
   /**
@@ -22,7 +22,7 @@ class VariablesMemory {
   std::string generateNewAvailableAlias(const std::string &startingPoint);
 
  protected:
-  std::unordered_map<std::string, std::shared_ptr<AbstractDataSource> > variables;
+  std::unordered_map<std::string, std::unique_ptr<AbstractDataSource> > variables;
 };
 
 #endif //SEMESTRAL_VARIABLES_MEMORY_H

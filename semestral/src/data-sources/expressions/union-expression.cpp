@@ -2,9 +2,9 @@
 
 using namespace std;
 
-UnionExpression::UnionExpression(shared_ptr<AbstractDataSource> left,
-                                 shared_ptr<AbstractDataSource> right, const string &name)
-        : AbstractBinaryExpression(left, right, name) {
+UnionExpression::UnionExpression(unique_ptr<AbstractDataSource> left,
+                                 unique_ptr<AbstractDataSource> right, const string &name)
+        : AbstractBinaryExpression(std::move(left), std::move(right), name) {
   for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
     if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {
       throw runtime_error("Cannot intersect expressions with different headers");
@@ -40,4 +40,8 @@ const vector<string> UnionExpression::getNextRow() {
     }
   }
   return rightExpression->getNextRow(); // if nothing is there, it will return an empty vector
+}
+
+unique_ptr<AbstractDataSource> UnionExpression::clone() const {
+  return make_unique<UnionExpression>(leftExpression->clone(), rightExpression->clone(), name);
 }

@@ -2,15 +2,15 @@
 
 using namespace std;
 
-vector<OperationPart *> createPostfixFromInfix(const std::vector<OperationPart *> &infix) {
-  vector<OperationPart *> postfix;
-  stack<OperationPart *> stack;
-  for (auto &part : infix) {
-    if (part->type == OperationPartType::OPERAND) {
-      postfix.push_back(part);
-    } else if (part->type == OperationPartType::LEFT_BRACKET) {
-      stack.push(part);
-    } else if (part->type == OperationPartType::RIGHT_BRACKET) {
+vector<unique_ptr<OperationPart> > createPostfixFromInfix(vector<unique_ptr<OperationPart> > && infix) {
+  vector<unique_ptr<OperationPart> > postfix;
+  stack<unique_ptr<OperationPart> > stack;
+  for(size_t i = 0; i < infix.size(); i++) {
+    if (infix[i]->type == OperationPartType::OPERAND) {
+      postfix.push_back(std::move(infix[i]));
+    } else if (infix[i]->type == OperationPartType::LEFT_BRACKET) {
+      stack.push(std::move(infix[i]));
+    } else if (infix[i]->type == OperationPartType::RIGHT_BRACKET) {
       bool bracketMatched = false;
       while (!stack.empty()) {
         if (stack.top()->type == OperationPartType::LEFT_BRACKET) {
@@ -18,7 +18,7 @@ vector<OperationPart *> createPostfixFromInfix(const std::vector<OperationPart *
           stack.pop();
           break;
         } else {
-          postfix.push_back(stack.top());
+          postfix.push_back(std::move(stack.top()));
           stack.pop();
         }
       }
@@ -29,11 +29,11 @@ vector<OperationPart *> createPostfixFromInfix(const std::vector<OperationPart *
       while (!stack.empty() &&
           stack.top()->type != OperationPartType::LEFT_BRACKET &&
           stack.top()->type != OperationPartType::RIGHT_BRACKET &&
-          stack.top()->priority >= part->priority) {
-        postfix.push_back(stack.top());
+          stack.top()->priority >= infix[i]->priority) {
+        postfix.push_back(std::move(stack.top()));
         stack.pop();
       }
-      stack.push(part);
+      stack.push(std::move(infix[i]));
     }
   }
   while (!stack.empty()) {
@@ -41,7 +41,7 @@ vector<OperationPart *> createPostfixFromInfix(const std::vector<OperationPart *
         || stack.top()->type == OperationPartType::RIGHT_BRACKET) {
       throw invalid_argument("Mismatched parentheses");
     }
-    postfix.push_back(stack.top());
+    postfix.push_back(std::move(stack.top()));
     stack.pop();
   }
   return postfix;

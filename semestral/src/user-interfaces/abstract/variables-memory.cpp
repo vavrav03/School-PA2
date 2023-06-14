@@ -6,12 +6,12 @@ bool VariablesMemory::exists(const string &name) {
   return variables.find(name) != variables.end();
 }
 
-void VariablesMemory::add(const string &name, shared_ptr<AbstractDataSource> item) {
-  variables[name] = item;
+void VariablesMemory::add(const string &name, unique_ptr<AbstractDataSource> item) {
+  variables[name] = std::move(item);
 }
 
-shared_ptr<AbstractDataSource> VariablesMemory::get(const string &name) {
-  return variables[name];
+unique_ptr<AbstractDataSource> VariablesMemory::get(const string &name) {
+  return variables[name]->clone();
 }
 
 vector<string> VariablesMemory::getVariablesNames() {

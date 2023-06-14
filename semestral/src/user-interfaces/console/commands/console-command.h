@@ -19,6 +19,7 @@ class ConsoleCommand {
 
   virtual void run(std::vector<Token> command) = 0;
   virtual bool matchesSyntactically(std::vector<Token> command) = 0;
+  virtual ~ConsoleCommand() = default;
 };
 
 /**

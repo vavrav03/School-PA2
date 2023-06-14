@@ -60,6 +60,8 @@ public:
     return "SELECT * FROM " + name;
   }
 
+  virtual std::unique_ptr<AbstractDataSource> clone() const = 0;
+
 protected:
   std::string name;
 };

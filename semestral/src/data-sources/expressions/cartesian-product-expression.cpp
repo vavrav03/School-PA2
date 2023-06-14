@@ -2,9 +2,9 @@
 
 using namespace std;
 
-CartesianProductExpression::CartesianProductExpression(std::shared_ptr<AbstractDataSource> left,
-                                                       std::shared_ptr<AbstractDataSource> right,
-                                                       const std::string &name) : AbstractBinaryExpression(left, right,
+CartesianProductExpression::CartesianProductExpression(std::unique_ptr<AbstractDataSource> left,
+                                                       std::unique_ptr<AbstractDataSource> right,
+                                                       const std::string &name) : AbstractBinaryExpression(std::move(left), std::move(right),
                                                                                                            name) {
   if (mapsContainSameKey(leftExpression->getHeaderMap(), rightExpression->getHeaderMap())) {
     throw runtime_error("Cannot perform cartesian product on expressions with same column names");
@@ -66,4 +66,8 @@ size_t CartesianProductExpression::getHeaderIndex(const string &name) const {
   } else {
     return rightExpression->getHeaderMap().at(name) + leftExpression->getHeaderSize();
   }
+}
+
+unique_ptr<AbstractDataSource> CartesianProductExpression::clone() const {
+  return make_unique<CartesianProductExpression>(leftExpression->clone(), rightExpression->clone(), name);
 }
