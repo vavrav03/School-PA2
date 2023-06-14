@@ -2,7 +2,7 @@
 
 using namespace std;
 
-ProjectionOperatorFactory::ProjectionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
+ProjectionOperatorFactory::ProjectionOperatorFactory() : OperationPartFactory() {}
 
 bool ProjectionOperatorFactory::canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const {
   if (tokens[nextTokenIndex].value != "[") {
@@ -28,7 +28,7 @@ bool ProjectionOperatorFactory::canCreate(const std::vector<Token> &tokens, size
         return false;
       }
       lastWasSpecial = true;
-    } else if (tokenizer.isSpecialCharacter(tokens[i].value)) {
+    } else if (Tokenizer::getInstnace().isSpecialCharacter(tokens[i].value)) {
       return false;
     } else {
       lastWasSpecial = false;

@@ -7,16 +7,16 @@ RelationalExpressionParser::RelationalExpressionParser(vector<unique_ptr<Operati
     : factories(std::move(factories)), memory(memory) {}
 
 RelationalExpressionParser
-RelationalExpressionParser::createDefaultInstance(const Tokenizer &tokenizer, VariablesMemory &memory) {
+RelationalExpressionParser::createDefaultInstance(VariablesMemory &memory) {
   vector<unique_ptr<OperationPartFactory> > factories;
-  factories.push_back(make_unique<LeftBracketRelationOperandFactory>(tokenizer));
-  factories.push_back(make_unique<RightBracketRelationOperandFactory>(tokenizer));
-  factories.push_back(make_unique<ProjectionOperatorFactory>(tokenizer));
-  factories.push_back(make_unique<IntersectionOperatorFactory>(tokenizer));
-  factories.push_back(make_unique<UnionOperatorFactory>(tokenizer));
-  factories.push_back(make_unique<ExceptOperatorFactory>(tokenizer));
-  factories.push_back(make_unique<CartesianProductOperatorFactory>(tokenizer));
-  factories.push_back(make_unique<DataSourceExpressionOperationPartFactory>(tokenizer, memory));
+  factories.push_back(make_unique<LeftBracketRelationOperandFactory>());
+  factories.push_back(make_unique<RightBracketRelationOperandFactory>());
+  factories.push_back(make_unique<ProjectionOperatorFactory>());
+  factories.push_back(make_unique<IntersectionOperatorFactory>());
+  factories.push_back(make_unique<UnionOperatorFactory>());
+  factories.push_back(make_unique<ExceptOperatorFactory>());
+  factories.push_back(make_unique<CartesianProductOperatorFactory>());
+  factories.push_back(make_unique<DataSourceExpressionOperationPartFactory>(memory));
   return RelationalExpressionParser(factories, memory);
 }
 

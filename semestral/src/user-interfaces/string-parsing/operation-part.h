@@ -33,7 +33,7 @@ class OperationPart {
 class OperationPartFactory {
 
  public:
-  OperationPartFactory(const Tokenizer &tokenizer) : tokenizer(tokenizer) {}
+  OperationPartFactory() {}
 
   /**
    * This method create OperationPart. It assumes that canCreate() returned true - no validity checks are performed
@@ -45,8 +45,6 @@ class OperationPartFactory {
   virtual bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const = 0;
   virtual std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const = 0;
   virtual ~OperationPartFactory() = default;
- protected:
-  const Tokenizer &tokenizer;
 };
 
 /**

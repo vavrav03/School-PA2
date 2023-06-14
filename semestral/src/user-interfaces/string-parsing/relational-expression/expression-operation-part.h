@@ -16,8 +16,7 @@ class LeftBracketRelationOperand : public OperationPart {
 
 class LeftBracketRelationOperandFactory : public OperationPartFactory {
  public:
-  LeftBracketRelationOperandFactory(const Tokenizer &tokenizer) : OperationPartFactory(
-      tokenizer) {}
+  LeftBracketRelationOperandFactory() : OperationPartFactory() {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].value == "{";
@@ -37,7 +36,7 @@ class RightBracketRelationOperand : public OperationPart {
 class RightBracketRelationOperandFactory : public OperationPartFactory {
 
  public:
-  RightBracketRelationOperandFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
+  RightBracketRelationOperandFactory() : OperationPartFactory() {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].value == "}";
@@ -51,7 +50,7 @@ class RightBracketRelationOperandFactory : public OperationPartFactory {
 
 class ProjectionOperatorFactory : public OperationPartFactory {
  public:
-  ProjectionOperatorFactory(const Tokenizer &tokenizer);
+  ProjectionOperatorFactory();
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
   std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
 };
@@ -82,14 +81,13 @@ class DataSourceExpressionOperationPart : public OperationPart {
 
 class DataSourceExpressionOperationPartFactory : public OperationPartFactory {
  public:
-  DataSourceExpressionOperationPartFactory(const Tokenizer &tokenizer, VariablesMemory &memory) : OperationPartFactory(
-      tokenizer), memory(memory) {}
+  DataSourceExpressionOperationPartFactory(VariablesMemory &memory) : OperationPartFactory(), memory(memory) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     if (tokens[nextTokenIndex].quoted) {
       return true;
     }
-    return !tokenizer.isSpecialCharacter(tokens[nextTokenIndex].value);
+    return !Tokenizer::getInstnace().isSpecialCharacter(tokens[nextTokenIndex].value);
   }
 
   std::unique_ptr<OperationPart> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
@@ -121,7 +119,7 @@ class IntersectionOperator : public OperationPart {
 
 class IntersectionOperatorFactory : public OperationPartFactory {
  public:
-  IntersectionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
+  IntersectionOperatorFactory() : OperationPartFactory() {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].value == "∩";
@@ -148,7 +146,7 @@ class UnionOperator : public OperationPart {
 
 class UnionOperatorFactory : public OperationPartFactory {
  public:
-  UnionOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
+  UnionOperatorFactory() : OperationPartFactory() {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].value == "∪";
@@ -175,7 +173,7 @@ class ExceptOperator : public OperationPart {
 
 class ExceptOperatorFactory : public OperationPartFactory {
  public:
-  ExceptOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
+  ExceptOperatorFactory() : OperationPartFactory() {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].value == "\\";
@@ -202,7 +200,7 @@ class CartesianProductOperator : public OperationPart {
 
 class CartesianProductOperatorFactory : public OperationPartFactory {
  public:
-  CartesianProductOperatorFactory(const Tokenizer &tokenizer) : OperationPartFactory(tokenizer) {}
+  CartesianProductOperatorFactory() : OperationPartFactory() {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].value == "×";

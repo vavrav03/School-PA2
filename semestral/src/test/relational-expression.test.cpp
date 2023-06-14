@@ -22,22 +22,24 @@ void assertReturnMatches(AbstractDataSource &expression, vector<vector<string> >
   assert(expression.getNextRow().empty());
 }
 
-void importTest1And2(VariablesMemory &memory, Tokenizer &tokenizer) {
+void importTest1And2(VariablesMemory &memory) {
   string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
   string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
   ImportCommand command(memory);
+  Tokenizer tokenizer = Tokenizer::getInstnace();
   command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
   command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
 }
 
-void testProjection(Tokenizer &tokenizer) {
+void testProjection() {
   cout << "RUNNING: testProjection" << endl;
   VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand command(memory);
   command.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
   unique_ptr<AbstractDataSource>
       expression = parser.createExpressionFromTokens(tokenizer.tokenize("abc  [height   -  >vyska,    age]"));
   assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from abc) as a");
@@ -61,12 +63,13 @@ void testProjection(Tokenizer &tokenizer) {
   assert(rows[0] == "180");
 }
 
-void testIntersection(Tokenizer &tokenizer) {
+void testIntersection() {
   cout << "RUNNING: testIntersection" << endl;
   VariablesMemory memory;
-  importTest1And2(memory, tokenizer);
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  importTest1And2(memory);
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 ∩    test2"));
   assert(toLowerCase(expression->toSQL())
@@ -80,12 +83,13 @@ void testIntersection(Tokenizer &tokenizer) {
   assertReturnMatches(*expression, expected);
 }
 
-void testUnion(Tokenizer &tokenizer) {
+void testUnion() {
   cout << "RUNNING: testUnion" << endl;
   VariablesMemory memory;
-  importTest1And2(memory, tokenizer);
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  importTest1And2(memory);
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  ∪   test2"));
   assert(
@@ -105,12 +109,13 @@ void testUnion(Tokenizer &tokenizer) {
   assertReturnMatches(*expression, data);
 }
 
-void testExcept(Tokenizer &tokenizer) {
+void testExcept() {
   cout << "RUNNING: testExcept" << endl;
   VariablesMemory memory;
-  importTest1And2(memory, tokenizer);
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  importTest1And2(memory);
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  \\   test2"));
   assert(
@@ -126,16 +131,17 @@ void testExcept(Tokenizer &tokenizer) {
   assertReturnMatches(*expression, data);
 }
 
-void testCartesian(Tokenizer &tokenizer) {
+void testCartesian() {
   cout << "RUNNING: testCartesian" << endl;
   VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
   string testFile1 = string(TEST_ASSETS_DIR) + "test.json";
   string testFile2 = string(TEST_ASSETS_DIR) + "test-set1.csv";
   ImportCommand command(memory);
   command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
   command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
+  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 × test2"));
   assert(
@@ -161,10 +167,9 @@ void testCartesian(Tokenizer &tokenizer) {
 }
 
 void testExpression() {
-  Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
-  testProjection(tokenizer);
-  testIntersection(tokenizer);
-  testUnion(tokenizer);
-  testExcept(tokenizer);
-  testCartesian(tokenizer);
+  testProjection();
+  testIntersection();
+  testUnion();
+  testExcept();
+  testCartesian();
 }

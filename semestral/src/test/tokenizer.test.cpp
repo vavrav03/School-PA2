@@ -6,7 +6,7 @@ using namespace std;
 
 void testTokenizeMethod() {
   cout << "- RUNNING: testTokenizeMethod" << endl;
-  Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
+  Tokenizer tokenizer = Tokenizer::getInstnace();
   std::vector<Token> tokens = tokenizer.tokenize("     help     anotherH elp    ");
   assert(tokens[0].value == "help");
   assert(tokens[1].value == "anotherH");

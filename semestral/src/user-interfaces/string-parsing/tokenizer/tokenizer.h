@@ -13,8 +13,8 @@
  */
 class Tokenizer {
 
-public:
-  Tokenizer(const std::vector<std::string>& specialCharacters);
+ public:
+  Tokenizer(const std::vector<std::string> &specialCharacters);
 
   std::vector<Token> tokenize(const std::string &command);
 
@@ -22,15 +22,14 @@ public:
    * Tokenizer with default special characters used in relational algebra
    * @return
    */
-  static Tokenizer createRelgebraInstance();
+  static Tokenizer getInstnace();
 
   /**
    * If these characters are found in a non-quoted part, they are assumed to be separate tokens
    */
   bool isSpecialCharacter(const std::string &character) const;
-private:
+ private:
   const std::vector<std::string> specialCharacters;
 };
-
 
 #endif //SEMESTRAL_TOKENIZER_H

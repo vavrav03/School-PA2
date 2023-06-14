@@ -4,7 +4,7 @@ using namespace std;
 
 Tokenizer::Tokenizer(const std::vector<std::string> &specialCharacters) : specialCharacters(specialCharacters) {}
 
-Tokenizer Tokenizer::createRelgebraInstance() {
+Tokenizer Tokenizer::getInstnace() {
   // not all operations have to be here, but it makes sense to have them repeated despite being mentioned elsewhere
   return Tokenizer({"∪", "∩", "\\", "×", "÷",
                     "⊆", "⊂", "=",

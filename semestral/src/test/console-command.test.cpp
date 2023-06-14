@@ -5,9 +5,10 @@
 
 using namespace std;
 
-void testImportCommand(Tokenizer &tokenizer) {
+void testImportCommand() {
   cout << "- RUNNING: testImportCommand" << endl;
   VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand command(memory);
   const string correct1 = "abc = import \"" + testFile + "\"";
@@ -50,13 +51,14 @@ void testImportCommand(Tokenizer &tokenizer) {
   assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectFollowedByCommand)));
 }
 
-void testPrintCommand(Tokenizer &tokenizer) {
+void testPrintCommand() {
   cout << "- RUNNING: testPrintCommand" << endl;
   VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand importCommand(memory);
   importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
-  PrintCommand command(memory, RelationalExpressionParser::createDefaultInstance(tokenizer, memory));
+  PrintCommand command(memory, RelationalExpressionParser::createDefaultInstance(memory));
   const string correct1 = "print abc";
   const string correct2 = "print abc";
   const string correct3 = "print \"abc\"";
@@ -92,8 +94,9 @@ void testPrintCommand(Tokenizer &tokenizer) {
   assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectWithoutPrint)));
 }
 
-void testExportCommand(Tokenizer &tokenizer) {
+void testExportCommand() {
   cout << "- RUNNING: testExportCommand" << endl;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   string outputFile = string(TEST_ASSETS_DIR) + "test_output185212351.csv";
@@ -153,8 +156,9 @@ void testExportCommand(Tokenizer &tokenizer) {
   assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectMulitpleFiles)));
 }
 
-void testSequelizeCommand(Tokenizer &tokenizer) {
+void testSequelizeCommand() {
   cout << "- RUNNING: testSequelizeCommand" << endl;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
   VariablesMemory memory;
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand importCommand(memory);
@@ -180,9 +184,8 @@ void testSequelizeCommand(Tokenizer &tokenizer) {
 }
 
 void testConsoleCommands() {
-  Tokenizer tokenizer = Tokenizer::createRelgebraInstance();
-  testImportCommand(tokenizer);
-  testPrintCommand(tokenizer);
-  testExportCommand(tokenizer);
-  testSequelizeCommand(tokenizer);
+  testImportCommand();
+  testPrintCommand();
+  testExportCommand();
+  testSequelizeCommand();
 }

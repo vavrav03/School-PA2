@@ -4,9 +4,9 @@
 
 using namespace std;
 
-ConsoleInterface::ConsoleInterface() : AbstractInterface(), tokenizer(Tokenizer::createRelgebraInstance()),
+ConsoleInterface::ConsoleInterface() : AbstractInterface(),
                                        stringToRelationParser(
-                                           RelationalExpressionParser::createDefaultInstance(tokenizer, memory)) {
+                                           RelationalExpressionParser::createDefaultInstance(memory)) {
   commands.push_back(make_unique<ExitCommand>(memory));
   commands.push_back(make_unique<HelpCommand>());
   commands.push_back(make_unique<ImportCommand>(memory));
@@ -23,7 +23,7 @@ void ConsoleInterface::run() {
   cout << "Type \"help\" to see available commands." << endl;
   while (true) {
     string prompt = getNextCommand();
-    vector<Token> commandTokens = tokenizer.tokenize(prompt);
+    vector<Token> commandTokens = Tokenizer::getInstnace().tokenize(prompt);
     try { processCommand(commandTokens); }
     catch (exception &e) { cout << e.what() << endl; }
   }
