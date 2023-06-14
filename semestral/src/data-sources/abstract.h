@@ -62,6 +62,10 @@ public:
 
   virtual std::unique_ptr<AbstractDataSource> clone() const = 0;
 
+  void setName(const std::string &name) {
+    this->name = name;
+  }
+
 protected:
   std::string name;
 };

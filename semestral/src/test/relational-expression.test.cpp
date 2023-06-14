@@ -40,7 +40,7 @@ void testProjection(Tokenizer &tokenizer) {
   RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(tokenizer, memory);
   unique_ptr<AbstractDataSource>
       expression = parser.createExpressionFromTokens(tokenizer.tokenize("abc  [height   -  >vyska,    age]"));
-  assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from test) as a");
+  assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from abc) as a");
   assert(expression->getHeaderSize() == 2);
   vector<string> rows = expression->getNextRow();
   assert(expression->getHeaderIndex("vyska") == 0);
@@ -53,7 +53,7 @@ void testProjection(Tokenizer &tokenizer) {
       tokenizer.tokenize("{{abc  [height   -  >vyska,    age]}}[vyska->height][height->opetvyska]"));
   assert(toLowerCase(expression2->toSQL()) ==
       toLowerCase(
-          "SELECT height AS opetvyska FROM (SELECT vyska AS height FROM (SELECT height AS vyska, age FROM (select * from test) AS a) AS b) AS c"));
+          "SELECT height AS opetvyska FROM (SELECT vyska AS height FROM (SELECT height AS vyska, age FROM (select * from abc) AS a) AS b) AS c"));
   assert(expression2->getHeaderSize() == 1);
   rows = expression2->getNextRow();
   assert(expression2->getHeaderIndex("opetvyska") == 0);
@@ -70,7 +70,7 @@ void testIntersection(Tokenizer &tokenizer) {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 ∩    test2"));
   assert(toLowerCase(expression->toSQL())
-             == toLowerCase("(select * from test-set1 INTERSECT select * from test-set2) AS a"));
+             == toLowerCase("(select * from test1 INTERSECT select * from test2) AS a"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -89,7 +89,7 @@ void testUnion(Tokenizer &tokenizer) {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  ∪   test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test-set1 UNION select * from test-set2) AS a"));
+      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 UNION select * from test2) AS a"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -114,7 +114,7 @@ void testExcept(Tokenizer &tokenizer) {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  \\   test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test-set1 EXCEPT select * from test-set2) AS a"));
+      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 EXCEPT select * from test2) AS a"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -139,7 +139,7 @@ void testCartesian(Tokenizer &tokenizer) {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 × test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test CROSS JOIN select * from test-set1) AS a"));
+      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 CROSS JOIN select * from test2) AS a"));
   assert(expression->getHeaderSize() == 6);
   assert(expression->getHeaderName(0) == "a");
   assert(expression->getHeaderName(1) == "b");

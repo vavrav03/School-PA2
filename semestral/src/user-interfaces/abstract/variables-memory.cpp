@@ -11,7 +11,9 @@ void VariablesMemory::add(const string &name, unique_ptr<AbstractDataSource> ite
 }
 
 unique_ptr<AbstractDataSource> VariablesMemory::get(const string &name) {
-  return variables[name]->clone();
+  auto clonedDataSource = variables[name]->clone();
+  clonedDataSource->setName(name);
+  return clonedDataSource;
 }
 
 vector<string> VariablesMemory::getVariablesNames() {
