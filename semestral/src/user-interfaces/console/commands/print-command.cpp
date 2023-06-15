@@ -2,8 +2,8 @@
 
 using namespace std;
 
-PrintCommand::PrintCommand(VariablesMemory &memory, const RelationalExpressionParser &parser)
-    : VariablesDependentCommand(memory), parser(parser) {}
+PrintCommand::PrintCommand(VariablesMemory &memory)
+    : VariablesDependentCommand(memory) {}
 
 bool PrintCommand::matchesSyntactically(std::vector<Token> command) {
   return command.size() >= 2 && command[0].value == "print";
@@ -11,6 +11,7 @@ bool PrintCommand::matchesSyntactically(std::vector<Token> command) {
 
 void PrintCommand::run(std::vector<Token> command) {
   string variableName = command[1].value;
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> dataSource;
   if (command.size() == 2) {
     if (!memory.exists(variableName)) {
@@ -18,7 +19,7 @@ void PrintCommand::run(std::vector<Token> command) {
     }
     dataSource = memory.get(variableName);
   } else {
-    vector<Token> expression(command.begin() + 2, command.end());
+    const vector<Token> expression(command.begin() + 2, command.end());
     dataSource = parser.createExpressionFromTokens(expression);
   }
   dataSource->reset();

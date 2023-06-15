@@ -7,7 +7,7 @@
 #include "../abstract/abstract.h"
 #include "../string-parsing/tokenizer/token.h"
 #include "../string-parsing/tokenizer/tokenizer.h"
-#include "../string-parsing/relational-expression/relational-expression-parser.h"
+#include "../string-parsing/expression-parser.h"
 
 /**
  * Interface for interaction with user via command line
@@ -38,7 +38,6 @@ class ConsoleInterface : public AbstractInterface {
    * List of all available commands
    */
   std::vector<std::unique_ptr<ConsoleCommand> > commands;
-  RelationalExpressionParser stringToRelationParser;
 };
 
 #endif //SEMESTRAL_CONSOLE_INTERFACE_H

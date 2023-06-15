@@ -2,9 +2,8 @@
 
 using namespace std;
 
-StoreExpressionToVariable::StoreExpressionToVariable(VariablesMemory &memory,
-                                                     const RelationalExpressionParser &parser)
-    : VariablesDependentCommand(memory), parser(parser) {
+StoreExpressionToVariable::StoreExpressionToVariable(VariablesMemory &memory)
+    : VariablesDependentCommand(memory) {
 
 }
 
@@ -14,6 +13,7 @@ bool StoreExpressionToVariable::matchesSyntactically(std::vector<Token> command)
 
 void StoreExpressionToVariable::run(std::vector<Token> command) {
   string variableName = command[0].value;
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   if (memory.exists(variableName)) {
     throw runtime_error("Variable " + variableName + " already exists.");
   }

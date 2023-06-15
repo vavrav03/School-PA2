@@ -58,7 +58,7 @@ void testPrintCommand() {
   string testFile = string(TEST_ASSETS_DIR) + "test.csv";
   ImportCommand importCommand(memory);
   importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
-  PrintCommand command(memory, RelationalExpressionParser::createDefaultInstance(memory));
+  PrintCommand command(memory);
   const string correct1 = "print abc";
   const string correct2 = "print abc";
   const string correct3 = "print \"abc\"";

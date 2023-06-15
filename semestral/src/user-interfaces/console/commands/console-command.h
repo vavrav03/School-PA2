@@ -3,11 +3,11 @@
 
 #include <string>
 #include <vector>
-#include "../../string-parsing/tokenizer/token.h"
 #include <iostream>
 #include "../../abstract/variables-memory.h"
+#include "../../string-parsing/tokenizer/token.h"
 #include "../../string-parsing/tokenizer/tokenizer.h"
-#include "../../string-parsing/relational-expression/relational-expression-parser.h"
+#include "../../string-parsing/expression-parser.h"
 
 /**
  * Abstract class for all commands used by console interface
@@ -67,12 +67,11 @@ class ImportCommand : public VariablesDependentCommand {
 
 class PrintCommand : public VariablesDependentCommand {
  public:
-  explicit PrintCommand(VariablesMemory &memory, const RelationalExpressionParser &parser);
+  explicit PrintCommand(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
   bool matchesSyntactically(std::vector<Token> command) override;
  private:
-  const RelationalExpressionParser &parser;
 };
 
 class PrintVariablesCommand : public VariablesDependentCommand {
@@ -101,13 +100,10 @@ class SequelizeCommand : public VariablesDependentCommand {
 
 class StoreExpressionToVariable : public VariablesDependentCommand {
  public:
-  explicit StoreExpressionToVariable(VariablesMemory &memory, const
-  RelationalExpressionParser &parser);
+  explicit StoreExpressionToVariable(VariablesMemory &memory);
 
   void run(std::vector<Token> command) override;
   bool matchesSyntactically(std::vector<Token> command) override;
- private:
-  const RelationalExpressionParser &parser;
 };
 
 #endif //SEMESTRAL_CONSOLE_COMMAND_H

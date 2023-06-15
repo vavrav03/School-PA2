@@ -1,4 +1,4 @@
-#include "../user-interfaces/string-parsing/relational-expression/relational-expression-parser.h"
+#include "../user-interfaces/string-parsing/expression-parser.h"
 #include "../data-sources/expressions/expressions.h"
 #include "test-list.h"
 #include "../user-interfaces/console/commands/console-command.h"
@@ -39,7 +39,7 @@ void testProjection() {
   ImportCommand command(memory);
   command.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource>
       expression = parser.createExpressionFromTokens(tokenizer.tokenize("abc  [height   -  >vyska,    age]"));
   assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from abc) as a");
@@ -69,7 +69,7 @@ void testIntersection() {
   Tokenizer tokenizer = Tokenizer::getInstnace();
   importTest1And2(memory);
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 ∩    test2"));
   assert(toLowerCase(expression->toSQL())
@@ -89,7 +89,7 @@ void testUnion() {
   Tokenizer tokenizer = Tokenizer::getInstnace();
   importTest1And2(memory);
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  ∪   test2"));
   assert(
@@ -115,7 +115,7 @@ void testExcept() {
   Tokenizer tokenizer = Tokenizer::getInstnace();
   importTest1And2(memory);
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  \\   test2"));
   assert(
@@ -141,7 +141,7 @@ void testCartesian() {
   command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
   command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
 
-  RelationalExpressionParser parser = RelationalExpressionParser::createDefaultInstance(memory);
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 × test2"));
   assert(
