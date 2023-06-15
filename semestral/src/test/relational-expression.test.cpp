@@ -153,6 +153,26 @@ void testCartesian() {
       {"4", "5", "6", "Betty", "20", "165"}
   };
   assertReturnMatches(*expression, expected);
+
+  try {
+    parser.createExpressionFromTokens(tokenizer.tokenize("test1 × test1"));
+    assert(false); // must rename columns
+  } catch (...) {
+
+  }
+  expression = parser.createExpressionFromTokens(tokenizer.tokenize("test1[a->xyz] × test1"));
+  assert(expression->getHeaderSize() == 4);
+  assert(expression->getHeaderName(0) == "xyz");
+  assert(expression->getHeaderName(1) == "a");
+  assert(expression->getHeaderName(2) == "b");
+  assert(expression->getHeaderName(3) == "c");
+  expected = {
+      {"1", "1", "2", "3"},
+      {"1", "4", "5", "6"},
+      {"4", "1", "2", "3"},
+      {"4", "4", "5", "6"}
+  };
+  assertReturnMatches(*expression, expected);
 }
 
 void testExpression() {
