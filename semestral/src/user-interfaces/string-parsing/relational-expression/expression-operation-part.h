@@ -8,6 +8,8 @@
 #include "../tokenizer/token.h"
 #include "../tokenizer/tokenizer.h"
 #include "../../abstract/variables-memory.h"
+#include "../../../data-sources/file/csv.h"
+#include "../../../data-sources/file/json.h"
 
 class LeftBracketRelationOperand : public OperationPart<AbstractDataSource> {
  public:
@@ -22,7 +24,8 @@ class LeftBracketRelationOperandFactory : public OperationPartFactory<AbstractDa
     return tokens[nextTokenIndex].value == "{";
   }
 
-  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<LeftBracketRelationOperand>();
   }
@@ -42,7 +45,8 @@ class RightBracketRelationOperandFactory : public OperationPartFactory<AbstractD
     return tokens[nextTokenIndex].value == "}";
   }
 
-  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<RightBracketRelationOperand>();
   }
@@ -52,7 +56,8 @@ class ProjectionOperatorFactory : public OperationPartFactory<AbstractDataSource
  public:
   ProjectionOperatorFactory();
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
-  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override;
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override;
 };
 
 class ProjectionOperator : public OperationPart<AbstractDataSource> {
@@ -66,9 +71,9 @@ class ProjectionOperator : public OperationPart<AbstractDataSource> {
   std::unordered_map<std::string, std::string> aliasToOldName;
 };
 
-class DataSourceExpressionOperationPart : public OperationPart<AbstractDataSource> {
+class VariableOperand : public OperationPart<AbstractDataSource> {
  public:
-  DataSourceExpressionOperationPart(std::unique_ptr<AbstractDataSource> expression) : OperationPart<AbstractDataSource>(
+  VariableOperand(std::unique_ptr<AbstractDataSource> expression) : OperationPart<AbstractDataSource>(
       OperationPartType::OPERAND, 1999), expression(std::move(expression)) {}
 
   void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
@@ -79,9 +84,9 @@ class DataSourceExpressionOperationPart : public OperationPart<AbstractDataSourc
   std::unique_ptr<AbstractDataSource> expression;
 };
 
-class DataSourceExpressionOperationPartFactory : public OperationPartFactory<AbstractDataSource> {
+class VariableOperandFactory : public OperationPartFactory<AbstractDataSource> {
  public:
-  DataSourceExpressionOperationPartFactory(VariablesMemory &memory) : OperationPartFactory<AbstractDataSource>(), memory(memory) {}
+  VariableOperandFactory(VariablesMemory &memory) : OperationPartFactory<AbstractDataSource>(), memory(memory) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     if (tokens[nextTokenIndex].quoted) {
@@ -90,12 +95,13 @@ class DataSourceExpressionOperationPartFactory : public OperationPartFactory<Abs
     return !Tokenizer::getInstnace().isSpecialCharacter(tokens[nextTokenIndex].value);
   }
 
-  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
     if (!memory.exists(tokens[nextTokenIndex].value)) {
       throw std::runtime_error("Variable " + tokens[nextTokenIndex].value + " does not exist.");
     }
     std::unique_ptr<OperationPart<AbstractDataSource>>
-        returnValue = std::make_unique<DataSourceExpressionOperationPart>(memory.get(tokens[nextTokenIndex].value));
+        returnValue = std::make_unique<VariableOperand>(memory.get(tokens[nextTokenIndex].value));
     nextTokenIndex++;
     return returnValue;
   }
@@ -125,7 +131,8 @@ class IntersectionOperatorFactory : public OperationPartFactory<AbstractDataSour
     return tokens[nextTokenIndex].value == "∩";
   }
 
-  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<IntersectionOperator>();
   }
@@ -152,7 +159,8 @@ class UnionOperatorFactory : public OperationPartFactory<AbstractDataSource> {
     return tokens[nextTokenIndex].value == "∪";
   }
 
-  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<UnionOperator>();
   }
@@ -179,7 +187,8 @@ class ExceptOperatorFactory : public OperationPartFactory<AbstractDataSource> {
     return tokens[nextTokenIndex].value == "\\";
   }
 
-  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<ExceptOperator>();
   }
@@ -206,9 +215,71 @@ class CartesianProductOperatorFactory : public OperationPartFactory<AbstractData
     return tokens[nextTokenIndex].value == "×";
   }
 
-  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const override {
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
     nextTokenIndex++;
     return std::make_unique<CartesianProductOperator>();
+  }
+};
+
+class CSVOperand : public OperationPart<AbstractDataSource> {
+ public:
+  CSVOperand(const std::string &path) : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
+                                        path(path) {}
+
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
+    const auto usedAlias = getNameWithoutExtension(path);
+
+    parts.push(std::make_unique<CSVDataSource>(path, usedAlias));
+  }
+
+ private:
+  std::string path;
+};
+
+class CSVOperandFactory : public OperationPartFactory<AbstractDataSource> {
+ public:
+  CSVOperandFactory() : OperationPartFactory<AbstractDataSource>() {}
+
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
+    return tokens[nextTokenIndex].quoted && getExtensionFromPath(tokens[nextTokenIndex].value) == "csv";
+  }
+
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
+    auto returnValue = std::make_unique<CSVOperand>(tokens[nextTokenIndex].value);
+    nextTokenIndex++;
+    return returnValue;
+  }
+};
+
+class JSONOperand : public OperationPart<AbstractDataSource> {
+ public:
+  JSONOperand(const std::string &path) : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
+                                         path(path) {}
+
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
+    const auto usedAlias = getNameWithoutExtension(path);
+    parts.push(std::make_unique<JSONDataSource>(path, usedAlias));
+  }
+
+ private:
+  std::string path;
+};
+
+class JSONOperandFactory : public OperationPartFactory<AbstractDataSource> {
+ public:
+  JSONOperandFactory() : OperationPartFactory<AbstractDataSource>() {}
+
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
+    return tokens[nextTokenIndex].quoted && getExtensionFromPath(tokens[nextTokenIndex].value) == "json";
+  }
+
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
+    auto returnValue = std::make_unique<JSONOperand>(tokens[nextTokenIndex].value);
+    nextTokenIndex++;
+    return returnValue;
   }
 };
 
