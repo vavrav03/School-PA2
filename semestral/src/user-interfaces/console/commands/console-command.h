@@ -57,14 +57,6 @@ class UnknownCommand : public ConsoleCommand {
   bool matchesSyntactically(std::vector<Token> command) override;
 };
 
-class ImportCommand : public VariablesDependentCommand {
- public:
-  explicit ImportCommand(VariablesMemory &memory);
-
-  void run(std::vector<Token> command) override;
-  bool matchesSyntactically(std::vector<Token> command) override;
-};
-
 class PrintCommand : public VariablesDependentCommand {
  public:
   explicit PrintCommand(VariablesMemory &memory);

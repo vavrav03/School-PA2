@@ -7,7 +7,6 @@ using namespace std;
 ConsoleInterface::ConsoleInterface() : AbstractInterface() {
   commands.push_back(make_unique<ExitCommand>(memory));
   commands.push_back(make_unique<HelpCommand>());
-  commands.push_back(make_unique<ImportCommand>(memory));
   commands.push_back(make_unique<StoreExpressionToVariable>(memory));
   commands.push_back(make_unique<PrintCommand>(memory));
   commands.push_back(make_unique<PrintVariablesCommand>(memory));

@@ -22,22 +22,11 @@ void assertReturnMatches(AbstractDataSource &expression, vector<vector<string> >
   assert(expression.getNextRow().empty());
 }
 
-void importTest1And2(VariablesMemory &memory) {
-  string testFile1 = string(TEST_CSV_SET_1);
-  string testFile2 = string(TEST_CSV_SET_2);
-  ImportCommand command(memory);
-  Tokenizer tokenizer = Tokenizer::getInstnace();
-  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
-  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
-}
-
 void testProjection() {
   cout << "RUNNING: testProjection" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  string testFile = string(TEST_CSV_1);
-  ImportCommand command(memory);
-  command.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("abc = \"" + string(TEST_CSV_1) + "\""));
 
   auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource>
@@ -67,7 +56,8 @@ void testIntersection() {
   cout << "RUNNING: testIntersection" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  importTest1And2(memory);
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_SET_1) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_2) + "\""));
 
   auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
@@ -87,7 +77,8 @@ void testUnion() {
   cout << "RUNNING: testUnion" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  importTest1And2(memory);
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_SET_1) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_2) + "\""));
 
   auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
@@ -113,7 +104,8 @@ void testExcept() {
   cout << "RUNNING: testExcept" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  importTest1And2(memory);
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_SET_1) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_2) + "\""));
 
   auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
@@ -135,11 +127,8 @@ void testCartesian() {
   cout << "RUNNING: testCartesian" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  string testFile1 = string(TEST_JSON_FILE);
-  string testFile2 = string(TEST_CSV_SET_1);
-  ImportCommand command(memory);
-  command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
-  command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_JSON_FILE) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_1) + "\""));
 
   auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(

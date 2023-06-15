@@ -224,22 +224,23 @@ class CartesianProductOperatorFactory : public OperationPartFactory<AbstractData
 
 class CSVOperand : public OperationPart<AbstractDataSource> {
  public:
-  CSVOperand(const std::string &path) : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
-                                        path(path) {}
+  CSVOperand(const std::string &path, const std::string &name) : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
+                                        path(path), name(name) {}
 
   void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
     const auto usedAlias = getNameWithoutExtension(path);
 
-    parts.push(std::make_unique<CSVDataSource>(path, usedAlias));
+    parts.push(std::make_unique<CSVDataSource>(path, name));
   }
 
  private:
   std::string path;
+  std::string name;
 };
 
 class CSVOperandFactory : public OperationPartFactory<AbstractDataSource> {
  public:
-  CSVOperandFactory() : OperationPartFactory<AbstractDataSource>() {}
+  CSVOperandFactory(VariablesMemory &memory) : OperationPartFactory<AbstractDataSource>(), memory(memory) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].quoted && getExtensionFromPath(tokens[nextTokenIndex].value) == "csv";
@@ -247,29 +248,33 @@ class CSVOperandFactory : public OperationPartFactory<AbstractDataSource> {
 
   std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
                                                             size_t &nextTokenIndex) const override {
-    auto returnValue = std::make_unique<CSVOperand>(tokens[nextTokenIndex].value);
+    std::string path = tokens[nextTokenIndex].value;
+    std::string name = memory.getAvailableAlias(getNameWithoutExtension(path));
+    auto returnValue = std::make_unique<CSVOperand>(path, name);
     nextTokenIndex++;
     return returnValue;
   }
+  VariablesMemory &memory;
 };
 
 class JSONOperand : public OperationPart<AbstractDataSource> {
  public:
-  JSONOperand(const std::string &path) : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
-                                         path(path) {}
+  JSONOperand(const std::string &path, const std::string &name)
+      : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
+        path(path), name(name) {}
 
   void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
-    const auto usedAlias = getNameWithoutExtension(path);
-    parts.push(std::make_unique<JSONDataSource>(path, usedAlias));
+    parts.push(std::make_unique<JSONDataSource>(path, name));
   }
 
  private:
   std::string path;
+  std::string name;
 };
 
 class JSONOperandFactory : public OperationPartFactory<AbstractDataSource> {
  public:
-  JSONOperandFactory() : OperationPartFactory<AbstractDataSource>() {}
+  JSONOperandFactory(VariablesMemory &memory) : OperationPartFactory<AbstractDataSource>(), memory(memory) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     return tokens[nextTokenIndex].quoted && getExtensionFromPath(tokens[nextTokenIndex].value) == "json";
@@ -277,10 +282,13 @@ class JSONOperandFactory : public OperationPartFactory<AbstractDataSource> {
 
   std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
                                                             size_t &nextTokenIndex) const override {
-    auto returnValue = std::make_unique<JSONOperand>(tokens[nextTokenIndex].value);
+    std::string path = tokens[nextTokenIndex].value;
+    std::string name = memory.getAvailableAlias(getNameWithoutExtension(path));
+    auto returnValue = std::make_unique<JSONOperand>(path, name);
     nextTokenIndex++;
     return returnValue;
   }
+  VariablesMemory &memory;
 };
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H

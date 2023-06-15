@@ -21,8 +21,8 @@ class ExpressionParser {
     factories.push_back(std::make_unique<UnionOperatorFactory>());
     factories.push_back(std::make_unique<ExceptOperatorFactory>());
     factories.push_back(std::make_unique<CartesianProductOperatorFactory>());
-    factories.push_back(std::make_unique<CSVOperandFactory>());
-    factories.push_back(std::make_unique<JSONOperandFactory>());
+    factories.push_back(std::make_unique<CSVOperandFactory>(memory));
+    factories.push_back(std::make_unique<JSONOperandFactory>(memory));
     factories.push_back(std::make_unique<VariableOperandFactory>(memory));
     return ExpressionParser(std::move(factories), memory);
   }

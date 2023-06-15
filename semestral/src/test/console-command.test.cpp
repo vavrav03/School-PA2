@@ -5,22 +5,16 @@
 
 using namespace std;
 
-void testImportCommand() {
-  cout << "- RUNNING: testImportCommand" << endl;
+void testStoreToVariableCommand() {
+  cout << "- RUNNING: testStoreToVariableCommand" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
   string testFile = string(TEST_CSV_1);
-  ImportCommand command(memory);
-  const string correct1 = "abc = import \"" + testFile + "\"";
-  const string correct2 = "ddd=import \"" + testFile + "\"";
-  const string incorrectAlreadyExistingVariable = "abc = import \"" + testFile + "\"";
-  const string incorrectUnquoted = "abc = import " + testFile;
-  const string incorrectWithoutImport = "abc = \"" + testFile + "\"";
-  const string incorrectFollowedByCommand = "abc = import \"" + testFile + "\" select * from abc";
+  const string correct1 = "abc = \"" + testFile + "\"";
+  const string correct2 = "ddd=\"" + testFile + "\"";
+  const string incorrectAlreadyExistingVariable = "abc = \"" + testFile + "\"";
 
-  assert(command.matchesSyntactically(tokenizer.tokenize(correct1)));
-  command.run(tokenizer.tokenize(correct1));
-  cout << memory.get("abc");
+  assert(runStoreToMemory(memory, tokenizer.tokenize(correct1)));
   assert(memory.get("abc")->getHeaderName(0) == "name");
   assert(memory.get("abc")->getHeaderName(1) == "age");
   assert(memory.get("abc")->getHeaderName(2) == "height");
@@ -29,8 +23,7 @@ void testImportCommand() {
   assert(row[1] == "25");
   assert(row[2] == "180");
 
-  assert(command.matchesSyntactically(tokenizer.tokenize(correct2)));
-  command.run(tokenizer.tokenize(correct2));
+  assert(runStoreToMemory(memory, tokenizer.tokenize(correct2)));
   assert(memory.get("ddd")->getHeaderName(0) == "name");
   assert(memory.get("ddd")->getHeaderName(1) == "age");
   assert(memory.get("ddd")->getHeaderName(2) == "height");
@@ -39,16 +32,13 @@ void testImportCommand() {
   assert(row[1] == "25");
   assert(row[2] == "180");
 
-  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectUnquoted)));
+
   try {
-    command.run(tokenizer.tokenize(incorrectAlreadyExistingVariable));
+    runStoreToMemory(memory, tokenizer.tokenize(incorrectAlreadyExistingVariable));
     assert(false);
   } catch (exception &e) {
     assert(true);
   }
-
-  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectWithoutImport)));
-  assert(!command.matchesSyntactically(tokenizer.tokenize(incorrectFollowedByCommand)));
 }
 
 void testPrintCommand() {
@@ -56,8 +46,7 @@ void testPrintCommand() {
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
   string testFile = string(TEST_CSV_1);
-  ImportCommand importCommand(memory);
-  importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("abc = \"" + testFile + "\""));
   PrintCommand command(memory);
   const string correct1 = "print abc";
   const string correct2 = "print abc";
@@ -102,10 +91,8 @@ void testExportCommand() {
   string outputFile = string(TEST_ASSETS_DIR) + "test_output185212351.csv";
   string testFileJSON = string(TEST_JSON_FILE);
   string outputFileJSON = string(TEST_ASSETS_DIR) + "test_output185212352.json";
-  ImportCommand importCommand(memory);
-  importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
-  ImportCommand importCommandJSON(memory);
-  importCommandJSON.run(tokenizer.tokenize("abcjson = import \"" + testFileJSON + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("abc = \"" + testFile + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("abcjson = \"" + testFileJSON + "\""));
   ExportCommand command(memory);
   ExportCommand commandJSON(memory);
   const string correct1 = "export abc to \"" + outputFile + "\"";
@@ -118,8 +105,7 @@ void testExportCommand() {
   assert(command.matchesSyntactically(tokenizer.tokenize(correct1)));
   command.run(tokenizer.tokenize(correct1));
   // test that file is filled correctly
-  ImportCommand importCommandCheck(memory);
-  importCommandCheck.run(tokenizer.tokenize("ddd = import \"" + outputFile + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("ddd = \"" + outputFile + "\""));
   assert(memory.get("ddd")->getHeaderName(0) == "name");
   assert(memory.get("ddd")->getHeaderName(1) == "age");
   assert(memory.get("ddd")->getHeaderName(2) == "height");
@@ -132,8 +118,7 @@ void testExportCommand() {
 
   assert(commandJSON.matchesSyntactically(tokenizer.tokenize(correct1JSON)));
   commandJSON.run(tokenizer.tokenize(correct1JSON));
-  ImportCommand importCommandCheckJSON(memory);
-  importCommandCheckJSON.run(tokenizer.tokenize("dddjson = import \"" + outputFileJSON + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("dddjson = \"" + outputFileJSON + "\""));
   assert(memory.get("dddjson")->getHeaderName(0) == "a");
   assert(memory.get("dddjson")->getHeaderName(1) == "b");
   assert(memory.get("dddjson")->getHeaderName(2) == "c");
@@ -161,8 +146,7 @@ void testSequelizeCommand() {
   Tokenizer tokenizer = Tokenizer::getInstnace();
   VariablesMemory memory;
   string testFile = string(TEST_CSV_1);
-  ImportCommand importCommand(memory);
-  importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("abc = \"" + testFile + "\""));
   SequelizeCommand command(memory);
   const string correct1 = "sequelize abc";
   const string incorrectNonExistingVariable = "sequelize ddd";
@@ -184,7 +168,7 @@ void testSequelizeCommand() {
 }
 
 void testConsoleCommands() {
-  testImportCommand();
+  testStoreToVariableCommand();
   testPrintCommand();
   testExportCommand();
   testSequelizeCommand();
