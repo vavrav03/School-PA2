@@ -4,12 +4,12 @@
 #include "../operation-part.h"
 #include <string>
 #include <stack>
-#include "../../../data-sources/expressions/expressions.h"
-#include "../tokenizer/token.h"
-#include "../tokenizer/tokenizer.h"
-#include "../../abstract/variables-memory.h"
-#include "../../../data-sources/file/csv.h"
-#include "../../../data-sources/file/json.h"
+#include "../../data-sources/expressions/expressions.h"
+#include "../../user-interfaces/string-parsing/tokenizer/token.h"
+#include "../../user-interfaces/string-parsing/tokenizer/tokenizer.h"
+#include "../../user-interfaces/abstract/variables-memory.h"
+#include "../../data-sources/file/csv.h"
+#include "../../data-sources/file/json.h"
 
 class LeftBracketRelationOperand : public OperationPart<AbstractDataSource> {
  public:

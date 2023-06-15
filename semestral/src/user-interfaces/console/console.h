@@ -7,7 +7,7 @@
 #include "../abstract/abstract.h"
 #include "../string-parsing/tokenizer/token.h"
 #include "../string-parsing/tokenizer/tokenizer.h"
-#include "../string-parsing/expression-parser.h"
+#include "../../expression-evaluation/expression-evaluator.h"
 
 /**
  * Interface for interaction with user via command line

@@ -1,8 +1,8 @@
 #ifndef SEMESTRAL_OPERATION_PART_H
 #define SEMESTRAL_OPERATION_PART_H
 
-#include "tokenizer/tokenizer.h"
-#include "../../data-sources/expressions/expressions.h"
+#include "../user-interfaces/string-parsing/tokenizer/tokenizer.h"
+#include "../data-sources/expressions/expressions.h"
 #include <stack>
 #include <iostream>
 
