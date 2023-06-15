@@ -10,7 +10,7 @@ string toLowerCase(const string &stringToConvert) {
   return result;
 }
 
-string getNameFromPath(string const &path) {
+string getNameFromPath(const string &path) {
 #ifdef _WIN32
   const char delimiter = '\\';
 #else
@@ -19,7 +19,7 @@ string getNameFromPath(string const &path) {
   return path.substr(path.find_last_of(delimiter) + 1);
 }
 
-string getNameWithoutExtension(string const &fileName) {
+string getNameWithoutExtension(const string &fileName) {
   string name = getNameFromPath(fileName);
   size_t const pos(name.find_first_of('.'));
   if (pos == string::npos) {
@@ -28,7 +28,7 @@ string getNameWithoutExtension(string const &fileName) {
   return name.substr(0, pos);
 }
 
-string getExtensionFromPath(string const &fileName) {
+string getExtensionFromPath(const string &fileName) {
   string name = getNameFromPath(fileName);
   size_t const pos(name.find_first_of('.'));
   if (pos == string::npos) {

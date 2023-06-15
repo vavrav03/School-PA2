@@ -1,7 +1,7 @@
 #include "../user-interfaces/console/commands/console-command.h"
 #include "../user-interfaces/string-parsing/tokenizer/tokenizer.h"
 
-#include "test-list.h"
+#include "test.h"
 
 using namespace std;
 
@@ -9,7 +9,7 @@ void testImportCommand() {
   cout << "- RUNNING: testImportCommand" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  string testFile = string(TEST_ASSETS_DIR) + "test.csv";
+  string testFile = string(TEST_CSV_1);
   ImportCommand command(memory);
   const string correct1 = "abc = import \"" + testFile + "\"";
   const string correct2 = "ddd=import \"" + testFile + "\"";
@@ -55,7 +55,7 @@ void testPrintCommand() {
   cout << "- RUNNING: testPrintCommand" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  string testFile = string(TEST_ASSETS_DIR) + "test.csv";
+  string testFile = string(TEST_CSV_1);
   ImportCommand importCommand(memory);
   importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
   PrintCommand command(memory);
@@ -98,9 +98,9 @@ void testExportCommand() {
   cout << "- RUNNING: testExportCommand" << endl;
   Tokenizer tokenizer = Tokenizer::getInstnace();
   VariablesMemory memory;
-  string testFile = string(TEST_ASSETS_DIR) + "test.csv";
+  string testFile = string(TEST_CSV_1);
   string outputFile = string(TEST_ASSETS_DIR) + "test_output185212351.csv";
-  string testFileJSON = string(TEST_ASSETS_DIR) + "test.json";
+  string testFileJSON = string(TEST_JSON_FILE);
   string outputFileJSON = string(TEST_ASSETS_DIR) + "test_output185212352.json";
   ImportCommand importCommand(memory);
   importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
@@ -160,7 +160,7 @@ void testSequelizeCommand() {
   cout << "- RUNNING: testSequelizeCommand" << endl;
   Tokenizer tokenizer = Tokenizer::getInstnace();
   VariablesMemory memory;
-  string testFile = string(TEST_ASSETS_DIR) + "test.csv";
+  string testFile = string(TEST_CSV_1);
   ImportCommand importCommand(memory);
   importCommand.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
   SequelizeCommand command(memory);

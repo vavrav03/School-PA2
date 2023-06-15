@@ -1,7 +1,7 @@
 
 #include "../data-sources/file/json.h"
 #include <iostream>
-#include "test-list.h"
+#include "test.h"
 #include "../utils/utils.h"
 
 using namespace std;
@@ -54,7 +54,7 @@ void testJSONBlockParser() {
 
 void testSampleRead() {
   cout << "- RUNNING: testSampleRead" << endl;
-  JSONDataSource dataSource1(string(TEST_ASSETS_DIR) + "test.json", "test");
+  JSONDataSource dataSource1(string(TEST_JSON_FILE), "test");
   assert(dataSource1.getHeaderSize() == 3);
   assert(equalsVectors(dataSource1.getHeaderVector(), vector<string>{"a", "b", "c"}));
   assert(equalsVectors(dataSource1.getNextRow(), vector<string>{"1", "2", "3"}));

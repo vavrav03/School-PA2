@@ -1,6 +1,6 @@
 #include "../user-interfaces/string-parsing/expression-parser.h"
 #include "../data-sources/expressions/expressions.h"
-#include "test-list.h"
+#include "test.h"
 #include "../user-interfaces/console/commands/console-command.h"
 #include <iostream>
 
@@ -23,8 +23,8 @@ void assertReturnMatches(AbstractDataSource &expression, vector<vector<string> >
 }
 
 void importTest1And2(VariablesMemory &memory) {
-  string testFile1 = string(TEST_ASSETS_DIR) + "test-set1.csv";
-  string testFile2 = string(TEST_ASSETS_DIR) + "test-set2.csv";
+  string testFile1 = string(TEST_CSV_SET_1);
+  string testFile2 = string(TEST_CSV_SET_2);
   ImportCommand command(memory);
   Tokenizer tokenizer = Tokenizer::getInstnace();
   command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
@@ -35,7 +35,7 @@ void testProjection() {
   cout << "RUNNING: testProjection" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  string testFile = string(TEST_ASSETS_DIR) + "test.csv";
+  string testFile = string(TEST_CSV_1);
   ImportCommand command(memory);
   command.run(tokenizer.tokenize("abc = import \"" + testFile + "\""));
 
@@ -135,8 +135,8 @@ void testCartesian() {
   cout << "RUNNING: testCartesian" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
-  string testFile1 = string(TEST_ASSETS_DIR) + "test.json";
-  string testFile2 = string(TEST_ASSETS_DIR) + "test-set1.csv";
+  string testFile1 = string(TEST_JSON_FILE);
+  string testFile2 = string(TEST_CSV_SET_1);
   ImportCommand command(memory);
   command.run(tokenizer.tokenize("test1 = import \"" + testFile1 + "\""));
   command.run(tokenizer.tokenize("test2 = import \"" + testFile2 + "\""));
