@@ -13,7 +13,7 @@ ExceptExpression::ExceptExpression(unique_ptr<AbstractDataSource> left,
 }
 
 string ExceptExpression::toSQL() const {
-  return "(" + leftExpression->toSQL() + " EXCEPT " + rightExpression->toSQL() + ") AS " + name;
+  return "SELECT * FROM (" + leftExpression->toSQL() + " EXCEPT " + rightExpression->toSQL() + ") AS " + name;
 }
 
 void ExceptExpression::reset() {

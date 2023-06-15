@@ -63,7 +63,7 @@ void testIntersection() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 ∩    test2"));
   assert(toLowerCase(expression->toSQL())
-             == toLowerCase("(select * from test1 INTERSECT select * from test2) AS a"));
+             == toLowerCase("SELECT * FROM (select * from test1 INTERSECT select * from test2) AS a"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -84,7 +84,7 @@ void testUnion() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  ∪   test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 UNION select * from test2) AS a"));
+      toLowerCase(expression->toSQL()) == toLowerCase("SELECT * FROM (select * from test1 UNION select * from test2) AS a"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -111,7 +111,7 @@ void testExcept() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  \\   test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 EXCEPT select * from test2) AS a"));
+      toLowerCase(expression->toSQL()) == toLowerCase("SELECT * FROM (select * from test1 EXCEPT select * from test2) AS a"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -134,7 +134,7 @@ void testCartesian() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 × test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("(select * from test1 CROSS JOIN select * from test2) AS a"));
+      toLowerCase(expression->toSQL()) == toLowerCase("SELECT * FROM (select * from test1 CROSS JOIN select * from test2) AS a"));
   assert(expression->getHeaderSize() == 6);
   assert(expression->getHeaderName(0) == "a");
   assert(expression->getHeaderName(1) == "b");

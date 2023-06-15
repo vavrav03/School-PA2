@@ -13,7 +13,7 @@ UnionExpression::UnionExpression(unique_ptr<AbstractDataSource> left,
 }
 
 string UnionExpression::toSQL() const {
-  return "(" + leftExpression->toSQL() + " UNION " + rightExpression->toSQL() + ") AS " + name;
+  return "SELECT * FROM (" + leftExpression->toSQL() + " UNION " + rightExpression->toSQL() + ") AS " + name;
 }
 
 void UnionExpression::reset() {
