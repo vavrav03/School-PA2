@@ -6,6 +6,7 @@
 #define TEST_CSV_1 TEST_ASSETS_DIR "test.csv"
 #define TEST_CSV_SET_1 TEST_ASSETS_DIR "test-set1.csv"
 #define TEST_CSV_SET_2 TEST_ASSETS_DIR "test-set2.csv"
+#define TEST_CSV_JOIN_1 TEST_ASSETS_DIR "test-join1.csv"
 #define TEST_CSV_4 TEST_ASSETS_DIR "test10.csv"
 #define TEST_JSON_FILE TEST_ASSETS_DIR "test.json"
 #define TEST_JSON_ERROR_1 TEST_ASSETS_DIR "test-error1.json"

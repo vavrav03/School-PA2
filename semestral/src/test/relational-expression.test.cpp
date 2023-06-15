@@ -150,7 +150,7 @@ void testCartesian() {
       {"4", "5", "6", "Mary", "28", "170"},
       {"4", "5", "6", "John", "25", "180"},
       {"4", "5", "6", "Alfred", "30", "175"},
-      {"4", "5", "6", "Betty", "20", "165"}
+      {"4", "5", "6", "Betty", "20", "165"},
   };
   assertReturnMatches(*expression, expected);
 
@@ -175,10 +175,33 @@ void testCartesian() {
   assertReturnMatches(*expression, expected);
 }
 
+void testNaturalJoin() {
+  cout << "RUNNING: natural join" << endl;
+  VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_JOIN_1) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_1) + "\""));
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+      tokenizer.tokenize("test1 * test2"));
+  assert(expression->getHeaderSize() == 4);
+  assert(expression->getHeaderName(0) == "name");
+  assert(expression->getHeaderName(1) == "age");
+  assert(expression->getHeaderName(2) == "school");
+  assert(expression->getHeaderName(3) == "height");
+  vector<vector<string> > expected = {
+      {"Mary", "28", "MIT", "170"},
+      {"Mary", "28", "Princeton", "170"},
+      {"Betty", "20", "CUNI", "165"}
+  };
+  assertReturnMatches(*expression, expected);
+}
+
 void testExpression() {
   testProjection();
   testIntersection();
   testUnion();
   testExcept();
   testCartesian();
+  testNaturalJoin();
 }

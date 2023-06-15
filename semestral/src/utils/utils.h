@@ -14,7 +14,7 @@ template<typename T>
 std::vector<T> indexMapToVector(const std::unordered_map<T, size_t> &map) {
   std::vector<T> vector(map.size());
   vector.reserve(map.size());
-  for (auto &pair: map) {
+  for (auto &pair : map) {
     vector[pair.second] = pair.first;
   }
   return vector;
@@ -39,7 +39,7 @@ std::string toLowerCase(const std::string &stringToConvert);
 
 template<typename T>
 void printVector(const std::vector<T> &vector) {
-  for (const T &item: vector) {
+  for (const T &item : vector) {
     std::cout << item << " ";
   }
   std::cout << std::endl;
@@ -79,17 +79,56 @@ std::vector<T> joinVectors(const std::vector<T> &a, const std::vector<T> &b) {
  */
 template<typename T>
 bool mapsContainSameKey(const std::unordered_map<T, size_t> &a, const std::unordered_map<T, size_t> &b) {
-  for (auto &pair: a) {
+  for (auto &pair : a) {
     if (b.find(pair.first) != b.end()) {
       return true;
     }
   }
-  for (auto &pair: b) {
+  for (auto &pair : b) {
     if (a.find(pair.first) != a.end()) {
       return true;
     }
   }
   return false;
+}
+
+template<typename T>
+std::vector<T> getSameKeys(const std::unordered_map<T, size_t> &a, const std::unordered_map<T, size_t> &b) {
+  std::vector<T> result;
+  for (auto &pair : a) {
+    if (b.find(pair.first) != b.end()) {
+      result.push_back(pair.first);
+    }
+  }
+  return result;
+}
+
+template<typename T>
+std::unordered_map<T, size_t> joinIndexMaps(const std::unordered_map<T, size_t> &a,
+                                            const std::unordered_map<T, size_t> &b) {
+  std::unordered_map<T, size_t> result(a.size() + b.size());
+  for (auto &pair : a) {
+    result[pair.first] = pair.second;
+  }
+  int index = a.size();
+  for (int i = 0; i < b.size(); i++) {
+    for (auto &pair : b) {
+      if (pair.second == i && result.find(pair.first) == result.end()) {
+        result[pair.first] = index++;
+      }
+    }
+  }
+  return result;
+}
+
+template<typename T>
+const T &findValueOrThrowInIndexMap(const std::unordered_map<T, size_t> &map, const size_t index) {
+  for (auto &pair : map) {
+    if (pair.second == index) {
+      return pair.first;
+    }
+  }
+  throw std::runtime_error("Index not found");
 }
 
 /**

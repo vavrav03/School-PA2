@@ -23,12 +23,7 @@ size_t FileDataSource::getHeaderIndex(const string &name) const {
 }
 
 const string &FileDataSource::getHeaderName(size_t index) const {
-  for (auto &pair : this->header) {
-    if (pair.second == index) {
-      return pair.first;
-    }
-  }
-  throw runtime_error("Index not found");
+  return findValueOrThrowInIndexMap(this->header, index);
 }
 
 size_t FileDataSource::getHeaderSize() const {

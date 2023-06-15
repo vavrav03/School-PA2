@@ -158,4 +158,25 @@ class CartesianProductExpression : public AbstractBinaryExpression {
   std::vector<std::string> currentLeftRow;
 };
 
+class NaturalJoinExpression : public AbstractBinaryExpression {
+ public:
+  NaturalJoinExpression(std::unique_ptr<AbstractDataSource> leftExpression,
+                             std::unique_ptr<AbstractDataSource> rightExpression,
+                             const std::string &name);
+
+  std::string toSQL() const override;
+  void reset() override;
+  const std::vector<std::string> getNextRow() override;
+  std::vector<std::string> getHeaderVector() const override;
+  std::unordered_map<std::string, size_t> getHeaderMap() const override;
+  size_t getHeaderIndex(const std::string &name) const override;
+  const std::string &getHeaderName(size_t index) const override;
+  size_t getHeaderSize() const override;
+  std::unique_ptr<AbstractDataSource> clone() const override;
+ private:
+  std::vector<std::string> currentLeftRow;
+  std::vector<std::string> sameColumns;
+  std::unordered_map<std::string, size_t> headerMap;
+};
+
 #endif //SEMESTRAL_EXPRESSIONS_H

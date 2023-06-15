@@ -222,6 +222,34 @@ class CartesianProductOperatorFactory : public OperationPartFactory<AbstractData
   }
 };
 
+class NaturalJoinOperator : public OperationPart<AbstractDataSource> {
+ public:
+  NaturalJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts, std::string &operationAlias) override {
+    auto right = std::move(parts.top());
+    parts.pop();
+    auto left = std::move(parts.top());
+    parts.pop();
+    parts.push(std::make_unique<NaturalJoinExpression>(std::move(left), std::move(right), operationAlias));
+  }
+};
+
+class NaturalJoinOperatorFactory : public OperationPartFactory<AbstractDataSource> {
+ public:
+  NaturalJoinOperatorFactory() : OperationPartFactory<AbstractDataSource>() {}
+
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
+    return tokens[nextTokenIndex].value == "*";
+  }
+
+  std::unique_ptr<OperationPart<AbstractDataSource>> create(const std::vector<Token> &tokens,
+                                                            size_t &nextTokenIndex) const override {
+    nextTokenIndex++;
+    return std::make_unique<NaturalJoinOperator>();
+  }
+};
+
 class CSVOperand : public OperationPart<AbstractDataSource> {
  public:
   CSVOperand(const std::string &path, const std::string &name) : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
