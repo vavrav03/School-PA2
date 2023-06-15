@@ -8,14 +8,15 @@
 
 class RelationalExpressionParser {
  public:
-  RelationalExpressionParser(std::vector<std::unique_ptr<OperationPartFactory>> &factories, VariablesMemory &memory);
+  RelationalExpressionParser(std::vector<std::unique_ptr<OperationPartFactory<AbstractDataSource>>> &factories,
+                             VariablesMemory &memory);
   static RelationalExpressionParser createDefaultInstance(VariablesMemory &memory);
   std::unique_ptr<AbstractDataSource> createExpressionFromTokens(const std::vector<Token> &tokens) const;
  private:
-  std::vector<std::unique_ptr<OperationPart>> createInfixFromTokens(const std::vector<Token> &tokens) const;
+  std::vector<std::unique_ptr<OperationPart<AbstractDataSource>>> createInfixFromTokens(const std::vector<Token> &tokens) const;
   std::unique_ptr<AbstractDataSource>
-  createExpressionFromPostfix(const std::vector<std::unique_ptr<OperationPart>> &parts) const;
-  std::vector<std::unique_ptr<OperationPartFactory>> factories;
+  createExpressionFromPostfix(const std::vector<std::unique_ptr<OperationPart<AbstractDataSource>>> &parts) const;
+  std::vector<std::unique_ptr<OperationPartFactory<AbstractDataSource>>> factories;
   VariablesMemory &memory;
 };
 

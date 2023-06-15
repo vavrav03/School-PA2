@@ -15,6 +15,7 @@ enum class OperationPartType {
   RIGHT_BRACKET
 };
 
+template<typename T>
 class OperationPart {
 
  public:
@@ -25,11 +26,12 @@ class OperationPart {
   const int priority;
   virtual ~OperationPart() = default;
 
-  virtual void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &evaluatedParts, std::string &operationAlias) {
+  virtual void evaluate(std::stack<std::unique_ptr<T>> &evaluatedParts, std::string &operationAlias) {
     // do nothing
   };
 };
 
+template<typename T>
 class OperationPartFactory {
 
  public:
@@ -43,7 +45,7 @@ class OperationPartFactory {
    * @return
    */
   virtual bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const = 0;
-  virtual std::unique_ptr<OperationPart>create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const = 0;
+  virtual std::unique_ptr<OperationPart<T>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const = 0;
   virtual ~OperationPartFactory() = default;
 };
 
@@ -52,6 +54,50 @@ class OperationPartFactory {
  * @param infix
  * @return
  */
-std::vector<std::unique_ptr<OperationPart>> createPostfixFromInfix(std::vector<std::unique_ptr<OperationPart>> &&infix);
+template<typename T>
+std::vector<std::unique_ptr<OperationPart<T>>> createPostfixFromInfix(std::vector<std::unique_ptr<OperationPart<T>>> &&infix){
+  std::vector<std::unique_ptr<OperationPart<T> > > postfix;
+  std::stack<std::unique_ptr<OperationPart<T> > > stack;
+  for (size_t i = 0; i < infix.size(); i++) {
+    if (infix[i]->type == OperationPartType::OPERAND) {
+      postfix.push_back(std::move(infix[i]));
+    } else if (infix[i]->type == OperationPartType::LEFT_BRACKET) {
+      stack.push(std::move(infix[i]));
+    } else if (infix[i]->type == OperationPartType::RIGHT_BRACKET) {
+      bool bracketMatched = false;
+      while (!stack.empty()) {
+        if (stack.top()->type == OperationPartType::LEFT_BRACKET) {
+          bracketMatched = true;
+          stack.pop();
+          break;
+        } else {
+          postfix.push_back(std::move(stack.top()));
+          stack.pop();
+        }
+      }
+      if (!bracketMatched) { // stack is empty now
+        throw std::invalid_argument("Mismatched parentheses");
+      }
+    } else {
+      while (!stack.empty() &&
+          stack.top()->type != OperationPartType::LEFT_BRACKET &&
+          stack.top()->type != OperationPartType::RIGHT_BRACKET &&
+          stack.top()->priority >= infix[i]->priority) {
+        postfix.push_back(std::move(stack.top()));
+        stack.pop();
+      }
+      stack.push(std::move(infix[i]));
+    }
+  }
+  while (!stack.empty()) {
+    if (stack.top()->type == OperationPartType::LEFT_BRACKET
+        || stack.top()->type == OperationPartType::RIGHT_BRACKET) {
+      throw std::invalid_argument("Mismatched parentheses");
+    }
+    postfix.push_back(std::move(stack.top()));
+    stack.pop();
+  }
+  return postfix;
+}
 
 #endif //SEMESTRAL_OPERATION_PART_H

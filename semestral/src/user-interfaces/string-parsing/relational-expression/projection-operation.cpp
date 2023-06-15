@@ -37,7 +37,7 @@ bool ProjectionOperatorFactory::canCreate(const std::vector<Token> &tokens, size
   return false; // no ]
 }
 
-unique_ptr<OperationPart>
+unique_ptr<OperationPart<AbstractDataSource> >
 ProjectionOperatorFactory::create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const {
   vector<string> header;
   unordered_map<string, string> aliasToOldName;
