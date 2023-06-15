@@ -10,19 +10,10 @@ bool PrintCommand::matchesSyntactically(std::vector<Token> command) {
 }
 
 void PrintCommand::run(std::vector<Token> command) {
-  string variableName = command[1].value;
   auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource> dataSource;
-  if (command.size() == 2) {
-    if (!memory.exists(variableName)) {
-      throw runtime_error("Variable " + variableName + " does not exist.");
-    }
-    dataSource = memory.get(variableName);
-  } else {
-    const vector<Token> expression(command.begin() + 2, command.end());
-    dataSource = parser.createExpressionFromTokens(expression);
-  }
-  dataSource->reset();
+  const vector<Token> expression(command.begin() + 1, command.end());
+  dataSource = parser.createExpressionFromTokens(expression);
   cout << "| ";
   for (string &columnName : dataSource->getHeaderVector()) {
     cout << columnName << " | ";
