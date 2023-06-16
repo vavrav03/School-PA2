@@ -2,7 +2,7 @@
 #define SEMESTRAL_RELATIONAL_EXPRESSION_PARSER_H
 
 #include <vector>
-#include "./relational-expression/expression-operation-part.h"
+#include "expression-operation-part.h"
 #include "./operation-part.h"
 #include "../user-interfaces/abstract/variables-memory.h"
 

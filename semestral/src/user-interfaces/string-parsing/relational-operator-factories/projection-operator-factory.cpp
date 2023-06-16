@@ -1,4 +1,4 @@
-#include "expression-operation-part.h"
+#include "./relational-operator-factories.h"
 
 using namespace std;
 
@@ -59,14 +59,4 @@ ProjectionOperatorFactory::create(const std::vector<Token> &tokens, size_t &next
     }
   }
   return make_unique<ProjectionOperator>(header, aliasToOldName);
-}
-
-ProjectionOperator::ProjectionOperator(const vector<string> &header,
-                                       const unordered_map<string, string> &aliasToOldName) : OperationPart(
-    OperationPartType::POSTFIX_UNARY_OPERATOR, 50), header(header), aliasToOldName(aliasToOldName) {}
-
-void ProjectionOperator::evaluate(stack<std::unique_ptr<AbstractDataSource> > &parts, string &operationAlias) {
-  auto projection = make_unique<ProjectionExpression>(std::move(parts.top()), header, aliasToOldName, operationAlias);
-  parts.pop();
-  parts.push(std::move(projection));
 }

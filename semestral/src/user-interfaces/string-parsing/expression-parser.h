@@ -3,6 +3,7 @@
 
 #include "../../expression-evaluation/expression-evaluator.h"
 #include "../../expression-evaluation/operation-part.h"
+#include "./relational-operator-factories/relational-operator-factories.h"
 
 template<typename T>
 class ExpressionParser {
