@@ -30,22 +30,4 @@ class OperationPart {
   };
 };
 
-template<typename T>
-class OperationPartFactory {
-
- public:
-  OperationPartFactory() {}
-
-  /**
-   * This method create OperationPart. It assumes that canCreate() returned true - no validity checks are performed
-   * It also sets new value of nextTokenIndex
-   * @param tokens
-   * @param nextTokenIndex It is guaranteed to never exceed tokens.size(). Item with this index potentially belongs to this operation part
-   * @return
-   */
-  virtual bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const = 0;
-  virtual std::unique_ptr<OperationPart<T>> create(const std::vector<Token> &tokens, size_t &nextTokenIndex) const = 0;
-  virtual ~OperationPartFactory() = default;
-};
-
 #endif //SEMESTRAL_OPERATION_PART_H

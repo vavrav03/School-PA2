@@ -3,26 +3,32 @@
 
 #include "../../expression-evaluation/expression-evaluator.h"
 #include "../../expression-evaluation/operation-part.h"
-#include "./relational-operator-factories/relational-operator-factories.h"
+#include "./operator-factories/relational-operation-factories.h"
 
 template<typename T>
 class ExpressionParser {
  public:
-  ExpressionParser(std::vector<std::unique_ptr<OperationPartFactory<T>>> &&factories, VariablesMemory &memory) : memory(
-      memory), factories(std::move(factories)), evaluator(memory) {
-
+  ExpressionParser(std::vector<std::unique_ptr<OperationPartFactory<T>>> &&factories, VariablesMemory &memory) :
+      memory(memory), factories(std::move(factories)), evaluator(memory) {
   }
 
   static ExpressionParser<AbstractDataSource> getInstance(VariablesMemory &memory) {
     std::vector<std::unique_ptr<OperationPartFactory<AbstractDataSource> >> factories;
-    factories.push_back(std::make_unique<LeftBracketRelationOperandFactory>());
-    factories.push_back(std::make_unique<RightBracketRelationOperandFactory>());
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftBracketRelationOperand>>(
+        std::vector<std::string>{"{"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightBracketRelationOperand>>(
+        std::vector<std::string>{"}"}));
     factories.push_back(std::make_unique<ProjectionOperatorFactory>());
-    factories.push_back(std::make_unique<IntersectionOperatorFactory>());
-    factories.push_back(std::make_unique<UnionOperatorFactory>());
-    factories.push_back(std::make_unique<ExceptOperatorFactory>());
-    factories.push_back(std::make_unique<CartesianProductOperatorFactory>());
-    factories.push_back(std::make_unique<NaturalJoinOperatorFactory>());
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, IntersectionOperator>>(
+        std::vector<std::string>{"∩"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, UnionOperator>>(
+        std::vector<std::string>{"∪"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, ExceptOperator>>(
+        std::vector<std::string>{"\\"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, CartesianProductOperator>>(
+        std::vector<std::string>{"×"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, NaturalJoinOperator>>(
+        std::vector<std::string>{"*"}));
     factories.push_back(std::make_unique<CSVOperandFactory>(memory));
     factories.push_back(std::make_unique<JSONOperandFactory>(memory));
     factories.push_back(std::make_unique<VariableOperandFactory>(memory));
