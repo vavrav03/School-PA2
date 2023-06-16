@@ -3,17 +3,15 @@
 using namespace std;
 
 NaturalJoinExpression::NaturalJoinExpression(std::unique_ptr<AbstractDataSource> left,
-                                             std::unique_ptr<AbstractDataSource> right,
-                                             const std::string &name) : AbstractBinaryExpression(std::move(left),
-                                                                                                 std::move(right),
-                                                                                                 name) {
+                                             std::unique_ptr<AbstractDataSource> right)
+    : AbstractBinaryExpression(std::move(left), std::move(right)) {
   sameColumns = getSameKeys(leftExpression->getHeaderMap(), rightExpression->getHeaderMap());
   headerMap = joinIndexMaps(leftExpression->getHeaderMap(), rightExpression->getHeaderMap());
   currentLeftRow = leftExpression->getNextRow();
 }
 
 string NaturalJoinExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " NATURAL JOIN " + rightExpression->toSQL() + ") AS " + name;
+  return "SELECT * FROM (" + leftExpression->toSQL() + " NATURAL JOIN " + rightExpression->toSQL() + ")";
 }
 
 void NaturalJoinExpression::reset() {
@@ -75,5 +73,5 @@ size_t NaturalJoinExpression::getHeaderSize() const {
 }
 
 unique_ptr<AbstractDataSource> NaturalJoinExpression::clone() const {
-  return make_unique<NaturalJoinExpression>(leftExpression->clone(), rightExpression->clone(), name);
+  return make_unique<NaturalJoinExpression>(leftExpression->clone(), rightExpression->clone());
 }

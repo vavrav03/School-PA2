@@ -12,7 +12,7 @@
  */
 class JSONDataSource : public FileDataSource {
  public:
-  JSONDataSource(const std::string &path, const std::string &name);
+  JSONDataSource(const std::string &path);
 
   const std::vector<std::string> getNextRow() override;
   void reset() override;

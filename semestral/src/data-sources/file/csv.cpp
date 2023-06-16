@@ -5,8 +5,8 @@
 
 using namespace std;
 
-CSVDataSource::CSVDataSource(const string &path, const string &name)
-        : FileDataSource(path, name) {
+CSVDataSource::CSVDataSource(const string &path)
+        : FileDataSource(path) {
   CSVDataSource::reset();
 }
 
@@ -43,5 +43,5 @@ void CSVDataSource::reset() {
 }
 
 unique_ptr<AbstractDataSource> CSVDataSource::clone() const {
-  return make_unique<CSVDataSource>(this->path, this->name);
+  return make_unique<CSVDataSource>(this->path);
 }

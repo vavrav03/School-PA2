@@ -25,7 +25,7 @@ class OperationPart {
   const int priority;
   virtual ~OperationPart() = default;
 
-  virtual void evaluate(std::stack<std::unique_ptr<T>> &evaluatedParts, std::string &operationAlias) {
+  virtual void evaluate(std::stack<std::unique_ptr<T>> &evaluatedParts) {
     // do nothing
   };
 };

@@ -13,15 +13,8 @@ class ExpressionEvaluator {
 
   std::unique_ptr<T> createExpressionFromPostfix(const std::vector<std::unique_ptr<OperationPart<T>>> &parts) const {
     std::stack<std::unique_ptr<T> > expressions;
-    std::string lastAlias;
-    std::string currentAlias;
     for (auto &part : parts) {
-      if (part->type != ::OperationPartType::OPERAND && part->type != ::OperationPartType::LEFT_BRACKET
-          && part->type != ::OperationPartType::RIGHT_BRACKET) {
-        currentAlias = memory.generateNewAvailableAlias(lastAlias);
-        lastAlias = currentAlias;
-      }
-      part->evaluate(expressions, currentAlias);
+      part->evaluate(expressions);
     }
     expressions.top()->reset();
     return std::move(expressions.top());

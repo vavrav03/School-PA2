@@ -3,9 +3,8 @@
 using namespace std;
 
 CartesianProductExpression::CartesianProductExpression(std::unique_ptr<AbstractDataSource> left,
-                                                       std::unique_ptr<AbstractDataSource> right,
-                                                       const std::string &name) : AbstractBinaryExpression(std::move(left), std::move(right),
-                                                                                                           name) {
+                                                       std::unique_ptr<AbstractDataSource> right)
+    : AbstractBinaryExpression(std::move(left), std::move(right)) {
   if (mapsContainSameKey(leftExpression->getHeaderMap(), rightExpression->getHeaderMap())) {
     throw runtime_error("Cannot perform cartesian product on expressions with same column names");
   }
@@ -13,7 +12,7 @@ CartesianProductExpression::CartesianProductExpression(std::unique_ptr<AbstractD
 }
 
 string CartesianProductExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " CROSS JOIN " + rightExpression->toSQL() + ") AS " + name;
+  return "SELECT * FROM (" + leftExpression->toSQL() + " CROSS JOIN " + rightExpression->toSQL() + ")";
 }
 
 void CartesianProductExpression::reset() {
@@ -69,5 +68,5 @@ size_t CartesianProductExpression::getHeaderIndex(const string &name) const {
 }
 
 unique_ptr<AbstractDataSource> CartesianProductExpression::clone() const {
-  return make_unique<CartesianProductExpression>(leftExpression->clone(), rightExpression->clone(), name);
+  return make_unique<CartesianProductExpression>(leftExpression->clone(), rightExpression->clone());
 }

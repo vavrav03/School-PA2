@@ -3,8 +3,7 @@
 
 using namespace std;
 
-FileDataSource::FileDataSource(const std::string &path, const std::string &name) : AbstractDataSource(name),
-                                                                                   file(path), path(path) {
+FileDataSource::FileDataSource(const std::string &path) : AbstractDataSource(), file(path), path(path) {
   if (file.fail()) {
     throw runtime_error("File not found");
   }
@@ -28,6 +27,10 @@ const string &FileDataSource::getHeaderName(size_t index) const {
 
 size_t FileDataSource::getHeaderSize() const {
   return this->header.size();
+}
+
+string FileDataSource::toSQL() const {
+  return "SELECT * FROM " + getNameWithoutExtension(path);
 }
 
 void FileDataSource::reset() {

@@ -4,9 +4,8 @@ using namespace std;
 
 ProjectionExpression::ProjectionExpression(unique_ptr<AbstractDataSource> expression,
                                            const std::vector<std::string> &columns,
-                                           const unordered_map<string, string> &aliasToPreviousName,
-                                           const std::string &name) : AbstractUnaryExpression(std::move(expression),
-                                                                                              name) {
+                                           const unordered_map<string, string> &aliasToPreviousName)
+    : AbstractUnaryExpression(std::move(expression)) {
   vector<int> indexes(this->expression->getHeaderSize());
   this->aliasToPreviousName = aliasToPreviousName;
   for (const std::string &column : columns) {
@@ -35,7 +34,7 @@ string ProjectionExpression::toSQL() const {
       sql += header[i];
     }
   }
-  sql += " FROM (" + this->expression->toSQL() + ") AS " + this->name;
+  sql += " FROM (" + this->expression->toSQL() + ")";
   return sql;
 }
 
@@ -86,8 +85,5 @@ std::string ProjectionExpression::getWrappedColumnName(const std::string &name) 
 }
 
 unique_ptr<AbstractDataSource> ProjectionExpression::clone() const {
-  return make_unique<ProjectionExpression>(this->expression->clone(),
-                                           this->getHeaderVector(),
-                                           this->aliasToPreviousName,
-                                           this->name);
+  return make_unique<ProjectionExpression>(this->expression->clone(), this->getHeaderVector(), this->aliasToPreviousName);
 }

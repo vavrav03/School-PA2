@@ -8,12 +8,12 @@ using namespace std;
 void testCsvDataSource() {
   cout << "- RUNNING: testCsvDataSource" << endl;
   try {
-    CSVDataSource csvDataSource("src/test/assets/non-existent.csv", "nonexistent");
+    CSVDataSource csvDataSource("src/test/assets/non-existent.csv");
     assert(false);
   } catch (const std::exception &e) {
     assert(true);
   }
-  CSVDataSource csvDataSource("src/test/assets/test.csv", "test");
+  CSVDataSource csvDataSource("src/test/assets/test.csv");
   assert(csvDataSource.getHeaderSize() == 3);
   assert(csvDataSource.getHeaderName(0) == "name");
   assert(csvDataSource.getHeaderName(1) == "age");

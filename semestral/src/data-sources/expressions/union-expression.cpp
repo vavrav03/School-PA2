@@ -3,8 +3,8 @@
 using namespace std;
 
 UnionExpression::UnionExpression(unique_ptr<AbstractDataSource> left,
-                                 unique_ptr<AbstractDataSource> right, const string &name)
-        : AbstractBinaryExpression(std::move(left), std::move(right), name) {
+                                 unique_ptr<AbstractDataSource> right)
+    : AbstractBinaryExpression(std::move(left), std::move(right)) {
   for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
     if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {
       throw runtime_error("Cannot intersect expressions with different headers");
@@ -13,7 +13,7 @@ UnionExpression::UnionExpression(unique_ptr<AbstractDataSource> left,
 }
 
 string UnionExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " UNION " + rightExpression->toSQL() + ") AS " + name;
+  return "SELECT * FROM (" + leftExpression->toSQL() + " UNION " + rightExpression->toSQL() + ")";
 }
 
 void UnionExpression::reset() {
@@ -43,5 +43,5 @@ const vector<string> UnionExpression::getNextRow() {
 }
 
 unique_ptr<AbstractDataSource> UnionExpression::clone() const {
-  return make_unique<UnionExpression>(leftExpression->clone(), rightExpression->clone(), name);
+  return make_unique<UnionExpression>(leftExpression->clone(), rightExpression->clone());
 }

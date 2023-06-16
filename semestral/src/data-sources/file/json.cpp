@@ -3,8 +3,7 @@
 
 using namespace std;
 
-JSONDataSource::JSONDataSource(const std::string &path, const std::string &name) : FileDataSource(path, name),
-                                                                                   reachedEndOfArray(false) {
+JSONDataSource::JSONDataSource(const std::string &path) : FileDataSource(path), reachedEndOfArray(false) {
   readFirstBlockAndSetHeader();
 }
 
@@ -124,5 +123,5 @@ JSONDataSource::parseBlockString(const std::string &unparsedJsonObject) {
 }
 
 unique_ptr<AbstractDataSource> JSONDataSource::clone() const {
-  return make_unique<JSONDataSource>(path, name);
+  return make_unique<JSONDataSource>(path);
 }

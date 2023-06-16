@@ -3,8 +3,8 @@
 using namespace std;
 
 ExceptExpression::ExceptExpression(unique_ptr<AbstractDataSource> left,
-                                   unique_ptr<AbstractDataSource> right, const string &name)
-    : AbstractBinaryExpression(std::move(left), std::move(right), name) {
+                                   unique_ptr<AbstractDataSource> right)
+    : AbstractBinaryExpression(std::move(left), std::move(right)) {
   for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
     if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {
       throw runtime_error("Cannot intersect expressions with different headers");
@@ -13,7 +13,7 @@ ExceptExpression::ExceptExpression(unique_ptr<AbstractDataSource> left,
 }
 
 string ExceptExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " EXCEPT " + rightExpression->toSQL() + ") AS " + name;
+  return "SELECT * FROM (" + leftExpression->toSQL() + " EXCEPT " + rightExpression->toSQL() + ")";
 }
 
 void ExceptExpression::reset() {
@@ -41,5 +41,5 @@ const vector<string> ExceptExpression::getNextRow() {
 }
 
 unique_ptr<AbstractDataSource> ExceptExpression::clone() const {
-  return make_unique<ExceptExpression>(leftExpression->clone(), rightExpression->clone(), name);
+  return make_unique<ExceptExpression>(leftExpression->clone(), rightExpression->clone());
 }

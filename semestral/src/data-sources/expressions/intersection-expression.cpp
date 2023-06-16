@@ -3,8 +3,8 @@
 using namespace std;
 
 IntersectionExpression::IntersectionExpression(unique_ptr<AbstractDataSource> left,
-                                               unique_ptr<AbstractDataSource> right, const string &name)
-        : AbstractBinaryExpression(std::move(left), std::move(right), name) {
+                                               unique_ptr<AbstractDataSource> right)
+        : AbstractBinaryExpression(std::move(left), std::move(right)) {
   for (size_t i = 0; i < leftExpression->getHeaderSize(); i++) {
     if (leftExpression->getHeaderName(i) != rightExpression->getHeaderName(i)) {
       throw runtime_error("Cannot intersect expressions with different headers");
@@ -18,7 +18,7 @@ void IntersectionExpression::reset() {
 }
 
 string IntersectionExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " INTERSECT " + rightExpression->toSQL() + ") AS " + name;
+  return "SELECT * FROM (" + leftExpression->toSQL() + " INTERSECT " + rightExpression->toSQL() + ")";
 }
 
 const vector<string> IntersectionExpression::getNextRow() {
@@ -36,5 +36,5 @@ const vector<string> IntersectionExpression::getNextRow() {
 }
 
 unique_ptr<AbstractDataSource> IntersectionExpression::clone() const {
-  return make_unique<IntersectionExpression>(leftExpression->clone(), rightExpression->clone(), name);
+  return make_unique<IntersectionExpression>(leftExpression->clone(), rightExpression->clone());
 }

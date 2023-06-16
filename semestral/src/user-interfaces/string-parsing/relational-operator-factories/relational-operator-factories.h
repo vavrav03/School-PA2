@@ -158,8 +158,7 @@ class CSVOperandFactory : public OperationPartFactory<AbstractDataSource> {
   std::unique_ptr<OperationPart<AbstractDataSource> > create(const std::vector<Token> &tokens,
                                                             size_t &nextTokenIndex) const override {
     std::string path = tokens[nextTokenIndex].value;
-    std::string name = memory.getAvailableAlias(getNameWithoutExtension(path));
-    auto returnValue = std::make_unique<CSVOperand>(path, name);
+    auto returnValue = std::make_unique<CSVOperand>(path);
     nextTokenIndex++;
     return returnValue;
   }
@@ -177,8 +176,7 @@ class JSONOperandFactory : public OperationPartFactory<AbstractDataSource> {
   std::unique_ptr<OperationPart<AbstractDataSource> > create(const std::vector<Token> &tokens,
                                                             size_t &nextTokenIndex) const override {
     std::string path = tokens[nextTokenIndex].value;
-    std::string name = memory.getAvailableAlias(getNameWithoutExtension(path));
-    auto returnValue = std::make_unique<JSONOperand>(path, name);
+    auto returnValue = std::make_unique<JSONOperand>(path);
     nextTokenIndex++;
     return returnValue;
   }

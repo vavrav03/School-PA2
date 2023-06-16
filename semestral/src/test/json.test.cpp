@@ -54,7 +54,7 @@ void testJSONBlockParser() {
 
 void testSampleRead() {
   cout << "- RUNNING: testSampleRead" << endl;
-  JSONDataSource dataSource1(string(TEST_JSON_FILE), "test");
+  JSONDataSource dataSource1(string(TEST_JSON_FILE));
   assert(dataSource1.getHeaderSize() == 3);
   assert(equalsVectors(dataSource1.getHeaderVector(), vector<string>{"a", "b", "c"}));
   assert(equalsVectors(dataSource1.getNextRow(), vector<string>{"1", "2", "3"}));
@@ -78,8 +78,7 @@ void testSampleRead() {
 
   for (size_t i = 1; i <= 3; i++) {
     try {
-      JSONDataSource dataSource2(string(TEST_ASSETS_DIR) + "test-error" + to_string(i) + ".json",
-                                 "testerror" + to_string(i));
+      JSONDataSource dataSource2(string(TEST_ASSETS_DIR) + "test-error" + to_string(i) + ".json");
       while (!(result = dataSource2.getNextRow()).empty()) {
         assert(result.size() == 3);
       }

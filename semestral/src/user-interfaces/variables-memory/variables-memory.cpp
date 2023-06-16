@@ -12,45 +12,13 @@ void VariablesMemory::add(const string &name, unique_ptr<AbstractDataSource> ite
 
 unique_ptr<AbstractDataSource> VariablesMemory::get(const string &name) {
   auto clonedDataSource = variables[name]->clone();
-  clonedDataSource->setName(name);
   return clonedDataSource;
 }
 
 vector<string> VariablesMemory::getVariablesNames() {
-  vector<string> names;
+  vector<string> names(variables.size());
   for (auto &pair : variables) {
     names.push_back(pair.first);
   }
   return names;
-}
-
-string VariablesMemory::getAvailableAlias(const string &preferredAlias) {
-  string alias = preferredAlias;
-  if (!this->exists(preferredAlias)) {
-    return alias;
-  }
-  alias += "_a";
-  while (this->exists(alias)) {
-    if (alias.back() == 'z') {
-      alias += 'a';
-    } else {
-      alias.back()++;
-    }
-  }
-  return alias;
-}
-
-string VariablesMemory::generateNewAvailableAlias(const string &startingPoint) {
-  if (startingPoint.empty()) {
-    return "a";
-  }
-  string alias = startingPoint;
-  do {
-    if (alias.back() == 'z') {
-      alias += 'a';
-    } else {
-      alias.back()++;
-    }
-  } while (this->exists(alias));
-  return alias;
 }

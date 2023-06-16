@@ -11,9 +11,8 @@
 class AbstractBinaryExpression : public AbstractDataSource {
  public:
   AbstractBinaryExpression(std::unique_ptr<AbstractDataSource> leftExpression,
-                           std::unique_ptr<AbstractDataSource> rightExpression,
-                           const std::string &name)
-      : AbstractDataSource(name),
+                           std::unique_ptr<AbstractDataSource> rightExpression)
+      : AbstractDataSource(),
         leftExpression(std::move(leftExpression)),
         rightExpression(std::move(rightExpression)) {}
 
@@ -49,8 +48,8 @@ class AbstractBinaryExpression : public AbstractDataSource {
 
 class AbstractUnaryExpression : public AbstractDataSource {
  public:
-  AbstractUnaryExpression(std::unique_ptr<AbstractDataSource> expression, const std::string &name) : AbstractDataSource(
-      name), expression(std::move(expression)) {}
+  AbstractUnaryExpression(std::unique_ptr<AbstractDataSource> expression)
+      : AbstractDataSource(), expression(std::move(expression)) {}
 
   void reset() override {
     expression->reset();
@@ -87,8 +86,7 @@ class AbstractUnaryExpression : public AbstractDataSource {
 class ProjectionExpression : public AbstractUnaryExpression {
  public:
   ProjectionExpression(std::unique_ptr<AbstractDataSource> expression, const std::vector<std::string> &columns,
-                       const std::unordered_map<std::string, std::string> &aliases,
-                       const std::string &name);
+                       const std::unordered_map<std::string, std::string> &aliases);
 
   std::string toSQL() const override;
   std::vector<std::string> getHeaderVector() const override;
@@ -107,8 +105,7 @@ class ProjectionExpression : public AbstractUnaryExpression {
 class IntersectionExpression : public AbstractBinaryExpression {
  public:
   IntersectionExpression(std::unique_ptr<AbstractDataSource> leftExpression,
-                         std::unique_ptr<AbstractDataSource> rightExpression,
-                         const std::string &name);
+                         std::unique_ptr<AbstractDataSource> rightExpression);
   std::string toSQL() const override;
   void reset() override;
   const std::vector<std::string> getNextRow() override;
@@ -118,8 +115,7 @@ class IntersectionExpression : public AbstractBinaryExpression {
 class UnionExpression : public AbstractBinaryExpression {
  public:
   UnionExpression(std::unique_ptr<AbstractDataSource> leftExpression,
-                  std::unique_ptr<AbstractDataSource> rightExpression,
-                  const std::string &name);
+                  std::unique_ptr<AbstractDataSource> rightExpression);
 
   std::string toSQL() const override;
   void reset() override;
@@ -130,8 +126,7 @@ class UnionExpression : public AbstractBinaryExpression {
 class ExceptExpression : public AbstractBinaryExpression {
  public:
   ExceptExpression(std::unique_ptr<AbstractDataSource> leftExpression,
-                   std::unique_ptr<AbstractDataSource> rightExpression,
-                   const std::string &name);
+                   std::unique_ptr<AbstractDataSource> rightExpression);
 
   std::string toSQL() const override;
   void reset() override;
@@ -142,8 +137,7 @@ class ExceptExpression : public AbstractBinaryExpression {
 class CartesianProductExpression : public AbstractBinaryExpression {
  public:
   CartesianProductExpression(std::unique_ptr<AbstractDataSource> leftExpression,
-                             std::unique_ptr<AbstractDataSource> rightExpression,
-                             const std::string &name);
+                             std::unique_ptr<AbstractDataSource> rightExpression);
 
   std::string toSQL() const override;
   void reset() override;
@@ -161,8 +155,7 @@ class CartesianProductExpression : public AbstractBinaryExpression {
 class NaturalJoinExpression : public AbstractBinaryExpression {
  public:
   NaturalJoinExpression(std::unique_ptr<AbstractDataSource> leftExpression,
-                             std::unique_ptr<AbstractDataSource> rightExpression,
-                             const std::string &name);
+                        std::unique_ptr<AbstractDataSource> rightExpression);
 
   std::string toSQL() const override;
   void reset() override;

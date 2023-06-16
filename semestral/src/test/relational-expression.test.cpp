@@ -31,7 +31,7 @@ void testProjection() {
   auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
   unique_ptr<AbstractDataSource>
       expression = parser.createExpressionFromTokens(tokenizer.tokenize("abc  [height   -  >vyska,    age]"));
-  assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from abc) as a");
+  assert(toLowerCase(expression->toSQL()) == "select height as vyska, age from (select * from test)");
   assert(expression->getHeaderSize() == 2);
   vector<string> rows = expression->getNextRow();
   assert(expression->getHeaderIndex("vyska") == 0);
@@ -44,7 +44,7 @@ void testProjection() {
       tokenizer.tokenize("{{abc  [height   -  >vyska,    age]}}[vyska->height][height->opetvyska]"));
   assert(toLowerCase(expression2->toSQL()) ==
       toLowerCase(
-          "SELECT height AS opetvyska FROM (SELECT vyska AS height FROM (SELECT height AS vyska, age FROM (select * from abc) AS a) AS b) AS c"));
+          "SELECT height AS opetvyska FROM (SELECT vyska AS height FROM (SELECT height AS vyska, age FROM (select * from test)))"));
   assert(expression2->getHeaderSize() == 1);
   rows = expression2->getNextRow();
   assert(expression2->getHeaderIndex("opetvyska") == 0);
@@ -63,7 +63,7 @@ void testIntersection() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 ∩    test2"));
   assert(toLowerCase(expression->toSQL())
-             == toLowerCase("SELECT * FROM (select * from test1 INTERSECT select * from test2) AS a"));
+             == toLowerCase("SELECT * FROM (select * from test-set1 INTERSECT select * from test-set2)"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -84,7 +84,8 @@ void testUnion() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  ∪   test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("SELECT * FROM (select * from test1 UNION select * from test2) AS a"));
+      toLowerCase(expression->toSQL())
+          == toLowerCase("SELECT * FROM (select * from test-set1 UNION select * from test-set2)"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -111,7 +112,8 @@ void testExcept() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1  \\   test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("SELECT * FROM (select * from test1 EXCEPT select * from test2) AS a"));
+      toLowerCase(expression->toSQL())
+          == toLowerCase("SELECT * FROM (select * from test-set1 EXCEPT select * from test-set2)"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -134,7 +136,8 @@ void testCartesian() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 × test2"));
   assert(
-      toLowerCase(expression->toSQL()) == toLowerCase("SELECT * FROM (select * from test1 CROSS JOIN select * from test2) AS a"));
+      toLowerCase(expression->toSQL())
+          == toLowerCase("SELECT * FROM (select * from test CROSS JOIN select * from test-set1)"));
   assert(expression->getHeaderSize() == 6);
   assert(expression->getHeaderName(0) == "a");
   assert(expression->getHeaderName(1) == "b");
@@ -157,9 +160,7 @@ void testCartesian() {
   try {
     parser.createExpressionFromTokens(tokenizer.tokenize("test1 × test1"));
     assert(false); // must rename columns
-  } catch (...) {
-
-  }
+  } catch (...) {}
   expression = parser.createExpressionFromTokens(tokenizer.tokenize("test1[a->xyz] × test1"));
   assert(expression->getHeaderSize() == 4);
   assert(expression->getHeaderName(0) == "xyz");
