@@ -4,7 +4,7 @@
 #include <vector>
 #include "expression-operation-part.h"
 #include "./operation-part.h"
-#include "../user-interfaces/abstract/variables-memory.h"
+#include "../user-interfaces/variables-memory/variables-memory.h"
 
 template<typename T>
 class ExpressionEvaluator {

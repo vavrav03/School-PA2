@@ -2,7 +2,7 @@
 #define SEMESTRAL_ABSTRACT_INTERFACE_H
 
 #include <string>
-#include "./variables-memory.h"
+#include "../variables-memory/variables-memory.h"
 
 class AbstractInterface {
  public:

@@ -7,7 +7,7 @@
 #include "../data-sources/expressions/expressions.h"
 #include "../user-interfaces/string-parsing/tokenizer/token.h"
 #include "../user-interfaces/string-parsing/tokenizer/tokenizer.h"
-#include "../user-interfaces/abstract/variables-memory.h"
+#include "../user-interfaces/variables-memory/variables-memory.h"
 #include "../data-sources/file/csv.h"
 #include "../data-sources/file/json.h"
 

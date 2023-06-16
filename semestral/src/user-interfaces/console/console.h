@@ -1,7 +1,7 @@
 #ifndef SEMESTRAL_CONSOLE_INTERFACE_H
 #define SEMESTRAL_CONSOLE_INTERFACE_H
 
-#include "../abstract/variables-memory.h"
+#include "../variables-memory/variables-memory.h"
 
 #include "./commands/console-command.h"
 #include "../abstract/abstract.h"

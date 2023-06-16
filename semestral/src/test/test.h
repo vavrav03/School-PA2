@@ -12,7 +12,7 @@
 #define TEST_JSON_ERROR_1 TEST_ASSETS_DIR "test-error1.json"
 #define TEST_JSON_ERROR_2 TEST_ASSETS_DIR "test-error2.json"
 #include <cassert>
-#include "../user-interfaces/abstract/variables-memory.h"
+#include "../user-interfaces/variables-memory/variables-memory.h"
 #include "../user-interfaces/string-parsing/tokenizer/token.h"
 #include "../user-interfaces/string-parsing/tokenizer/tokenizer.h"
 

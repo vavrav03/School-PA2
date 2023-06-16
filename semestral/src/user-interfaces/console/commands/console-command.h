@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "../../abstract/variables-memory.h"
+#include "../../variables-memory/variables-memory.h"
 #include "../../string-parsing/tokenizer/token.h"
 #include "../../string-parsing/tokenizer/tokenizer.h"
 #include "../../string-parsing/expression-parser.h"
