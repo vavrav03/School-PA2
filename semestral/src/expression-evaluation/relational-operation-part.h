@@ -166,12 +166,25 @@ class RightNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
   }
 };
 
-class LeftAntiJoin: public OperationPart<AbstractDataSource> {
+class LeftNaturalAntiJoin : public OperationPart<AbstractDataSource> {
  public:
-  LeftAntiJoin() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+  LeftNaturalAntiJoin() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
 
   void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto leftExpressionClone = parts[parts.size() - 2]->clone();
+    LeftNaturalSemiJoinOperator().evaluate(parts);
+    parts.push_back(std::make_unique<ExceptExpression>(std::move(leftExpressionClone), std::move(parts.back())));
+  }
+};
 
+class RightNaturalAntiJoin: public OperationPart<AbstractDataSource> {
+ public:
+  RightNaturalAntiJoin() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto rightExpressionClone = parts.back()->clone();
+    RightNaturalSemiJoinOperator().evaluate(parts);
+    parts.push_back(std::make_unique<ExceptExpression>(std::move(rightExpressionClone), std::move(parts.back())));
   }
 };
 

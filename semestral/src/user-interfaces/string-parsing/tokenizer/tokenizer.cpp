@@ -7,10 +7,11 @@ Tokenizer::Tokenizer(const std::vector<std::string> &specialCharacters) : specia
 Tokenizer Tokenizer::getInstnace() {
   // not all operations have to be here, but it makes sense to have them repeated despite being mentioned elsewhere
   return Tokenizer({"∪", "∩", "\\", "×", "÷",
+                    "*", "!",
                     "⊆", "⊂", "=",
                     "{", "}", ",", "(", ")", "[", "]", "-",
                     "∧", "∨", "¬", "⇒", "⇔", "⊼", "⊽",
-                    "=", "≠", "<", ">", "≤", "≥", "~"});
+                    "=", "<", ">", "~"});
 }
 
 vector<Token> Tokenizer::tokenize(const string &command) {

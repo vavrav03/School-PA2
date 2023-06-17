@@ -198,7 +198,7 @@ void testNaturalJoin() {
   assertReturnMatches(*expression, expected);
 }
 
-void testNaturalSemiJoins(){
+void testNaturalSemiJoins() {
   cout << "RUNNING: left natural semi join" << endl;
   VariablesMemory memory;
   Tokenizer tokenizer = Tokenizer::getInstnace();
@@ -233,8 +233,38 @@ void testNaturalSemiJoins(){
   };
 }
 
-void testNaturalAntiJoins(){
+void testNaturalAntiJoins() {
+  cout << "RUNNING: left natural anti join" << endl;
+  VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_JOIN_1) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_1) + "\""));
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+      tokenizer.tokenize("test1 !<* test2"));
+  assert(expression->getHeaderSize() == 3);
+  assert(expression->getHeaderName(0) == "name");
+  assert(expression->getHeaderName(1) == "age");
+  assert(expression->getHeaderName(2) == "school");
+  vector<vector<string> > expected = {
+      {"Mary", "17", "Harvard"},
+      {"Alfred", "29", "CTU"}
+  };
+  assertReturnMatches(*expression, expected);
 
+  cout << "RUNNING: right natural semi join" << endl;
+
+  expression = parser.createExpressionFromTokens(
+      tokenizer.tokenize("test1 !*> test2"));
+  assert(expression->getHeaderSize() == 3);
+  assert(expression->getHeaderName(0) == "name");
+  assert(expression->getHeaderName(1) == "age");
+  assert(expression->getHeaderName(2) == "height");
+  expected = {
+      {"John", "25", "180"},
+      {"Alfred", "30", "175"}
+  };
+  assertReturnMatches(*expression, expected);
 }
 
 void testExpression() {
