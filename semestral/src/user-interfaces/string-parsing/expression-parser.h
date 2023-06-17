@@ -23,9 +23,9 @@ class ExpressionParser {
         std::vector<std::string>{"<", "*"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightNaturalSemiJoinOperator>>(
         std::vector<std::string>{"*", ">"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftBracketRelationOperand>>(
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftBracketOperand>>(
         std::vector<std::string>{"{"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightBracketRelationOperand>>(
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightBracketOperand>>(
         std::vector<std::string>{"}"}));
     factories.push_back(std::make_unique<ProjectionOperatorFactory>());
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, IntersectionOperator>>(

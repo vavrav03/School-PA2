@@ -11,16 +11,6 @@
 #include "../data-sources/file/csv.h"
 #include "../data-sources/file/json.h"
 
-class LeftBracketRelationOperand : public OperationPart<AbstractDataSource> {
- public:
-  LeftBracketRelationOperand() : OperationPart<AbstractDataSource>(OperationPartType::LEFT_BRACKET, 999) {}
-};
-
-class RightBracketRelationOperand : public OperationPart<AbstractDataSource> {
- public:
-  RightBracketRelationOperand() : OperationPart<AbstractDataSource>(OperationPartType::RIGHT_BRACKET, 999) {}
-};
-
 class VariableOperand : public OperationPart<AbstractDataSource> {
  public:
   VariableOperand(std::unique_ptr<AbstractDataSource> expression) : OperationPart<AbstractDataSource>(
@@ -79,69 +69,29 @@ class ProjectionOperator : public OperationPart<AbstractDataSource> {
   std::unordered_map<std::string, std::string> aliasToOldName;
 };
 
-class IntersectionOperator : public OperationPart<AbstractDataSource> {
+class IntersectionOperator : public BinaryOperator<AbstractDataSource, IntersectionExpression> {
  public:
-  IntersectionOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 9) {}
-
-  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.back());
-    parts.pop_back();
-    auto left = std::move(parts.back());
-    parts.pop_back();
-    parts.push_back(std::make_unique<IntersectionExpression>(std::move(left), std::move(right)));
-  }
+  IntersectionOperator() : BinaryOperator<AbstractDataSource, IntersectionExpression>(10) {}
 };
 
-class UnionOperator : public OperationPart<AbstractDataSource> {
+class UnionOperator : public BinaryOperator<AbstractDataSource, UnionExpression> {
  public:
-  UnionOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 10) {}
-
-  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.back());
-    parts.pop_back();
-    auto left = std::move(parts.back());
-    parts.pop_back();
-    parts.push_back(std::make_unique<UnionExpression>(std::move(left), std::move(right)));
-  }
+  UnionOperator() : BinaryOperator<AbstractDataSource, UnionExpression>(9) {}
 };
 
-class ExceptOperator : public OperationPart<AbstractDataSource> {
+class ExceptOperator : public BinaryOperator<AbstractDataSource, ExceptExpression> {
  public:
-  ExceptOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 10) {}
-
-  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.back());
-    parts.pop_back();
-    auto left = std::move(parts.back());
-    parts.pop_back();
-    parts.push_back(std::make_unique<ExceptExpression>(std::move(left), std::move(right)));
-  }
+  ExceptOperator() : BinaryOperator<AbstractDataSource, ExceptExpression>(10) {}
 };
 
-class CartesianProductOperator : public OperationPart<AbstractDataSource> {
+class CartesianProductOperator : public BinaryOperator<AbstractDataSource, CartesianProductExpression> {
  public:
-  CartesianProductOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
-
-  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.back());
-    parts.pop_back();
-    auto left = std::move(parts.back());
-    parts.pop_back();
-    parts.push_back(std::make_unique<CartesianProductExpression>(std::move(left), std::move(right)));
-  }
+  CartesianProductOperator() : BinaryOperator<AbstractDataSource, CartesianProductExpression>(9) {}
 };
 
-class NaturalJoinOperator : public OperationPart<AbstractDataSource> {
+class NaturalJoinOperator : public BinaryOperator<AbstractDataSource, NaturalJoinExpression> {
  public:
-  NaturalJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
-
-  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.back());
-    parts.pop_back();
-    auto left = std::move(parts.back());
-    parts.pop_back();
-    parts.push_back(std::make_unique<NaturalJoinExpression>(std::move(left), std::move(right)));
-  }
+  NaturalJoinOperator() : BinaryOperator<AbstractDataSource, NaturalJoinExpression>(11) {}
 };
 
 class LeftNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
