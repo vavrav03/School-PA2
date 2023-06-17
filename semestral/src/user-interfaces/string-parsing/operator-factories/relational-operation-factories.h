@@ -4,7 +4,7 @@
 #include "./operation-factory.h"
 #include "../tokenizer/token.h"
 #include "../../../expression-evaluation/operation-part.h"
-#include "../../../expression-evaluation/expression-operation-part.h"
+#include "../../../expression-evaluation/relational-operation-part.h"
 
 class ProjectionOperatorFactory : public OperationPartFactory<AbstractDataSource> {
  public:
