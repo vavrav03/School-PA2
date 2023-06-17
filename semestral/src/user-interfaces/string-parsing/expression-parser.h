@@ -14,6 +14,11 @@ class ExpressionParser {
 
   static ExpressionParser<AbstractDataSource> getInstance(VariablesMemory &memory) {
     std::vector<std::unique_ptr<OperationPartFactory<AbstractDataSource> >> factories;
+    // the ones with more characters must be first to avoid matching the shorter ones
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftNaturalSemiJoinOperator>>(
+        std::vector<std::string>{"<", "*"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightNaturalSemiJoinOperator>>(
+        std::vector<std::string>{"*", ">"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftBracketRelationOperand>>(
         std::vector<std::string>{"{"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightBracketRelationOperand>>(

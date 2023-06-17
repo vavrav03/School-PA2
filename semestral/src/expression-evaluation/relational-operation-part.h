@@ -144,4 +144,30 @@ class NaturalJoinOperator : public OperationPart<AbstractDataSource> {
   }
 };
 
+class LeftNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
+ public:
+  LeftNaturalSemiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto right = std::move(parts.top());
+    parts.pop();
+    auto left = std::move(parts.top());
+    const std::vector<std::string> leftHeader = left->getHeaderVector();
+    parts.pop();
+    parts.push(std::make_unique<NaturalJoinExpression>(std::move(left), std::move(right)));
+    ProjectionOperator(leftHeader, std::unordered_map<std::string, std::string>()).evaluate(parts);
+  }
+};
+
+class RightNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
+ public:
+  RightNaturalSemiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+
+  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
+    const std::vector<std::string> rightHeader = parts.top()->getHeaderVector();
+    NaturalJoinOperator().evaluate(parts);
+    ProjectionOperator(rightHeader, std::unordered_map<std::string, std::string>()).evaluate(parts);
+  }
+};
+
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H
