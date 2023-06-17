@@ -34,8 +34,8 @@ class ExpressionParser {
         std::vector<std::string>{"×"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, NaturalJoinOperator>>(
         std::vector<std::string>{"*"}));
-    factories.push_back(std::make_unique<CSVOperandFactory>(memory));
-    factories.push_back(std::make_unique<JSONOperandFactory>(memory));
+    factories.push_back(std::make_unique<CSVOperandFactory>());
+    factories.push_back(std::make_unique<JSONOperandFactory>());
     factories.push_back(std::make_unique<VariableOperandFactory>(memory));
     return ExpressionParser(std::move(factories), memory);
   }

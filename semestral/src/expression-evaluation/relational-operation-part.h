@@ -26,8 +26,8 @@ class VariableOperand : public OperationPart<AbstractDataSource> {
   VariableOperand(std::unique_ptr<AbstractDataSource> expression) : OperationPart<AbstractDataSource>(
       OperationPartType::OPERAND, 1999), expression(std::move(expression)) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    parts.push(std::move(expression));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    parts.push_back(std::move(expression));
   }
 
  private:
@@ -40,8 +40,8 @@ class CSVOperand : public OperationPart<AbstractDataSource> {
       : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
         path(path) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    parts.push(std::make_unique<CSVDataSource>(path));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    parts.push_back(std::make_unique<CSVDataSource>(path));
   }
 
  private:
@@ -54,8 +54,8 @@ class JSONOperand : public OperationPart<AbstractDataSource> {
       : OperationPart<AbstractDataSource>(OperationPartType::OPERAND, 1999),
         path(path) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    parts.push(std::make_unique<JSONDataSource>(path));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    parts.push_back(std::make_unique<JSONDataSource>(path));
   }
 
  private:
@@ -68,11 +68,11 @@ class ProjectionOperator : public OperationPart<AbstractDataSource> {
                      const std::unordered_map<std::string, std::string> &aliasToOld) : OperationPart(
       OperationPartType::POSTFIX_UNARY_OPERATOR, 50), header(header), aliasToOldName(aliasToOld) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
     auto projection =
-        std::make_unique<ProjectionExpression>(std::move(parts.top()), header, aliasToOldName);
-    parts.pop();
-    parts.push(std::move(projection));
+        std::make_unique<ProjectionExpression>(std::move(parts.back()), header, aliasToOldName);
+    parts.pop_back();
+    parts.push_back(std::move(projection));
   }
  private:
   std::vector<std::string> header;
@@ -83,12 +83,12 @@ class IntersectionOperator : public OperationPart<AbstractDataSource> {
  public:
   IntersectionOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 9) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.top());
-    parts.pop();
-    auto left = std::move(parts.top());
-    parts.pop();
-    parts.push(std::make_unique<IntersectionExpression>(std::move(left), std::move(right)));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto right = std::move(parts.back());
+    parts.pop_back();
+    auto left = std::move(parts.back());
+    parts.pop_back();
+    parts.push_back(std::make_unique<IntersectionExpression>(std::move(left), std::move(right)));
   }
 };
 
@@ -96,12 +96,12 @@ class UnionOperator : public OperationPart<AbstractDataSource> {
  public:
   UnionOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 10) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.top());
-    parts.pop();
-    auto left = std::move(parts.top());
-    parts.pop();
-    parts.push(std::make_unique<UnionExpression>(std::move(left), std::move(right)));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto right = std::move(parts.back());
+    parts.pop_back();
+    auto left = std::move(parts.back());
+    parts.pop_back();
+    parts.push_back(std::make_unique<UnionExpression>(std::move(left), std::move(right)));
   }
 };
 
@@ -109,12 +109,12 @@ class ExceptOperator : public OperationPart<AbstractDataSource> {
  public:
   ExceptOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 10) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.top());
-    parts.pop();
-    auto left = std::move(parts.top());
-    parts.pop();
-    parts.push(std::make_unique<ExceptExpression>(std::move(left), std::move(right)));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto right = std::move(parts.back());
+    parts.pop_back();
+    auto left = std::move(parts.back());
+    parts.pop_back();
+    parts.push_back(std::make_unique<ExceptExpression>(std::move(left), std::move(right)));
   }
 };
 
@@ -122,12 +122,12 @@ class CartesianProductOperator : public OperationPart<AbstractDataSource> {
  public:
   CartesianProductOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.top());
-    parts.pop();
-    auto left = std::move(parts.top());
-    parts.pop();
-    parts.push(std::make_unique<CartesianProductExpression>(std::move(left), std::move(right)));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto right = std::move(parts.back());
+    parts.pop_back();
+    auto left = std::move(parts.back());
+    parts.pop_back();
+    parts.push_back(std::make_unique<CartesianProductExpression>(std::move(left), std::move(right)));
   }
 };
 
@@ -135,12 +135,12 @@ class NaturalJoinOperator : public OperationPart<AbstractDataSource> {
  public:
   NaturalJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.top());
-    parts.pop();
-    auto left = std::move(parts.top());
-    parts.pop();
-    parts.push(std::make_unique<NaturalJoinExpression>(std::move(left), std::move(right)));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto right = std::move(parts.back());
+    parts.pop_back();
+    auto left = std::move(parts.back());
+    parts.pop_back();
+    parts.push_back(std::make_unique<NaturalJoinExpression>(std::move(left), std::move(right)));
   }
 };
 
@@ -148,13 +148,9 @@ class LeftNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
  public:
   LeftNaturalSemiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    auto right = std::move(parts.top());
-    parts.pop();
-    auto left = std::move(parts.top());
-    const std::vector<std::string> leftHeader = left->getHeaderVector();
-    parts.pop();
-    parts.push(std::make_unique<NaturalJoinExpression>(std::move(left), std::move(right)));
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto leftHeader = parts[parts.size() - 2]->getHeaderVector();
+    NaturalJoinOperator().evaluate(parts);
     ProjectionOperator(leftHeader, std::unordered_map<std::string, std::string>()).evaluate(parts);
   }
 };
@@ -163,10 +159,19 @@ class RightNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
  public:
   RightNaturalSemiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
 
-  void evaluate(std::stack<std::unique_ptr<AbstractDataSource>> &parts) override {
-    const std::vector<std::string> rightHeader = parts.top()->getHeaderVector();
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    const std::vector<std::string> rightHeader = parts.back()->getHeaderVector();
     NaturalJoinOperator().evaluate(parts);
     ProjectionOperator(rightHeader, std::unordered_map<std::string, std::string>()).evaluate(parts);
+  }
+};
+
+class LeftAntiJoin: public OperationPart<AbstractDataSource> {
+ public:
+  LeftAntiJoin() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+
   }
 };
 

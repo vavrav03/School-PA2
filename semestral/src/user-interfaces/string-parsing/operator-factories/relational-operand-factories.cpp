@@ -23,8 +23,8 @@ std::unique_ptr<OperationPart<AbstractDataSource> > VariableOperandFactory::crea
   return returnValue;
 }
 
-CSVOperandFactory::CSVOperandFactory(VariablesMemory &memory)
-    : OperationPartFactory<AbstractDataSource>(), memory(memory) {}
+CSVOperandFactory::CSVOperandFactory()
+    : OperationPartFactory<AbstractDataSource>() {}
 
 bool CSVOperandFactory::canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const {
   return tokens[nextTokenIndex].quoted && getExtensionFromPath(tokens[nextTokenIndex].value) == "csv";
@@ -38,8 +38,8 @@ std::unique_ptr<OperationPart<AbstractDataSource> > CSVOperandFactory::create(co
   return returnValue;
 }
 
-JSONOperandFactory::JSONOperandFactory(VariablesMemory &memory)
-    : OperationPartFactory<AbstractDataSource>(), memory(memory) {}
+JSONOperandFactory::JSONOperandFactory()
+    : OperationPartFactory<AbstractDataSource>() {}
 
 bool JSONOperandFactory::canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const {
   return tokens[nextTokenIndex].quoted && getExtensionFromPath(tokens[nextTokenIndex].value) == "json";

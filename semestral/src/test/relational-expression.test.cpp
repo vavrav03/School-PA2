@@ -233,6 +233,10 @@ void testNaturalSemiJoins(){
   };
 }
 
+void testNaturalAntiJoins(){
+
+}
+
 void testExpression() {
   testProjection();
   testIntersection();
@@ -241,4 +245,5 @@ void testExpression() {
   testCartesian();
   testNaturalJoin();
   testNaturalSemiJoins();
+  testNaturalAntiJoins();
 }

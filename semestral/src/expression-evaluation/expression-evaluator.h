@@ -12,12 +12,12 @@ class ExpressionEvaluator {
   ExpressionEvaluator(VariablesMemory &memory) : memory(memory) {}
 
   std::unique_ptr<T> createExpressionFromPostfix(const std::vector<std::unique_ptr<OperationPart<T>>> &parts) const {
-    std::stack<std::unique_ptr<T> > expressions;
+    std::vector<std::unique_ptr<T> > expressions;
     for (auto &part : parts) {
       part->evaluate(expressions);
     }
-    expressions.top()->reset();
-    return std::move(expressions.top());
+    expressions.back()->reset();
+    return std::move(expressions.back());
   }
 
 /**
@@ -27,45 +27,45 @@ class ExpressionEvaluator {
  */
   std::vector<std::unique_ptr<OperationPart<T>>> createPostfixFromInfix(std::vector<std::unique_ptr<OperationPart<T>>> &&infix) const {
     std::vector<std::unique_ptr<OperationPart<T> > > postfix;
-    std::stack<std::unique_ptr<OperationPart<T> > > stack;
+    std::vector<std::unique_ptr<OperationPart<T> > > vector;
     for (size_t i = 0; i < infix.size(); i++) {
       if (infix[i]->type == ::OperationPartType::OPERAND) {
         postfix.push_back(std::move(infix[i]));
       } else if (infix[i]->type == ::OperationPartType::LEFT_BRACKET) {
-        stack.push(std::move(infix[i]));
+        vector.push_back(std::move(infix[i]));
       } else if (infix[i]->type == ::OperationPartType::RIGHT_BRACKET) {
         bool bracketMatched = false;
-        while (!stack.empty()) {
-          if (stack.top()->type == ::OperationPartType::LEFT_BRACKET) {
+        while (!vector.empty()) {
+          if (vector.back()->type == ::OperationPartType::LEFT_BRACKET) {
             bracketMatched = true;
-            stack.pop();
+            vector.pop_back();
             break;
           } else {
-            postfix.push_back(std::move(stack.top()));
-            stack.pop();
+            postfix.push_back(std::move(vector.back()));
+            vector.pop_back();
           }
         }
-        if (!bracketMatched) { // stack is empty now
+        if (!bracketMatched) { // vector is empty now
           throw std::invalid_argument("Mismatched parentheses");
         }
       } else {
-        while (!stack.empty() &&
-            stack.top()->type != ::OperationPartType::LEFT_BRACKET &&
-            stack.top()->type != ::OperationPartType::RIGHT_BRACKET &&
-            stack.top()->priority >= infix[i]->priority) {
-          postfix.push_back(std::move(stack.top()));
-          stack.pop();
+        while (!vector.empty() &&
+            vector.back()->type != ::OperationPartType::LEFT_BRACKET &&
+            vector.back()->type != ::OperationPartType::RIGHT_BRACKET &&
+            vector.back()->priority >= infix[i]->priority) {
+          postfix.push_back(std::move(vector.back()));
+          vector.pop_back();
         }
-        stack.push(std::move(infix[i]));
+        vector.push_back(std::move(infix[i]));
       }
     }
-    while (!stack.empty()) {
-      if (stack.top()->type == ::OperationPartType::LEFT_BRACKET
-          || stack.top()->type == ::OperationPartType::RIGHT_BRACKET) {
+    while (!vector.empty()) {
+      if (vector.back()->type == ::OperationPartType::LEFT_BRACKET
+          || vector.back()->type == ::OperationPartType::RIGHT_BRACKET) {
         throw std::invalid_argument("Mismatched parentheses");
       }
-      postfix.push_back(std::move(stack.top()));
-      stack.pop();
+      postfix.push_back(std::move(vector.back()));
+      vector.pop_back();
     }
     return postfix;
   }

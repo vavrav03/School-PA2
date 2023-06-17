@@ -3,7 +3,7 @@
 
 #include "../user-interfaces/string-parsing/tokenizer/tokenizer.h"
 #include "../data-sources/expressions/expressions.h"
-#include <stack>
+#include <vector>
 #include <iostream>
 
 enum class OperationPartType {
@@ -25,7 +25,7 @@ class OperationPart {
   const int priority;
   virtual ~OperationPart() = default;
 
-  virtual void evaluate(std::stack<std::unique_ptr<T>> &evaluatedParts) {
+  virtual void evaluate(std::vector<std::unique_ptr<T>> &evaluatedParts) {
     // do nothing
   };
 };

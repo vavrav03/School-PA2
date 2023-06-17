@@ -26,22 +26,18 @@ class VariableOperandFactory : public OperationPartFactory<AbstractDataSource> {
 
 class CSVOperandFactory : public OperationPartFactory<AbstractDataSource> {
  public:
-  explicit CSVOperandFactory(VariablesMemory &memory);
+  explicit CSVOperandFactory();
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
   std::unique_ptr<OperationPart<AbstractDataSource> > create(const std::vector<Token> &tokens,
                                                              size_t &nextTokenIndex) const override;
- private:
-  VariablesMemory &memory;
 };
 
 class JSONOperandFactory : public OperationPartFactory<AbstractDataSource> {
  public:
-  explicit JSONOperandFactory(VariablesMemory &memory);
+  explicit JSONOperandFactory();
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
   std::unique_ptr<OperationPart<AbstractDataSource> > create(const std::vector<Token> &tokens,
                                                              size_t &nextTokenIndex) const override;
- private:
-  VariablesMemory &memory;
 };
 
 #endif //SEMESTRAL_SRC_USER_INTERFACES_STRING_PARSING_RELATIONAL_OPERATOR_FACTORIES_H_
