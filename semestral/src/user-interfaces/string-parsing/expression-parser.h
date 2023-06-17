@@ -55,8 +55,27 @@ class ExpressionParser {
     factories.push_back(std::make_unique<CharacterOperatorFactory<bool, RightBracketOperand<bool>>>(
         std::vector<std::string>{")"}));
     factories.push_back(std::make_unique<BooleanOperandFactory<EqualityOperand>>(std::vector<std::string>{"="}));
+    factories.push_back(std::make_unique<BooleanOperandFactory<InequalityOperand>>(std::vector<std::string>{"!", "="}));
+    factories.push_back(std::make_unique<BooleanOperandFactory<LessThanOperand>>(std::vector<std::string>{"<"}));
+    factories.push_back(std::make_unique<BooleanOperandFactory<LessThanOrEqualOperand>>(
+        std::vector<std::string>{"<", "="}));
+    factories.push_back(std::make_unique<BooleanOperandFactory<GreaterThanOperand>>(std::vector<std::string>{">"}));
+    factories.push_back(std::make_unique<BooleanOperandFactory<GreaterThanOrEqualOperand>>(
+        std::vector<std::string>{">", "="}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<bool, AndOperator>>(
         std::vector<std::string>{"∧"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, OrOperator>>(
+        std::vector<std::string>{"∨"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, XorOperator>>(
+        std::vector<std::string>{"⊕"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, ImpliesOperator>>(
+        std::vector<std::string>{"⇒"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, EquivalenceOperator>>(
+        std::vector<std::string>{"⇔"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, NandOperator>>(
+        std::vector<std::string>{"↓"}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, NorOperator>>(
+        std::vector<std::string>{"↑"}));
     return ExpressionParser(std::move(factories));
   }
 
@@ -82,7 +101,6 @@ class ExpressionParser {
           break;
         }
       }
-
       if (!found) {
         throw std::runtime_error("Unknown token " + tokens[nextTokenIndex].value);
       }

@@ -28,7 +28,7 @@ class CharacterOperatorFactory : public OperationPartFactory<Generic> {
   CharacterOperatorFactory(const std::vector<std::string> &operators) : operatorParts({operators}) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
-    if (nextTokenIndex + operatorParts.size() >= tokens.size()) {
+    if (nextTokenIndex + operatorParts.size() > tokens.size()) {
       return false;
     }
     for (int i = 0; i < operatorParts.size(); i++) {
