@@ -8,5 +8,6 @@ int main() {
   testTokenizeMethod();
   testConsoleCommands();
   testExpression();
+  testBooleanParser();
   return 0;
 }

@@ -5,14 +5,10 @@
 
 using namespace std;
 
-string getValue(string name, int argc, char **argv)
-{
-  for (int i = 0; i < argc; i++)
-  {
-    if (string(argv[i]) == name)
-    {
-      if (i + 1 >= argc)
-      {
+string getValue(string name, int argc, char **argv) {
+  for (int i = 0; i < argc; i++) {
+    if (string(argv[i]) == name) {
+      if (i + 1 >= argc) {
         throw runtime_error("No value specified for" + name);
       }
       return string(argv[i + 1]);
@@ -30,23 +26,18 @@ string getValue(string name, int argc, char **argv)
  * If no interface is specified, console interface is used.
  * @return
  */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   string interfaceName = "console";
   unique_ptr<AbstractInterface> interface;
-  try
-  {
+  try {
     interfaceName = getValue("--interface", argc, argv);
   }
-  catch (const runtime_error &e)
-  {
+  catch (const runtime_error &e) {
   }
-  try
-  {
+  try {
     interface = AbstractInterface::createInstance(interfaceName);
   }
-  catch (const runtime_error &e)
-  {
+  catch (const runtime_error &e) {
     cout << e.what() << endl;
     return 1;
   }

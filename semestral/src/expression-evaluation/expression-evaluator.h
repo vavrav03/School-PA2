@@ -4,19 +4,17 @@
 #include <vector>
 #include "relational-operation-part.h"
 #include "./operation-part.h"
-#include "../user-interfaces/variables-memory/variables-memory.h"
 
 template<typename T>
 class ExpressionEvaluator {
  public:
-  ExpressionEvaluator(VariablesMemory &memory) : memory(memory) {}
+  ExpressionEvaluator() {}
 
   std::unique_ptr<T> createExpressionFromPostfix(const std::vector<std::unique_ptr<OperationPart<T>>> &parts) const {
     std::vector<std::unique_ptr<T> > expressions;
     for (auto &part : parts) {
       part->evaluate(expressions);
     }
-    expressions.back()->reset();
     return std::move(expressions.back());
   }
 
@@ -69,8 +67,6 @@ class ExpressionEvaluator {
     }
     return postfix;
   }
- private:
-  VariablesMemory &memory;
 };
 
 #endif //SEMESTRAL_RELATIONAL_EXPRESSION_PARSER_H

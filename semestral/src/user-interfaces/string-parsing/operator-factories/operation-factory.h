@@ -25,11 +25,14 @@ template<typename Generic, typename Concrete>
 class CharacterOperatorFactory : public OperationPartFactory<Generic> {
 
  public:
-  CharacterOperatorFactory(const std::vector<std::string> &   operators) : operatorParts({operators}) {}
+  CharacterOperatorFactory(const std::vector<std::string> &operators) : operatorParts({operators}) {}
 
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
+    if (nextTokenIndex + operatorParts.size() >= tokens.size()) {
+      return false;
+    }
     for (int i = 0; i < operatorParts.size(); i++) {
-      if (nextTokenIndex + i >= tokens.size() || tokens[nextTokenIndex + i].value != operatorParts[i]) {
+      if (tokens[nextTokenIndex + i].value != operatorParts[i]) {
         return false;
       }
     }

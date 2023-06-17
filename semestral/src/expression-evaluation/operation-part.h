@@ -30,14 +30,16 @@ class OperationPart {
   };
 };
 
-class LeftBracketOperand : public OperationPart<AbstractDataSource> {
+template<typename T>
+class LeftBracketOperand : public OperationPart<T> {
  public:
-  LeftBracketOperand() : OperationPart<AbstractDataSource>(OperationPartType::LEFT_BRACKET, 999) {}
+  LeftBracketOperand() : OperationPart<T>(OperationPartType::LEFT_BRACKET, 999) {}
 };
 
-class RightBracketOperand : public OperationPart<AbstractDataSource> {
+template<typename T>
+class RightBracketOperand : public OperationPart<T> {
  public:
-  RightBracketOperand() : OperationPart<AbstractDataSource>(OperationPartType::RIGHT_BRACKET, 999) {}
+  RightBracketOperand() : OperationPart<T>(OperationPartType::RIGHT_BRACKET, 999) {}
 };
 
 template<typename GenericType, typename TargetType>

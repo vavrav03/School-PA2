@@ -4,12 +4,14 @@
 #include "../../expression-evaluation/expression-evaluator.h"
 #include "../../expression-evaluation/operation-part.h"
 #include "./operator-factories/relational-operation-factories.h"
+#include "./operator-factories/boolean-operation-factories.h"
+#include "../../expression-evaluation/boolean-operation-part.h"
 
 template<typename T>
 class ExpressionParser {
  public:
-  ExpressionParser(std::vector<std::unique_ptr<OperationPartFactory<T>>> &&factories, VariablesMemory &memory) :
-      memory(memory), factories(std::move(factories)), evaluator(memory) {
+  ExpressionParser(std::vector<std::unique_ptr<OperationPartFactory<T>>> &&factories)
+      : factories(std::move(factories)), evaluator() {
   }
 
   static ExpressionParser<AbstractDataSource> getInstance(VariablesMemory &memory) {
@@ -18,14 +20,16 @@ class ExpressionParser {
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftNaturalAntiJoin>>(
         std::vector<std::string>{"!", "<", "*"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightNaturalAntiJoin>>(
-        std::vector<std::string>{ "!", "*", ">"}));
+        std::vector<std::string>{"!", "*", ">"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftNaturalSemiJoinOperator>>(
         std::vector<std::string>{"<", "*"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightNaturalSemiJoinOperator>>(
         std::vector<std::string>{"*", ">"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftBracketOperand>>(
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource,
+                                                                  LeftBracketOperand<AbstractDataSource>>>(
         std::vector<std::string>{"{"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightBracketOperand>>(
+    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource,
+                                                                  RightBracketOperand<AbstractDataSource>>>(
         std::vector<std::string>{"}"}));
     factories.push_back(std::make_unique<ProjectionOperatorFactory>());
     factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, IntersectionOperator>>(
@@ -41,7 +45,19 @@ class ExpressionParser {
     factories.push_back(std::make_unique<CSVOperandFactory>());
     factories.push_back(std::make_unique<JSONOperandFactory>());
     factories.push_back(std::make_unique<VariableOperandFactory>(memory));
-    return ExpressionParser(std::move(factories), memory);
+    return ExpressionParser(std::move(factories));
+  }
+
+  static ExpressionParser<bool> getInstance() {
+    std::vector<std::unique_ptr<OperationPartFactory<bool>>> factories;
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, LeftBracketOperand<bool>>>(
+        std::vector<std::string>{"("}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, RightBracketOperand<bool>>>(
+        std::vector<std::string>{")"}));
+    factories.push_back(std::make_unique<BooleanOperandFactory<EqualityOperand>>(std::vector<std::string>{"="}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, AndOperator>>(
+        std::vector<std::string>{"∧"}));
+    return ExpressionParser(std::move(factories));
   }
 
   /**
@@ -56,7 +72,7 @@ class ExpressionParser {
   std::vector<std::unique_ptr<OperationPart<T>>>
   createInfixFromTokens(const std::vector<Token> &tokens) const {
     size_t nextTokenIndex = 0;
-    std::vector<std::unique_ptr<OperationPart<AbstractDataSource> >> infix;
+    std::vector<std::unique_ptr<OperationPart<T> >> infix;
     while (nextTokenIndex < tokens.size()) {
       bool found = false;
       for (auto &factory : factories) {
@@ -73,7 +89,6 @@ class ExpressionParser {
     }
     return infix;
   }
-  VariablesMemory &memory;
   std::vector<std::unique_ptr<OperationPartFactory<T>>> factories;
   ExpressionEvaluator<T> evaluator;
 };

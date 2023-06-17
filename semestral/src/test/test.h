@@ -24,5 +24,6 @@ void testTokenizeMethod();
 void testConsoleCommands();
 void testExpression();
 void testUtils();
+void testBooleanParser();
 
 #endif //SEMESTRAL_TEST_LIST_H
