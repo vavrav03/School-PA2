@@ -14,3 +14,14 @@ sequelize a
 sequelize b
 
 projection = a[name]
+print projection
+print a[name]
+print a[name->jmeno]
+print a[name->jmeno, age->vek]
+print a[name->jmeno, age->vek, height->vyska][jmeno]
+sequelize a
+
+export a to "examples/exported1.json"
+export a to "examples/exported1.csv"
+
+

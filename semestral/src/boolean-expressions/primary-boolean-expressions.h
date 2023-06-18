@@ -13,7 +13,7 @@ class AbstractPrimaryBooleanExpression : public AbstractBooleanExpression {
  public:
   AbstractPrimaryBooleanExpression(const std::string &leftName, const std::string &rightName)
       : leftName(leftName), rightName(rightName) {}
-  virtual ~AbstractPrimaryBooleanExpression() {}
+  virtual ~AbstractPrimaryBooleanExpression() = default;
  protected:
   std::string leftName;
   std::string rightName;

@@ -19,6 +19,7 @@ class ConsoleInterface : public AbstractInterface {
    * Wait in endless loop for next command separated by new line. Command is then tokenized and passed to processCommand
    */
   void run() override;
+  ~ConsoleInterface() override = default;
  private:
 
   /**
