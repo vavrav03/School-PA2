@@ -6,10 +6,13 @@
 #include "../../../expression-evaluation/operation-part.h"
 #include "../../../expression-evaluation/boolean-operation-part.h"
 
-template <typename ConcreteOperand>
+template<typename ConcreteOperand>
 class BooleanOperandFactory : public OperationPartFactory<bool> {
  public:
-  BooleanOperandFactory(const std::vector<std::string> &operators) : operatorParts({operators}) {}
+  BooleanOperandFactory(const std::vector<std::string> &operators,
+                        const std::unordered_map<std::string, size_t> &indexMap,
+                        const std::vector<std::string> &row)
+      : operatorParts({operators}), indexMap(indexMap), row(row) {}
   bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override {
     if (nextTokenIndex + 2 + operatorParts.size() > tokens.size()) {
       return false;
@@ -26,11 +29,12 @@ class BooleanOperandFactory : public OperationPartFactory<bool> {
     auto leftName = tokens[nextTokenIndex].value;
     auto rightName = tokens[nextTokenIndex + operatorParts.size() + 1].value;
     nextTokenIndex += operatorParts.size() + 2;
-    return std::make_unique<ConcreteOperand>(leftName, rightName);
+    return std::make_unique<ConcreteOperand>(row.at(indexMap.at(leftName)), row.at(indexMap.at(rightName)));
   }
  private:
   std::vector<std::string> operatorParts;
+  const std::unordered_map<std::string, size_t> &indexMap;
+  const std::vector<std::string> &row;
 };
-
 
 #endif //SEMESTRAL_SRC_USER_INTERFACES_STRING_PARSING_OPERATOR_FACTORIES_BOOLEAN_OPERATION_FACTORIES_H_
