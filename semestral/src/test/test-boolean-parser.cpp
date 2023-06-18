@@ -6,6 +6,6 @@ using namespace std;
 void testBooleanParser(){
   Tokenizer tokenizer = Tokenizer::getInstnace();
   auto parser = ExpressionParser<bool>::getInstance();
-  auto result = parser.createExpressionFromTokens(tokenizer.tokenize("(a!=a ⊕ a=a)"));
+  auto result = parser.createExpressionFromTokens(tokenizer.tokenize("((a!=a ⊕ a=a)')'"));
   cout << *result;
 }

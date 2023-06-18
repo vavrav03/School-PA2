@@ -10,8 +10,8 @@ Tokenizer Tokenizer::getInstnace() {
                     "*", "!",
                     "⊆", "⊂", "=",
                     "{", "}", ",", "(", ")", "[", "]", "-",
-                    "∧", "∨", "¬", "⇒", "⇔", "⊼", "⊽",
-                    "=", "<", ">", "~"});
+                    "∧", "∨", "'", "⇒", "⇔", "↓", "↑",
+                    "=", "<", ">"});
 }
 
 vector<Token> Tokenizer::tokenize(const string &command) {

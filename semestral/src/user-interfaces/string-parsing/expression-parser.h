@@ -62,6 +62,8 @@ class ExpressionParser {
     factories.push_back(std::make_unique<BooleanOperandFactory<GreaterThanOperand>>(std::vector<std::string>{">"}));
     factories.push_back(std::make_unique<BooleanOperandFactory<GreaterThanOrEqualOperand>>(
         std::vector<std::string>{">", "="}));
+    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, NotOperator>>(
+        std::vector<std::string>{"'"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<bool, AndOperator>>(
         std::vector<std::string>{"∧"}));
     factories.push_back(std::make_unique<CharacterOperatorFactory<bool, OrOperator>>(

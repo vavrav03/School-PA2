@@ -69,6 +69,17 @@ class GreaterThanOrEqualOperand : public BinaryPrimaryBooleanOperand {
   }
 };
 
+class NotOperator: public OperationPart<bool> {
+ public:
+  NotOperator() : OperationPart<bool>(OperationPartType::POSTFIX_UNARY_OPERATOR, 12) {}
+  virtual void evaluate(std::vector<std::unique_ptr<bool> > &evaluatedParts) override {
+    // here it has already been converted to postfix
+    auto operand = std::move(evaluatedParts.back());
+    evaluatedParts.pop_back();
+    evaluatedParts.push_back(std::make_unique<bool>(!*operand));
+  };
+};
+
 class AndOperator : public OperationPart<bool> {
  public:
   AndOperator() : OperationPart<bool>(OperationPartType::BINARY_OPERATOR, 10) {}
