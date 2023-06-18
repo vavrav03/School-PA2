@@ -20,7 +20,7 @@ void VariablesMemory::erase(const string &name) {
 }
 
 vector<string> VariablesMemory::getVariablesNames() {
-  vector<string> names(variables.size());
+  vector<string> names;
   for (auto &pair : variables) {
     names.push_back(pair.first);
   }
