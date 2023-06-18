@@ -11,8 +11,17 @@ class HeaderRowMapping {
                    const std::unordered_map<std::string, size_t> &indexMap)
       : row(row), indexMap(indexMap) {}
 
+  /**
+   *
+   * @param name
+   * @return either value in row acquired via indexMap using name as key or name itself if name is not in indexMap
+   */
   std::string getValue(const std::string &name) const {
-    return row.at(indexMap.at(name));
+    if(indexMap.find(name) == indexMap.end()) {
+      return name;
+    } else {
+      return row.at(indexMap.at(name));
+    }
   }
  private:
   const std::vector<std::string> &row;

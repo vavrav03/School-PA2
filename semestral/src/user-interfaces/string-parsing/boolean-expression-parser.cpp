@@ -13,18 +13,18 @@ ExpressionParser<AbstractBooleanExpression> ExpressionParser<AbstractBooleanExpr
   factories.push_back(make_unique<CharacterOperatorFactory<AbstractBooleanExpression,
                                                            RightBracketOperand<AbstractBooleanExpression>>>
                           (vector<string>{")"}));
-  factories.push_back(make_unique<BooleanOperandFactory<EqualOperand>>
-                          (vector<string>{"="}));
   factories.push_back(make_unique<BooleanOperandFactory<NoEqualOperand>>
                           (vector<string>{"!", "="}));
-  factories.push_back(make_unique<BooleanOperandFactory<LessThanOperand>>
-                          (vector<string>{"<"}));
   factories.push_back(make_unique<BooleanOperandFactory<LessThanOrEqualOperand>>
                           (vector<string>{"<", "="}));
-  factories.push_back(make_unique<BooleanOperandFactory<GreaterThanOperand>>
-                          (vector<string>{">"}));
   factories.push_back(make_unique<BooleanOperandFactory<GreaterThanOrEqualOperand>>
                           (vector<string>{">", "="}));
+  factories.push_back(make_unique<BooleanOperandFactory<EqualOperand>>
+                          (vector<string>{"="}));
+  factories.push_back(make_unique<BooleanOperandFactory<LessThanOperand>>
+                          (vector<string>{"<"}));
+  factories.push_back(make_unique<BooleanOperandFactory<GreaterThanOperand>>
+                          (vector<string>{">"}));
   factories.push_back(make_unique<CharacterOperatorFactory<AbstractBooleanExpression, NotOperator>>
                           (vector<string>{"'"}));
   factories.push_back(make_unique<CharacterOperatorFactory<AbstractBooleanExpression, AndOperator>>
@@ -41,5 +41,5 @@ ExpressionParser<AbstractBooleanExpression> ExpressionParser<AbstractBooleanExpr
                           (vector<string>{"↓"}));
   factories.push_back(make_unique<CharacterOperatorFactory<AbstractBooleanExpression, NorOperator>>
                           (vector<string>{"↑"}));
-  return ExpressionParser(std::move(factories));
+  return ExpressionParser<AbstractBooleanExpression>(std::move(factories));
 }

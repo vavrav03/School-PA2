@@ -4,7 +4,7 @@ using namespace std;
 
 SelectionExpression::SelectionExpression(unique_ptr<AbstractDataSource> expression,
                                          unique_ptr<AbstractBooleanExpression> condition)
-    : AbstractUnaryExpression(move(expression)), condition(std::move(condition)) {}
+    : AbstractUnaryExpression(std::move(expression)), condition(std::move(condition)) {}
 
 string SelectionExpression::toSQL() const {
   return "SELECT * FROM " + expression->toSQL() + " WHERE " + condition->toSQL();
