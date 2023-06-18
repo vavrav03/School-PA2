@@ -11,7 +11,7 @@ NaturalJoinExpression::NaturalJoinExpression(std::unique_ptr<AbstractDataSource>
 }
 
 string NaturalJoinExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " NATURAL JOIN " + rightExpression->toSQL() + ")";
+  return "SELECT * FROM ((" + leftExpression->toSQL() + ") NATURAL JOIN (" + rightExpression->toSQL() + "))";
 }
 
 void NaturalJoinExpression::reset() {

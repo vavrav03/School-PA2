@@ -1,27 +1,82 @@
+--commands overview
 a = "examples/example1.csv"
 b = "examples/example2.csv"
 vars
-
-a = "examples/example1.csv" --already used variable - X
+--already used variable - X
+a = "examples/example1.csv"
 delete a
-b = "examples/example1.csv" --should work
+--should work
+a = "examples/example1.csv"
 vars
-
 print a
 print b
-
 sequelize a
 sequelize b
 
+-----projection
 projection = a[name]
 print projection
 print a[name]
 print a[name->jmeno]
 print a[name->jmeno, age->vek]
 print a[name->jmeno, age->vek, height->vyska][jmeno]
-sequelize a
+print a[nonexistentfield, name]
+sequelize a[name->jmeno, age->vek, height->vyska][jmeno]
+delete projection
 
-export a to "examples/exported1.json"
-export a to "examples/exported1.csv"
+-----export
+outgoing = a[name->jmeno, age->vek, height->vyska]
+print outgoing
+export outgoing to "examples/exported1.json"
+export outgoing to "examples/exported1.csv"
 
+-----files as parts of expressions
+print "examples/exported1.json"
+print "examples/exported1.json"[jmeno]
+print "examples/nonexistent.json"
+
+-----set operations
+c = "examples/example3.csv"
+print a ∪ b
+print a ∩ b
+print a \ b
+print a × c
+
+-----corner cases
+print a ∪ a ∪ a ∪ a ∪ a
+print a ∩ a
+print a \ a
+
+-----!!!!! - must use renames before (does not limit the functionality)
+print a × a
+print a[name->jmeno, age->vek, height->vyska] × a
+
+-----natural joins
+d = "examples/example4.csv"
+--- should be empty (no common fields)
+print b * c
+--- should be same with more fields
+print c * d
+print c * d * {b ∪ a}
+sequelize c * d * {b ∪ a}
+
+print c <* d
+print d *> b
+
+print c !<* d
+print d !*> b
+
+----- selection
+print a(age >= 30)
+print a(age >= 26 ∧ name != Mary)
+print a((age >= 26 ∧ name != Mary)')
+print a((age >= 26 ∧ name != Mary)'')
+
+----- theta join
+print d[name, school->student_school][student_school=school]c
+print d[name, school->student_school]<[student_school=school]c
+print d[name, school->student_school]!<[student_school=school]c
+
+print d[name, school->student_school][student_school=school]>c
+print d[name, school->student_school]![student_school=school]>c
 

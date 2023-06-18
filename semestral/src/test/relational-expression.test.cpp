@@ -71,7 +71,7 @@ void testIntersection() {
   unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("test1 ∩    test2"));
   assert(toLowerCase(expression->toSQL())
-             == toLowerCase("SELECT * FROM (select * from test-set1 INTERSECT select * from test-set2)"));
+             == toLowerCase("SELECT * FROM ((select * from test-set1) INTERSECT (select * from test-set2))"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -93,7 +93,7 @@ void testUnion() {
       tokenizer.tokenize("test1  ∪   test2"));
   assert(
       toLowerCase(expression->toSQL())
-          == toLowerCase("SELECT * FROM (select * from test-set1 UNION select * from test-set2)"));
+          == toLowerCase("SELECT * FROM ((select * from test-set1) UNION (select * from test-set2))"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -121,7 +121,7 @@ void testExcept() {
       tokenizer.tokenize("test1  \\   test2"));
   assert(
       toLowerCase(expression->toSQL())
-          == toLowerCase("SELECT * FROM (select * from test-set1 EXCEPT select * from test-set2)"));
+          == toLowerCase("SELECT * FROM ((select * from test-set1) EXCEPT (select * from test-set2))"));
   assert(expression->getHeaderSize() == 3);
   assert(expression->getHeaderName(0) == "name");
   assert(expression->getHeaderName(1) == "age");
@@ -145,7 +145,7 @@ void testCartesian() {
       tokenizer.tokenize("test1 × test2"));
   assert(
       toLowerCase(expression->toSQL())
-          == toLowerCase("SELECT * FROM (select * from test CROSS JOIN select * from test-set1)"));
+          == toLowerCase("SELECT * FROM ((select * from test) CROSS JOIN (select * from test-set1))"));
   assert(expression->getHeaderSize() == 6);
   assert(expression->getHeaderName(0) == "a");
   assert(expression->getHeaderName(1) == "b");

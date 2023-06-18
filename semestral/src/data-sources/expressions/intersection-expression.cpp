@@ -18,7 +18,7 @@ void IntersectionExpression::reset() {
 }
 
 string IntersectionExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " INTERSECT " + rightExpression->toSQL() + ")";
+  return "SELECT * FROM ((" + leftExpression->toSQL() + ") INTERSECT (" + rightExpression->toSQL() + "))";
 }
 
 const vector<string> IntersectionExpression::getNextRow() {

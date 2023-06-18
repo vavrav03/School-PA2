@@ -12,7 +12,7 @@ CartesianProductExpression::CartesianProductExpression(std::unique_ptr<AbstractD
 }
 
 string CartesianProductExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " CROSS JOIN " + rightExpression->toSQL() + ")";
+  return "SELECT * FROM ((" + leftExpression->toSQL() + ") CROSS JOIN (" + rightExpression->toSQL() + "))";
 }
 
 void CartesianProductExpression::reset() {

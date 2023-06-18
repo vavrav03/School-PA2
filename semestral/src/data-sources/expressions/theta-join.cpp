@@ -9,7 +9,7 @@ ThetaJoinExpression::ThetaJoinExpression(std::unique_ptr<AbstractDataSource> lef
 }
 
 string ThetaJoinExpression::toSQL() const {
-  return "SELECT * FROM (" + leftExpression->toSQL() + " JOIN " + rightExpression->toSQL() + " ON ("
+  return "SELECT * FROM ((" + leftExpression->toSQL() + ") JOIN (" + rightExpression->toSQL() + ") ON ("
       + condition->toSQL() + "))";
 }
 
