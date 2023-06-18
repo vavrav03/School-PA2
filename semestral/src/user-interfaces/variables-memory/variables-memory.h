@@ -6,6 +6,9 @@
 #include "../../data-sources/abstract.h"
 #include "../../data-sources/expressions/expressions.h"
 
+/**
+ * Container for relational variables for user interface
+ */
 class VariablesMemory {
  public:
   bool exists(const std::string &name);

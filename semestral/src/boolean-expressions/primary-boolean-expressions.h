@@ -5,6 +5,10 @@
 #include "./header-row-mapping.h"
 #include "./boolean-expressions.h"
 
+/**
+ * All expression that do not take boolean as input and spit out boolean that are used in SQL queries must inherit from this class
+ *
+ */
 class AbstractPrimaryBooleanExpression : public AbstractBooleanExpression {
  public:
   AbstractPrimaryBooleanExpression(const std::string &leftName, const std::string &rightName)

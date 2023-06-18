@@ -5,6 +5,10 @@
 #include <unordered_map>
 #include <vector>
 
+/**
+ * Class that provides boolean expressions with access to values in a row of a relational data source. It is created
+ * on every new row for selection and theta joins etc...
+ */
 class HeaderRowMapping {
  public:
   HeaderRowMapping(const std::vector<std::string> &row,

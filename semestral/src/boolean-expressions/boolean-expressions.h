@@ -5,6 +5,9 @@
 #include <string>
 #include <memory>
 
+/**
+ * All expressions that take anything and spit out boolean that are used in SQL queries must inherit from this class
+ */
 class AbstractBooleanExpression {
  public:
   virtual bool evaluate(const HeaderRowMapping &rowMapping) = 0;

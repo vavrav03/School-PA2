@@ -14,6 +14,12 @@ enum class OperationPartType {
   RIGHT_BRACKET
 };
 
+/**
+ * Generic class that represents part of a string of operation parts. It is used to declare the type and store all information
+ * needed to create evaluatable expression. It's purpose is solely to be used to find out stuff about priorities, postfix / prefix,
+ * convesions between infix and postfix and construction of evaluatable expressions.
+ * @tparam T
+ */
 template<typename T>
 class OperationPart {
 

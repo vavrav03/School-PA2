@@ -13,7 +13,17 @@ class ExpressionParser {
       : factories(std::move(factories)), evaluator() {
   }
 
+  /**
+   * Creates instance for creation of evaluatable relational expression
+   * @param memory
+   * @return
+   */
   static ExpressionParser<AbstractDataSource> getInstance(VariablesMemory &memory);
+
+  /**
+   * Creates instance for creation of evaluatable boolean expression
+   * @return
+   */
   static ExpressionParser<AbstractBooleanExpression> getInstance();
 
   /**
@@ -26,6 +36,12 @@ class ExpressionParser {
   }
  private:
   std::vector<std::unique_ptr<OperationPart<T>>>
+
+  /**
+   * Convert Token vector format to logical infix format using factories of the class
+   * @param tokens
+   * @return
+   */
   createInfixFromTokens(const std::vector<Token> &tokens) const {
     size_t nextTokenIndex = 0;
     std::vector<std::unique_ptr<OperationPart<T> >> infix;
