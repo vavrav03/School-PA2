@@ -266,6 +266,25 @@ void testNaturalAntiJoins() {
   assertReturnMatches(*expression, expected);
 }
 
+void testSelection(){
+    cout << "RUNNING: selection" << endl;
+    VariablesMemory memory;
+    Tokenizer tokenizer = Tokenizer::getInstnace();
+    runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_SET_1) + "\""));
+    auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
+    unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+        tokenizer.tokenize("test1(name = Mary ∨ age >= 28)"));
+    assert(expression->getHeaderSize() == 3);
+    assert(expression->getHeaderName(0) == "name");
+    assert(expression->getHeaderName(1) == "age");
+    assert(expression->getHeaderName(2) == "height");
+    vector<vector<string> > expected = {
+        {"Mary", "28", "170"},
+        {"Alfred", "30", "175"}
+    };
+    assertReturnMatches(*expression, expected);
+}
+
 void testExpression() {
   testProjection();
   testIntersection();
@@ -275,4 +294,5 @@ void testExpression() {
   testNaturalJoin();
   testNaturalSemiJoins();
   testNaturalAntiJoins();
+  testSelection();
 }

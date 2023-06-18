@@ -8,7 +8,7 @@ bool SelectionOperatorFactory::canCreate(const std::vector<Token> &tokens, size_
     return false;
   }
   int bracketCount = 1;
-  for (int i = nextTokenIndex + 1; i < tokens.size(); i++) {
+  for (size_t i = nextTokenIndex + 1; i < tokens.size(); i++) {
     if (tokens[i].value == "(") {
       bracketCount++;
     } else if (tokens[i].value == ")") {
@@ -26,7 +26,7 @@ std::unique_ptr<OperationPart<AbstractDataSource> > SelectionOperatorFactory::cr
   nextTokenIndex++;
   std::vector<Token> subTokens;
   int bracketCount = 1;
-  for (int i = nextTokenIndex; i < tokens.size(); i++) {
+  for (size_t i = nextTokenIndex; i < tokens.size(); i++) {
     if (tokens[i].value == "(") {
       bracketCount++;
     } else if (tokens[i].value == ")") {

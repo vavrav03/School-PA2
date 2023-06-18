@@ -21,6 +21,7 @@ ExpressionParser<AbstractDataSource> ExpressionParser<AbstractDataSource>::getIn
   factories.push_back(make_unique<CharacterOperatorFactory<AbstractDataSource,
                                                            RightBracketOperand<AbstractDataSource>>>(
       vector<string>{"}"}));
+  factories.push_back(make_unique<SelectionOperatorFactory>());
   factories.push_back(make_unique<ProjectionOperatorFactory>());
   factories.push_back(make_unique<CharacterOperatorFactory<AbstractDataSource, IntersectionOperator>>(
       vector<string>{"∩"}));
