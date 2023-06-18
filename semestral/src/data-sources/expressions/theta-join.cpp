@@ -3,14 +3,15 @@
 using namespace std;
 
 ThetaJoinExpression::ThetaJoinExpression(std::unique_ptr<AbstractDataSource> left,
-                     std::unique_ptr<AbstractDataSource> right,
-                     std::unique_ptr<AbstractBooleanExpression> condition)
+                                         std::unique_ptr<AbstractDataSource> right,
+                                         std::unique_ptr<AbstractBooleanExpression> condition)
     : CartesianProductExpression(std::move(left), std::move(right)), condition(std::move(condition)) {
 }
 
 string ThetaJoinExpression::toSQL() const {
-  return "SELECT * FROM ((" + leftExpression->toSQL() + ") JOIN (" + rightExpression->toSQL() + ") ON ("
-      + condition->toSQL() + "))";
+  return "SELECT * FROM ((" + leftExpression->toSQL() + ") AS " + getRandomString(10) + " JOIN ("
+      + rightExpression->toSQL() + ") ON ("
+      + condition->toSQL() + ") AS " + getRandomString(10) + ")";
 }
 
 const vector<string> ThetaJoinExpression::getNextRow() {

@@ -27,5 +27,5 @@ obj/%.o: src/%.cpp
 
 obj/Makefile.deps:
 	mkdir -p obj
-	$($(COMPILER) -MM $(SRC_FILES)) > obj/Makefile.deps
+	$(COMPILER) -MM $(SRC_FILES) > obj/Makefile.deps
 -include obj/Makefile.deps

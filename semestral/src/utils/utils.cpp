@@ -37,3 +37,15 @@ string getExtensionFromPath(const string &fileName) {
   return name.substr(pos + 1);
 }
 
+string getRandomString(size_t length) {
+  static const char alphanum[] =
+      "0123456789abcdefghijklmnopqrstuvwxyz";
+
+  string result(length, ' ');
+  result[0] = alphanum[rand() % (sizeof(alphanum) - 10) + 10];
+  for (size_t i = 1; i < length; ++i) {
+    result[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+  }
+  return result;
+}
+

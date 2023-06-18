@@ -146,5 +146,6 @@ const T &findValueOrThrowInIndexMap(const std::unordered_map<T, size_t> &map, co
 std::string getNameFromPath(const std::string &path);
 std::string getExtensionFromPath(const std::string &path);
 std::string getNameWithoutExtension(const std::string &filename);
+std::string getRandomString(size_t length);
 
 #endif //SEMESTRAL_UTILS_H

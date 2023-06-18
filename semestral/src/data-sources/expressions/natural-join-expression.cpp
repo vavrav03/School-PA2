@@ -11,7 +11,8 @@ NaturalJoinExpression::NaturalJoinExpression(std::unique_ptr<AbstractDataSource>
 }
 
 string NaturalJoinExpression::toSQL() const {
-  return "SELECT * FROM ((" + leftExpression->toSQL() + ") NATURAL JOIN (" + rightExpression->toSQL() + "))";
+  return "SELECT * FROM ((" + leftExpression->toSQL() + ") AS " + getRandomString(10) + "  NATURAL JOIN ("
+      + rightExpression->toSQL() + ") AS " + getRandomString(10) + " )";
 }
 
 void NaturalJoinExpression::reset() {
@@ -21,7 +22,7 @@ void NaturalJoinExpression::reset() {
 }
 
 const vector<string> NaturalJoinExpression::getNextRow() {
-  if(sameColumns.empty()) {
+  if (sameColumns.empty()) {
     return vector<string>();
   }
   while (true) {

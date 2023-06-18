@@ -45,4 +45,4 @@ INSERT INTO example4 (name, school) VALUES ('John', 'MIT');
 INSERT INTO example4 (name, school) VALUES ('Octopus', 'FIT');
 INSERT INTO example4 (name, school) VALUES ('Betty', 'FEL');
 
-SELECT * FROM ((SELECT * FROM example2) NATURAL JOIN (SELECT * FROM example3))
+SELECT * FROM ((SELECT * FROM ((SELECT * FROM example3) AS p19t4xfi87  NATURAL JOIN (SELECT * FROM example4) AS h2wjq9j1rl )) AS kk10ttkv6d  NATURAL JOIN ((SELECT * FROM example2) UNION (SELECT * FROM example1)) AS itgssec8uv )

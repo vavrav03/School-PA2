@@ -34,7 +34,7 @@ string ProjectionExpression::toSQL() const {
       sql += header[i];
     }
   }
-  sql += " FROM (" + this->expression->toSQL() + ")";
+  sql += " FROM (" + this->expression->toSQL() + ") AS " + getRandomString(10);
   return sql;
 }
 

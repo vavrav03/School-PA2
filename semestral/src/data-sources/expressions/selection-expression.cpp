@@ -7,7 +7,7 @@ SelectionExpression::SelectionExpression(unique_ptr<AbstractDataSource> expressi
     : AbstractUnaryExpression(std::move(expression)), condition(std::move(condition)) {}
 
 string SelectionExpression::toSQL() const {
-  return "SELECT * FROM " + expression->toSQL() + " WHERE " + "(" + condition->toSQL() + ")";
+  return "SELECT * FROM " + expression->toSQL() + " WHERE " + "(" + condition->toSQL() + ") AS " + getRandomString(10);
 }
 
 unique_ptr<AbstractDataSource> SelectionExpression::clone() const {
