@@ -118,7 +118,7 @@ std::unordered_map<T, size_t> joinIndexMaps(const std::unordered_map<T, size_t> 
     result[pair.first] = pair.second;
   }
   int index = a.size();
-  for (int i = 0; i < b.size(); i++) {
+  for (size_t i = 0; i < b.size(); i++) {
     for (auto &pair : b) {
       if (pair.second == i && result.find(pair.first) == result.end()) {
         result[pair.first] = index++;

@@ -31,7 +31,7 @@ class CharacterOperatorFactory : public OperationPartFactory<Generic> {
     if (nextTokenIndex + operatorParts.size() > tokens.size()) {
       return false;
     }
-    for (int i = 0; i < operatorParts.size(); i++) {
+    for (size_t i = 0; i < operatorParts.size(); i++) {
       if (tokens[nextTokenIndex + i].value != operatorParts[i]) {
         return false;
       }

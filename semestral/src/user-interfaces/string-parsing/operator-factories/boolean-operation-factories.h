@@ -16,7 +16,7 @@ class BooleanOperandFactory : public OperationPartFactory<AbstractBooleanExpress
     if (nextTokenIndex + 2 + operatorParts.size() > tokens.size()) {
       return false;
     }
-    for (int i = 0; i < operatorParts.size(); i++) {
+    for (size_t i = 0; i < operatorParts.size(); i++) {
       if (tokens[nextTokenIndex + i + 1].value != operatorParts[i]) {
         return false;
       }
