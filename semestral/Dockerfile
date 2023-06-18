@@ -66,6 +66,6 @@ USER root
 RUN chmod -R 777 .
 USER progtest
 RUN make clean
-RUN make doc
+RUN make compile
 
 CMD bash

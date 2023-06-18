@@ -21,9 +21,9 @@ Features of the project:
 - nested expressions using () - Shunting-Yard algorithm
 ==============================================================================================
 Example of usage:
-animals1 = import "animals1.csv"
-animals2 = import "animals2.csv"
-nourishment = import "nourishment.csv"
+animals1 = "animals1.csv"
+animals2 = "animals2.csv"
+nourishment = "nourishment.csv"
 temp = {{animals1 ∪ animals2} × nourishment}
 print temp
 sequelize temp

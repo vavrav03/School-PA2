@@ -40,5 +40,13 @@ void HelpCommand::run(std::vector<Token> command) {
   cout << R"(   - implicit operator priorities are implemented. Left to right evaluation is used)" << endl;
   cout << R"(   - use quotes when dealing with file names. Otherwise, they are not going to be considered file names)" << endl;
   cout << R"(   - write date in format "YYYY-MM-DD")" << endl;
+  cout << R"(Example:)" << endl;
+  cout << R"(   animals1 = "animals1.csv")" << endl;
+  cout << R"(   animals2 = "animals2.csv")" << endl;
+  cout << R"(   nourishment = "nourishment.csv")" << endl;
+  cout << R"(   temp = {{animals1 ∪ animals2} × nourishment})" << endl;
+  cout << R"(   print temp)" << endl;
+  cout << R"(   sequelize temp)" << endl;
+  cout << R"(   export temp to "temp.csv")" << endl;
 }
 // @formatter:on

@@ -1,2 +1,16 @@
-a = import "examples/example1.csv"
-b = import "examples/example2.csv"
+a = "examples/example1.csv"
+b = "examples/example2.csv"
+vars
+
+a = "examples/example1.csv" --already used variable - X
+delete a
+b = "examples/example1.csv" --should work
+vars
+
+print a
+print b
+
+sequelize a
+sequelize b
+
+projection = a[name]
