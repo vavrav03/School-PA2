@@ -342,17 +342,41 @@ void testThetaSemiJoins() {
   cout << "RUNNING: theta right semi join" << endl;
   expression = parser.createExpressionFromTokens(
       tokenizer.tokenize("{test1[name->a_name, age]}[a_name=b_name]>{test2[name->b_name, height]}"));
-    assert(expression->getHeaderSize() == 2);
+  assert(expression->getHeaderSize() == 2);
   assert(expression->getHeaderName(0) == "b_name");
   assert(expression->getHeaderName(1) == "height");
-    expected = {
-        {"Mary", "170"},
-        {"Mary", "170"},
-        {"Mary", "170"},
-        {"Alfred", "175"},
-        {"Betty", "165"}
-    };
+  expected = {
+      {"Mary", "170"},
+      {"Mary", "170"},
+      {"Mary", "170"},
+      {"Alfred", "175"},
+      {"Betty", "165"}
+  };
+}
 
+void testAntiJoinThetaJoin() {
+  cout << "RUNNING: theta left anti join" << endl;
+  VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_JOIN_1) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_1) + "\""));
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+      tokenizer.tokenize("{test1[name->a_name, age]}!<[a_name=b_name]{test2[name->b_name, height]}"));
+  assert(expression->getHeaderSize() == 2);
+  assert(expression->getHeaderName(0) == "a_name");
+  assert(expression->getHeaderName(1) == "age");
+  vector<vector<string> > expected = {};
+  assertReturnMatches(*expression, expected);
+
+  cout << "RUNNING: theta right anti join" << endl;
+  expression = parser.createExpressionFromTokens(tokenizer.tokenize(
+      "{test1[name->a_name, age]}![a_name=b_name]>{test2[name->b_name, height]}"));
+  assert(expression->getHeaderSize() == 2);
+  assert(expression->getHeaderName(0) == "b_name");
+  assert(expression->getHeaderName(1) == "height");
+  expected = {{"John", "180"}};
+  assertReturnMatches(*expression, expected);
 }
 
 void testExpression() {
@@ -367,4 +391,5 @@ void testExpression() {
   testSelection();
   testThetaJoin();
   testThetaSemiJoins();
+  testAntiJoinThetaJoin();
 }
