@@ -9,6 +9,12 @@ void testBooleanParser() {
   std::unordered_map<std::string, size_t> indexMap = {{"a", 0}, {"b", 1}, {"c", 2}};
   HeaderRowMapping mapping(row, indexMap);
   auto parser = ExpressionParser<AbstractBooleanExpression>::getInstance();
+  try {
+    parser.createExpressionFromTokens(tokenizer.tokenize("(a = c ∨ b <= 96")); // wrong syntax
+    assert(false);
+  } catch(...){
+    assert(true);
+  }
   assert(parser.createExpressionFromTokens(tokenizer.tokenize("a =c"))->evaluate(mapping));
   assert(!parser.createExpressionFromTokens(tokenizer.tokenize("a=b"))->evaluate(mapping));
   assert(parser.createExpressionFromTokens(tokenizer.tokenize("a=b ∨ a=c"))->evaluate(mapping));

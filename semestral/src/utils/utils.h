@@ -58,6 +58,13 @@ bool equalsVectors(const std::vector<T> &a, const std::vector<T> &b) {
   return true;
 }
 
+/**
+ * Joins two vectors into one from left of the first vector to right of the second vector
+ * @tparam T
+ * @param a
+ * @param b
+ * @return
+ */
 template<typename T>
 std::vector<T> joinVectors(const std::vector<T> &a, const std::vector<T> &b) {
   std::vector<T> result(a.size() + b.size());

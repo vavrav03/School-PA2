@@ -17,21 +17,21 @@ Tokenizer Tokenizer::getInstnace() {
 vector<Token> Tokenizer::tokenize(const string &command) {
   vector<Token> tokens;
   string buffer;
-  bool in_quotes = false;
+  bool inQuotes = false;
 
   for (const char &c : command) {
     if (c == '"') {
-      in_quotes = !in_quotes;
+      inQuotes = !inQuotes;
       if (!buffer.empty()) {
-        tokens.push_back(Token(buffer, !in_quotes));
+        tokens.push_back(Token(buffer, !inQuotes));
         buffer.clear();
       }
-    } else if (std::isspace(c) && !in_quotes) {
+    } else if (std::isspace(c) && !inQuotes) {
       if (!buffer.empty()) {
         tokens.push_back(Token(buffer, false));
         buffer.clear();
       }
-    } else if (!in_quotes &&
+    } else if (!inQuotes &&
         isSpecialCharacter(string(1, c))) {
       if (!buffer.empty()) {
         tokens.push_back(Token(buffer, false));
@@ -44,7 +44,7 @@ vector<Token> Tokenizer::tokenize(const string &command) {
   }
 
   if (!buffer.empty()) {
-    tokens.push_back(Token(buffer, in_quotes));
+    tokens.push_back(Token(buffer, inQuotes));
   }
 
   return tokens;

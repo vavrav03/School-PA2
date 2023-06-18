@@ -12,6 +12,9 @@ class ExpressionEvaluator {
 
   std::unique_ptr<T> createExpressionFromPostfix(const std::vector<std::unique_ptr<OperationPart<T>>> &parts) const {
     std::vector<std::unique_ptr<T> > expressions;
+    if(parts.empty()) {
+      throw std::runtime_error("Empty expression");
+    }
     for (auto &part : parts) {
       part->evaluate(expressions);
     }

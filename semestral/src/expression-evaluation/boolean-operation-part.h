@@ -13,8 +13,8 @@ class BinaryPrimaryBooleanOperand : public OperationPart<AbstractBooleanExpressi
         leftName(leftName),
         rightName(rightName) {}
 
-  virtual void evaluate(std::vector<std::unique_ptr<AbstractBooleanExpression> > &evaluatedParts) override {
-    evaluatedParts.push_back(std::make_unique<T>(leftName, rightName));
+  void evaluate(std::vector<std::unique_ptr<AbstractBooleanExpression> > &evaluatedParts) override {
+    evaluatedParts.push_back(std::make_unique<T>(std::move(leftName), std::move(rightName)));
   }
 
  protected:

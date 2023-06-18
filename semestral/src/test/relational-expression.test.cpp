@@ -12,6 +12,15 @@ void assertReturnMatches(AbstractDataSource &expression, vector<vector<string> >
     for (size_t j = 0; j < expected.size(); j++) {
       if (equalsVectors(row, expected[j])) {
         equalCounters[j]++;
+        break;
+      }
+    }
+  }
+  for(size_t i = 0; i < equalCounters.size(); i++) {
+    for(size_t j = i + 1; j < equalCounters.size(); j++) {
+      if(equalsVectors(expected[i], expected[j])) { // non-distinct pile up in the first one
+        equalCounters[i]--;
+        equalCounters[j]++;
       }
     }
   }
@@ -266,23 +275,47 @@ void testNaturalAntiJoins() {
   assertReturnMatches(*expression, expected);
 }
 
-void testSelection(){
-    cout << "RUNNING: selection" << endl;
-    VariablesMemory memory;
-    Tokenizer tokenizer = Tokenizer::getInstnace();
-    runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_SET_1) + "\""));
-    auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
-    unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
-        tokenizer.tokenize("test1(name = Mary ∨ age >= 28)"));
-    assert(expression->getHeaderSize() == 3);
-    assert(expression->getHeaderName(0) == "name");
-    assert(expression->getHeaderName(1) == "age");
-    assert(expression->getHeaderName(2) == "height");
-    vector<vector<string> > expected = {
-        {"Mary", "28", "170"},
-        {"Alfred", "30", "175"}
-    };
-    assertReturnMatches(*expression, expected);
+void testSelection() {
+  cout << "RUNNING: selection" << endl;
+  VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_SET_1) + "\""));
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+      tokenizer.tokenize("test1(name = Mary ∨ age >= 28)"));
+  assert(expression->getHeaderSize() == 3);
+  assert(expression->getHeaderName(0) == "name");
+  assert(expression->getHeaderName(1) == "age");
+  assert(expression->getHeaderName(2) == "height");
+  vector<vector<string> > expected = {
+      {"Mary", "28", "170"},
+      {"Alfred", "30", "175"}
+  };
+  assertReturnMatches(*expression, expected);
+}
+
+void testThetaJoin() {
+  cout << "RUNNING: theta join" << endl;
+  VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_JOIN_1) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_1) + "\""));
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+      tokenizer.tokenize("{test1[name->a_name, age]}[a_name=b_name]{test2[name->b_name, height]}"));
+  assert(expression->getHeaderSize() == 4);
+  assert(expression->getHeaderName(0) == "a_name");
+  assert(expression->getHeaderName(1) == "age");
+  assert(expression->getHeaderName(2) == "b_name");
+  assert(expression->getHeaderName(3) == "height");
+  vector<vector<string> > expected = {
+      {"Mary", "17", "Mary", "170"},
+      {"Mary", "28", "Mary", "170"},
+      {"Mary", "28", "Mary", "170"},
+      {"Alfred", "29", "Alfred", "175"},
+      {"Betty", "20", "Betty", "165"}
+  };
+  assertReturnMatches(*expression, expected);
 }
 
 void testExpression() {
@@ -295,4 +328,5 @@ void testExpression() {
   testNaturalSemiJoins();
   testNaturalAntiJoins();
   testSelection();
+  testThetaJoin();
 }

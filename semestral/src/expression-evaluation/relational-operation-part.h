@@ -152,7 +152,23 @@ class SelectionOperator : public OperationPart<AbstractDataSource> {
   }
  private:
   std::unique_ptr<AbstractBooleanExpression> condition;
+};
 
+class ThetaJoinOperator : public OperationPart<AbstractDataSource> {
+ public:
+  ThetaJoinOperator(std::unique_ptr<AbstractBooleanExpression> condition)
+      : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11),
+        condition(std::move(condition)) {}
+
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto right = std::move(parts.back());
+    parts.pop_back();
+    auto left = std::move(parts.back());
+    parts.pop_back();
+    parts.push_back(std::make_unique<ThetaJoinExpression>(std::move(left), std::move(right), std::move(condition)));
+  }
+ protected:
+  std::unique_ptr<AbstractBooleanExpression> condition;
 };
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H

@@ -21,6 +21,9 @@ void NaturalJoinExpression::reset() {
 }
 
 const vector<string> NaturalJoinExpression::getNextRow() {
+  if(sameColumns.empty()) {
+    return vector<string>();
+  }
   while (true) {
     vector<string> rightRow = rightExpression->getNextRow();
     if (rightRow.empty()) {

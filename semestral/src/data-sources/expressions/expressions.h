@@ -149,7 +149,7 @@ class CartesianProductExpression : public AbstractBinaryExpression {
   const std::string &getHeaderName(size_t index) const override;
   size_t getHeaderSize() const override;
   std::unique_ptr<AbstractDataSource> clone() const override;
- private:
+ protected:
   std::vector<std::string> currentLeftRow;
 };
 
@@ -175,7 +175,21 @@ class NaturalJoinExpression : public AbstractBinaryExpression {
 
 class SelectionExpression : public AbstractUnaryExpression {
  public:
-  SelectionExpression(std::unique_ptr<AbstractDataSource> expression, std::unique_ptr<AbstractBooleanExpression> condition);
+  SelectionExpression(std::unique_ptr<AbstractDataSource> expression,
+                      std::unique_ptr<AbstractBooleanExpression> condition);
+
+  std::string toSQL() const override;
+  const std::vector<std::string> getNextRow() override;
+  std::unique_ptr<AbstractDataSource> clone() const override;
+ private:
+  std::unique_ptr<AbstractBooleanExpression> condition;
+};
+
+class ThetaJoinExpression : public CartesianProductExpression {
+ public:
+  ThetaJoinExpression(std::unique_ptr<AbstractDataSource> leftExpression,
+            std::unique_ptr<AbstractDataSource> rightExpression,
+            std::unique_ptr<AbstractBooleanExpression> condition);
 
   std::string toSQL() const override;
   const std::vector<std::string> getNextRow() override;
