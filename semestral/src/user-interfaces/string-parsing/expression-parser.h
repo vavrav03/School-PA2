@@ -3,9 +3,8 @@
 
 #include "../../expression-evaluation/expression-evaluator.h"
 #include "../../expression-evaluation/operation-part.h"
-#include "./operator-factories/relational-operation-factories.h"
-#include "./operator-factories/boolean-operation-factories.h"
-#include "../../expression-evaluation/boolean-operation-part.h"
+#include "../../boolean-expressions/boolean-expressions.h"
+#include "./operator-factories/operation-factory.h"
 
 template<typename T>
 class ExpressionParser {
@@ -14,77 +13,8 @@ class ExpressionParser {
       : factories(std::move(factories)), evaluator() {
   }
 
-  static ExpressionParser<AbstractDataSource> getInstance(VariablesMemory &memory) {
-    std::vector<std::unique_ptr<OperationPartFactory<AbstractDataSource> >> factories;
-    // the ones with more characters must be first to avoid matching the shorter ones
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftNaturalAntiJoin>>(
-        std::vector<std::string>{"!", "<", "*"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightNaturalAntiJoin>>(
-        std::vector<std::string>{"!", "*", ">"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, LeftNaturalSemiJoinOperator>>(
-        std::vector<std::string>{"<", "*"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, RightNaturalSemiJoinOperator>>(
-        std::vector<std::string>{"*", ">"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource,
-                                                                  LeftBracketOperand<AbstractDataSource>>>(
-        std::vector<std::string>{"{"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource,
-                                                                  RightBracketOperand<AbstractDataSource>>>(
-        std::vector<std::string>{"}"}));
-    factories.push_back(std::make_unique<ProjectionOperatorFactory>());
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, IntersectionOperator>>(
-        std::vector<std::string>{"∩"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, UnionOperator>>(
-        std::vector<std::string>{"∪"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, ExceptOperator>>(
-        std::vector<std::string>{"\\"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, CartesianProductOperator>>(
-        std::vector<std::string>{"×"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<AbstractDataSource, NaturalJoinOperator>>(
-        std::vector<std::string>{"*"}));
-    factories.push_back(std::make_unique<CSVOperandFactory>());
-    factories.push_back(std::make_unique<JSONOperandFactory>());
-    factories.push_back(std::make_unique<VariableOperandFactory>(memory));
-    return ExpressionParser(std::move(factories));
-  }
-
-  static ExpressionParser<bool> getInstance(std::unordered_map<std::string, size_t> &indexMap,
-                                            std::vector<std::string> &row) {
-    std::vector<std::unique_ptr<OperationPartFactory<bool>>> factories;
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, LeftBracketOperand<bool>>>
-                            (std::vector<std::string>{"("}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, RightBracketOperand<bool>>>
-                            (std::vector<std::string>{")"}));
-    factories.push_back(std::make_unique<BooleanOperandFactory<EqualityOperand>>
-                            (std::vector<std::string>{"="}, indexMap, row));
-    factories.push_back(std::make_unique<BooleanOperandFactory<InequalityOperand>>
-                            (std::vector<std::string>{"!", "="}, indexMap, row));
-    factories.push_back(std::make_unique<BooleanOperandFactory<LessThanOperand>>
-                            (std::vector<std::string>{"<"}, indexMap, row));
-    factories.push_back(std::make_unique<BooleanOperandFactory<LessThanOrEqualOperand>>
-                            (std::vector<std::string>{"<", "="}, indexMap, row));
-    factories.push_back(std::make_unique<BooleanOperandFactory<GreaterThanOperand>>
-                            (std::vector<std::string>{">"}, indexMap, row));
-    factories.push_back(std::make_unique<BooleanOperandFactory<GreaterThanOrEqualOperand>>
-                            (std::vector<std::string>{">", "="}, indexMap, row));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, NotOperator>>
-                            (std::vector<std::string>{"'"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, AndOperator>>
-                            (std::vector<std::string>{"∧"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, OrOperator>>
-                            (std::vector<std::string>{"∨"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, XorOperator>>
-                            (std::vector<std::string>{"⊕"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, ImpliesOperator>>
-                            (std::vector<std::string>{"⇒"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, EquivalenceOperator>>
-                            (std::vector<std::string>{"⇔"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, NandOperator>>
-                            (std::vector<std::string>{"↓"}));
-    factories.push_back(std::make_unique<CharacterOperatorFactory<bool, NorOperator>>
-                            (std::vector<std::string>{"↑"}));
-    return ExpressionParser(std::move(factories));
-  }
+  static ExpressionParser<AbstractDataSource> getInstance(VariablesMemory &memory);
+  static ExpressionParser<AbstractBooleanExpression> getInstance();
 
   /**
    *

@@ -42,6 +42,18 @@ class RightBracketOperand : public OperationPart<T> {
 };
 
 template<typename GenericType, typename TargetType>
+class UnaryOperator : public OperationPart<GenericType> {
+ public:
+  UnaryOperator(int priority) : OperationPart<GenericType>(OperationPartType::BINARY_OPERATOR, priority) {}
+
+  void evaluate(std::vector<std::unique_ptr<GenericType>> &evaluatedParts) override {
+    auto wrap = std::move(evaluatedParts.back());
+    evaluatedParts.pop_back();
+    evaluatedParts.push_back(std::make_unique<TargetType>(std::move(wrap)));
+  }
+};
+
+template<typename GenericType, typename TargetType>
 class BinaryOperator : public OperationPart<GenericType> {
  public:
   BinaryOperator(int priority) : OperationPart<GenericType>(OperationPartType::BINARY_OPERATOR, priority) {}

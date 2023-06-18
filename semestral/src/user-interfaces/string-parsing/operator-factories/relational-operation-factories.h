@@ -14,6 +14,14 @@ class ProjectionOperatorFactory : public OperationPartFactory<AbstractDataSource
                                                              size_t &nextTokenIndex) const override;
 };
 
+class SelectionOperatorFactory : public OperationPartFactory<AbstractDataSource> {
+ public:
+  SelectionOperatorFactory();
+  bool canCreate(const std::vector<Token> &tokens, size_t nextTokenIndex) const override;
+  std::unique_ptr<OperationPart<AbstractDataSource> > create(const std::vector<Token> &tokens,
+                                                             size_t &nextTokenIndex) const override;
+};
+
 class VariableOperandFactory : public OperationPartFactory<AbstractDataSource> {
  public:
   explicit VariableOperandFactory(VariablesMemory &memory);

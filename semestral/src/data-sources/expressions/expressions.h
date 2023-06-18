@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include "../abstract.h"
 #include "../../utils/utils.h"
+#include "../../boolean-expressions/boolean-expressions.h"
 #include <memory>
 
 class AbstractBinaryExpression : public AbstractDataSource {
@@ -170,6 +171,17 @@ class NaturalJoinExpression : public AbstractBinaryExpression {
   std::vector<std::string> currentLeftRow;
   std::vector<std::string> sameColumns;
   std::unordered_map<std::string, size_t> headerMap;
+};
+
+class SelectionExpression : public AbstractUnaryExpression {
+ public:
+  SelectionExpression(std::unique_ptr<AbstractDataSource> expression, std::unique_ptr<AbstractBooleanExpression> condition);
+
+  std::string toSQL() const override;
+  const std::vector<std::string> getNextRow() override;
+  std::unique_ptr<AbstractDataSource> clone() const override;
+ private:
+  std::unique_ptr<AbstractBooleanExpression> condition;
 };
 
 #endif //SEMESTRAL_EXPRESSIONS_H

@@ -116,9 +116,9 @@ class RightNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
   }
 };
 
-class LeftNaturalAntiJoin : public OperationPart<AbstractDataSource> {
+class LeftNaturalAntiJoinOperator : public OperationPart<AbstractDataSource> {
  public:
-  LeftNaturalAntiJoin() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+  LeftNaturalAntiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
 
   void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
     auto leftExpressionClone = parts[parts.size() - 2]->clone();
@@ -127,15 +127,32 @@ class LeftNaturalAntiJoin : public OperationPart<AbstractDataSource> {
   }
 };
 
-class RightNaturalAntiJoin: public OperationPart<AbstractDataSource> {
+class RightNaturalAntiJoinOperator : public OperationPart<AbstractDataSource> {
  public:
-  RightNaturalAntiJoin() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+  RightNaturalAntiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
 
   void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
     auto rightExpressionClone = parts.back()->clone();
     RightNaturalSemiJoinOperator().evaluate(parts);
     parts.push_back(std::make_unique<ExceptExpression>(std::move(rightExpressionClone), std::move(parts.back())));
   }
+};
+
+class SelectionOperator : public OperationPart<AbstractDataSource> {
+ public:
+  SelectionOperator(std::unique_ptr<AbstractBooleanExpression> condition)
+      : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11),
+        condition(std::move(condition)) {}
+
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto selection =
+        std::make_unique<SelectionExpression>(std::move(parts.back()), std::move(condition));
+    parts.pop_back();
+    parts.push_back(std::move(selection));
+  }
+ private:
+  std::unique_ptr<AbstractBooleanExpression> condition;
+
 };
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H
