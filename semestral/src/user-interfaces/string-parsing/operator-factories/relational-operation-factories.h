@@ -53,6 +53,7 @@ class ThetaJoinOperatorFactory : public OperationPartFactory<AbstractDataSource>
       }
       subTokens.push_back(tokens[examinedIndex]);
     }
+    examinedIndex++;
     if (!found) {
       return false;
     }

@@ -21,8 +21,17 @@ ExpressionParser<AbstractDataSource> ExpressionParser<AbstractDataSource>::getIn
   factories.push_back(make_unique<CharacterOperatorFactory<AbstractDataSource,
                                                            RightBracketOperand<AbstractDataSource>>>(
       vector<string>{"}"}));
+  factories.push_back(make_unique<ThetaJoinOperatorFactory<LeftSemiThetaJsonOperator>>(vector<string>{"<"},
+                                                                                       vector<string>{}));
+  factories.push_back(make_unique<ThetaJoinOperatorFactory<RightSemiThetaJsonOperator>>(vector<string>{},
+                                                                                        vector<string>{">"}));
+  factories.push_back(make_unique<ThetaJoinOperatorFactory<LeftAntiThetaJsonOperator>>(vector<string>{"!", "<"},
+                                                                                       vector<string>{}));
+  factories.push_back(make_unique<ThetaJoinOperatorFactory<RightAntiThetaJsonOperator>>(vector<string>{"!"},
+                                                                                        vector<string>{">"}));
   factories.push_back(make_unique<SelectionOperatorFactory>());
-  factories.push_back(make_unique<ThetaJoinOperatorFactory<ThetaJoinOperator>>(vector<string>{}, vector<string>{})); // must be above projection
+  factories.push_back(make_unique<ThetaJoinOperatorFactory<ThetaJoinOperator>>(vector<string>{},
+                                                                               vector<string>{})); // must be above projection
   factories.push_back(make_unique<ProjectionOperatorFactory>());
   factories.push_back(make_unique<CharacterOperatorFactory<AbstractDataSource, IntersectionOperator>>(
       vector<string>{"∩"}));

@@ -16,9 +16,9 @@ void assertReturnMatches(AbstractDataSource &expression, vector<vector<string> >
       }
     }
   }
-  for(size_t i = 0; i < equalCounters.size(); i++) {
-    for(size_t j = i + 1; j < equalCounters.size(); j++) {
-      if(equalsVectors(expected[i], expected[j])) { // non-distinct pile up in the first one
+  for (size_t i = 0; i < equalCounters.size(); i++) {
+    for (size_t j = i + 1; j < equalCounters.size(); j++) {
+      if (equalsVectors(expected[i], expected[j])) { // non-distinct pile up in the first one
         equalCounters[i]--;
         equalCounters[j]++;
       }
@@ -318,6 +318,43 @@ void testThetaJoin() {
   assertReturnMatches(*expression, expected);
 }
 
+void testThetaSemiJoins() {
+  cout << "RUNNING: theta left semi join" << endl;
+  VariablesMemory memory;
+  Tokenizer tokenizer = Tokenizer::getInstnace();
+  runStoreToMemory(memory, tokenizer.tokenize("test1 = \"" + string(TEST_CSV_JOIN_1) + "\""));
+  runStoreToMemory(memory, tokenizer.tokenize("test2 = \"" + string(TEST_CSV_SET_1) + "\""));
+  auto parser(ExpressionParser<AbstractDataSource>::getInstance(memory));
+  unique_ptr<AbstractDataSource> expression = parser.createExpressionFromTokens(
+      tokenizer.tokenize("{test1[name->a_name, age]}<[a_name=b_name]{test2[name->b_name, height]}"));
+  assert(expression->getHeaderSize() == 2);
+  assert(expression->getHeaderName(0) == "a_name");
+  assert(expression->getHeaderName(1) == "age");
+  vector<vector<string> > expected = {
+      {"Mary", "17"},
+      {"Mary", "28"},
+      {"Mary", "28"},
+      {"Alfred", "29"},
+      {"Betty", "20"}
+  };
+  assertReturnMatches(*expression, expected);
+
+  cout << "RUNNING: theta right semi join" << endl;
+  expression = parser.createExpressionFromTokens(
+      tokenizer.tokenize("{test1[name->a_name, age]}[a_name=b_name]>{test2[name->b_name, height]}"));
+    assert(expression->getHeaderSize() == 2);
+  assert(expression->getHeaderName(0) == "b_name");
+  assert(expression->getHeaderName(1) == "height");
+    expected = {
+        {"Mary", "170"},
+        {"Mary", "170"},
+        {"Mary", "170"},
+        {"Alfred", "175"},
+        {"Betty", "165"}
+    };
+
+}
+
 void testExpression() {
   testProjection();
   testIntersection();
@@ -329,4 +366,5 @@ void testExpression() {
   testNaturalAntiJoins();
   testSelection();
   testThetaJoin();
+  testThetaSemiJoins();
 }

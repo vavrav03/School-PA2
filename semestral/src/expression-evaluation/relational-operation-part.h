@@ -94,46 +94,46 @@ class NaturalJoinOperator : public BinaryOperator<AbstractDataSource, NaturalJoi
   NaturalJoinOperator() : BinaryOperator<AbstractDataSource, NaturalJoinExpression>(11) {}
 };
 
-class LeftNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
+class LeftNaturalSemiJoinOperator : public NaturalJoinOperator {
  public:
-  LeftNaturalSemiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+  LeftNaturalSemiJoinOperator() : NaturalJoinOperator() {}
 
   void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
     auto leftHeader = parts[parts.size() - 2]->getHeaderVector();
-    NaturalJoinOperator().evaluate(parts);
+    NaturalJoinOperator::evaluate(parts);
     ProjectionOperator(leftHeader, std::unordered_map<std::string, std::string>()).evaluate(parts);
   }
 };
 
-class RightNaturalSemiJoinOperator : public OperationPart<AbstractDataSource> {
+class RightNaturalSemiJoinOperator : public NaturalJoinOperator {
  public:
-  RightNaturalSemiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+  RightNaturalSemiJoinOperator() : NaturalJoinOperator() {}
 
   void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
     const std::vector<std::string> rightHeader = parts.back()->getHeaderVector();
-    NaturalJoinOperator().evaluate(parts);
+    NaturalJoinOperator::evaluate(parts);
     ProjectionOperator(rightHeader, std::unordered_map<std::string, std::string>()).evaluate(parts);
   }
 };
 
-class LeftNaturalAntiJoinOperator : public OperationPart<AbstractDataSource> {
+class LeftNaturalAntiJoinOperator : public LeftNaturalSemiJoinOperator {
  public:
-  LeftNaturalAntiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+  LeftNaturalAntiJoinOperator() : LeftNaturalSemiJoinOperator() {}
 
   void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
     auto leftExpressionClone = parts[parts.size() - 2]->clone();
-    LeftNaturalSemiJoinOperator().evaluate(parts);
+    LeftNaturalSemiJoinOperator::evaluate(parts);
     parts.push_back(std::make_unique<ExceptExpression>(std::move(leftExpressionClone), std::move(parts.back())));
   }
 };
 
-class RightNaturalAntiJoinOperator : public OperationPart<AbstractDataSource> {
+class RightNaturalAntiJoinOperator : public RightNaturalSemiJoinOperator {
  public:
-  RightNaturalAntiJoinOperator() : OperationPart<AbstractDataSource>(OperationPartType::BINARY_OPERATOR, 11) {}
+  RightNaturalAntiJoinOperator() : RightNaturalSemiJoinOperator() {}
 
   void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
     auto rightExpressionClone = parts.back()->clone();
-    RightNaturalSemiJoinOperator().evaluate(parts);
+    RightNaturalSemiJoinOperator::evaluate(parts);
     parts.push_back(std::make_unique<ExceptExpression>(std::move(rightExpressionClone), std::move(parts.back())));
   }
 };
@@ -169,6 +169,54 @@ class ThetaJoinOperator : public OperationPart<AbstractDataSource> {
   }
  protected:
   std::unique_ptr<AbstractBooleanExpression> condition;
+};
+
+class LeftSemiThetaJsonOperator : public ThetaJoinOperator {
+ public:
+  LeftSemiThetaJsonOperator(std::unique_ptr<AbstractBooleanExpression> condition)
+      : ThetaJoinOperator(std::move(condition)) {}
+
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto leftHeader = parts[parts.size() - 2]->getHeaderVector();
+    ThetaJoinOperator::evaluate(parts);
+    ProjectionOperator(leftHeader, std::unordered_map<std::string, std::string>()).evaluate(parts);
+  }
+};
+
+class RightSemiThetaJsonOperator : public ThetaJoinOperator {
+ public:
+  RightSemiThetaJsonOperator(std::unique_ptr<AbstractBooleanExpression> condition)
+      : ThetaJoinOperator(std::move(condition)) {}
+
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    const std::vector<std::string> rightHeader = parts.back()->getHeaderVector();
+    ThetaJoinOperator::evaluate(parts);
+    ProjectionOperator(rightHeader, std::unordered_map<std::string, std::string>()).evaluate(parts);
+  }
+};
+
+class LeftAntiThetaJsonOperator : public LeftSemiThetaJsonOperator {
+ public:
+  LeftAntiThetaJsonOperator(std::unique_ptr<AbstractBooleanExpression> condition)
+      : LeftSemiThetaJsonOperator(std::move(condition)) {}
+
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto leftExpressionClone = parts[parts.size() - 2]->clone();
+    LeftSemiThetaJsonOperator::evaluate(parts);
+    parts.push_back(std::make_unique<ExceptExpression>(std::move(leftExpressionClone), std::move(parts.back())));
+  }
+};
+
+class RightAntiThetaJsonOperator : public RightSemiThetaJsonOperator {
+ public:
+  RightAntiThetaJsonOperator(std::unique_ptr<AbstractBooleanExpression> condition)
+      : RightSemiThetaJsonOperator(std::move(condition)) {}
+
+  void evaluate(std::vector<std::unique_ptr<AbstractDataSource>> &parts) override {
+    auto rightExpressionClone = parts.back()->clone();
+    RightSemiThetaJsonOperator::evaluate(parts);
+    parts.push_back(std::make_unique<ExceptExpression>(std::move(rightExpressionClone), std::move(parts.back())));
+  }
 };
 
 #endif //SEMESTRAL_EXPRESSION_OPERATION_PART_H
