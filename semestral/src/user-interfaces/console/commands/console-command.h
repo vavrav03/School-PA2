@@ -98,4 +98,12 @@ class StoreExpressionToVariable : public VariablesDependentCommand {
   bool matchesSyntactically(std::vector<Token> command) override;
 };
 
+class DeleteVariableCommand: public VariablesDependentCommand {
+ public:
+  explicit DeleteVariableCommand(VariablesMemory &memory);
+
+  void run(std::vector<Token> command) override;
+  bool matchesSyntactically(std::vector<Token> command) override;
+};
+
 #endif //SEMESTRAL_CONSOLE_COMMAND_H

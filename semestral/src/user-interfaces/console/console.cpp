@@ -1,11 +1,13 @@
 #include "./console.h"
 #include <iostream>
 #include <string>
+#include "../abstract/exit-exception.h"
 
 using namespace std;
 
 ConsoleInterface::ConsoleInterface() : AbstractInterface() {
   commands.push_back(make_unique<ExitCommand>(memory));
+  commands.push_back(make_unique<DeleteVariableCommand>(memory));
   commands.push_back(make_unique<HelpCommand>());
   commands.push_back(make_unique<StoreExpressionToVariable>(memory));
   commands.push_back(make_unique<PrintCommand>(memory));
@@ -22,7 +24,12 @@ void ConsoleInterface::run() {
     string prompt = getNextCommand();
     vector<Token> commandTokens = Tokenizer::getInstnace().tokenize(prompt);
     try { processCommand(commandTokens); }
-    catch (exception &e) { cout << e.what() << endl; }
+    catch(ExitException & e){
+      break;
+    }
+    catch (exception &e) {
+      cout << e.what() << endl;
+    }
   }
 }
 

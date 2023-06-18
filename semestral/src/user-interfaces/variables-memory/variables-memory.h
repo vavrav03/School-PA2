@@ -9,8 +9,9 @@
 class VariablesMemory {
  public:
   bool exists(const std::string &name);
-  void add(const std::string &name, std::unique_ptr<AbstractDataSource> item);
+  void add(const std::string &name, std::unique_ptr<AbstractDataSource>&& item);
   std::unique_ptr<AbstractDataSource> get(const std::string &name);
+  void erase(const std::string &name);
   std::vector<std::string> getVariablesNames();
  protected:
   std::unordered_map<std::string, std::unique_ptr<AbstractDataSource> > variables;
